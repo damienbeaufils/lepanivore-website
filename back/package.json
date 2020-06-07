@@ -1,6 +1,6 @@
 {
   "name": "lepanivore-website-backend",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "private": true,
   "scripts": {
     "postinstall": "[[ -n $APP_FOLDER ]] && npm run build && npm run typeorm:migration:run || exit 0",
