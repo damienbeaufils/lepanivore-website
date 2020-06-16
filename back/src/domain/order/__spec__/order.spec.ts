@@ -655,6 +655,10 @@ describe('domain/order/Order', () => {
           newOrderCommand.deliveryAddress = '1224 Rue Bélanger, Montréal, QC H2S 1H8';
           newOrderCommand.type = OrderType.PICK_UP;
 
+          const now: Date = new Date('2020-06-03T04:41:20');
+          // @ts-ignore
+          jest.spyOn(global, 'Date').mockImplementation(() => now);
+
           // when
           const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
 
@@ -746,7 +750,12 @@ describe('domain/order/Order', () => {
 
         it('should fail when delivery date is during a closing period', () => {
           // given
-          closingPeriods = [{ startDate: tuesdayBeforeSevenPM, endDate: secondThursdayAfterTuesday } as ClosingPeriodInterface];
+          closingPeriods = [
+            {
+              startDate: tuesdayBeforeSevenPM,
+              endDate: secondThursdayAfterTuesday,
+            } as ClosingPeriodInterface,
+          ];
           newOrderCommand.deliveryDate = firstThursdayAfterTuesday;
           // @ts-ignore
           jest.spyOn(global, 'Date').mockImplementation(() => tuesdayBeforeSevenPM);
@@ -760,7 +769,12 @@ describe('domain/order/Order', () => {
 
         it('should not fail when delivery date is outside a closing period', () => {
           // given
-          closingPeriods = [{ startDate: tuesdayBeforeSevenPM, endDate: secondThursdayAfterTuesday } as ClosingPeriodInterface];
+          closingPeriods = [
+            {
+              startDate: tuesdayBeforeSevenPM,
+              endDate: secondThursdayAfterTuesday,
+            } as ClosingPeriodInterface,
+          ];
           newOrderCommand.deliveryDate = thirdThursdayAfterTuesday;
           // @ts-ignore
           jest.spyOn(global, 'Date').mockImplementation(() => tuesdayBeforeSevenPM);
@@ -1404,7 +1418,12 @@ describe('domain/order/Order', () => {
 
       it('should fail when delivery date is during a closing period', () => {
         // given
-        closingPeriods = [{ startDate: tuesdayBeforeSevenPM, endDate: secondThursdayAfterTuesday } as ClosingPeriodInterface];
+        closingPeriods = [
+          {
+            startDate: tuesdayBeforeSevenPM,
+            endDate: secondThursdayAfterTuesday,
+          } as ClosingPeriodInterface,
+        ];
         updateOrderCommand.deliveryDate = firstThursdayAfterTuesday;
         // @ts-ignore
         jest.spyOn(global, 'Date').mockImplementation(() => tuesdayBeforeSevenPM);
@@ -1418,7 +1437,12 @@ describe('domain/order/Order', () => {
 
       it('should not fail when delivery date is outside a closing period', () => {
         // given
-        closingPeriods = [{ startDate: tuesdayBeforeSevenPM, endDate: secondThursdayAfterTuesday } as ClosingPeriodInterface];
+        closingPeriods = [
+          {
+            startDate: tuesdayBeforeSevenPM,
+            endDate: secondThursdayAfterTuesday,
+          } as ClosingPeriodInterface,
+        ];
         updateOrderCommand.deliveryDate = thirdThursdayAfterTuesday;
         // @ts-ignore
         jest.spyOn(global, 'Date').mockImplementation(() => tuesdayBeforeSevenPM);

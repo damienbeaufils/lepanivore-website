@@ -1,7 +1,11 @@
 import { cloneDeep, isEmpty } from 'lodash';
 import { ClosingPeriodInterface } from '../closing-period/closing-period.interface';
 import { Day, NUMBER_OF_DAYS_IN_A_WEEK } from '../date.constants';
-import { getNumberOfDaysBetweenFirstDateAndSecondDate, isFirstDateBeforeSecondDateIgnoringHours } from '../date.utils';
+import {
+  getCurrentDateAtCanadaEasternTimeZone,
+  getNumberOfDaysBetweenFirstDateAndSecondDate,
+  isFirstDateBeforeSecondDateIgnoringHours,
+} from '../date.utils';
 import { Product } from '../product/product';
 import { ProductIdWithQuantity, ProductWithQuantity } from '../product/product-with-quantity';
 import { ProductInterface } from '../product/product.interface';
@@ -100,7 +104,7 @@ export class Order implements OrderInterface {
         throw new InvalidOrderError('a pick-up date has to be defined when order type is pick-up');
       }
 
-      const now: Date = new Date();
+      const now: Date = getCurrentDateAtCanadaEasternTimeZone();
       if (isFirstDateBeforeSecondDateIgnoringHours(pickUpDate, now)) {
         throw new InvalidOrderError(`pick-up date ${pickUpDate.toISOString()} has to be in the future`);
       }
@@ -119,7 +123,7 @@ export class Order implements OrderInterface {
 
   private static assertPickUpDateIsEqualOrAfterTheFirstAvailableDay(type: OrderType, pickUpDate: Date): void {
     if (type === OrderType.PICK_UP) {
-      const now: Date = new Date();
+      const now: Date = getCurrentDateAtCanadaEasternTimeZone();
       const currentDay: number = now.getDay();
       if (currentDay - pickUpDate.getDay() === 0) {
         throw new InvalidOrderError(`pick-up date ${pickUpDate.toISOString()} cannot be same day as now`);
@@ -158,7 +162,7 @@ export class Order implements OrderInterface {
         throw new InvalidOrderError('a delivery date has to be defined when order type is delivery');
       }
 
-      const now: Date = new Date();
+      const now: Date = getCurrentDateAtCanadaEasternTimeZone();
       if (isFirstDateBeforeSecondDateIgnoringHours(deliveryDate, now)) {
         throw new InvalidOrderError(`delivery date ${deliveryDate.toISOString()} has to be in the future`);
       }
@@ -177,7 +181,7 @@ export class Order implements OrderInterface {
 
   private static assertDeliveryDateIsEqualOrAfterTheFirstAvailableDay(type: OrderType, deliveryDate: Date): void {
     if (type === OrderType.DELIVERY) {
-      const now: Date = new Date();
+      const now: Date = getCurrentDateAtCanadaEasternTimeZone();
       const numberOfDaysBetweenNowAndDeliveryDate: number = getNumberOfDaysBetweenFirstDateAndSecondDate(now, deliveryDate);
       const isDeliveryDateIsInTheNextSixDays: boolean = numberOfDaysBetweenNowAndDeliveryDate < NUMBER_OF_DAYS_IN_A_WEEK;
       if (
@@ -200,7 +204,7 @@ export class Order implements OrderInterface {
   }
 
   private static getCurrentDatePlusDays(numberOfDaysToAdd: number): Date {
-    const date: Date = new Date();
+    const date: Date = getCurrentDateAtCanadaEasternTimeZone();
     date.setDate(date.getDate() + numberOfDaysToAdd);
 
     return date;

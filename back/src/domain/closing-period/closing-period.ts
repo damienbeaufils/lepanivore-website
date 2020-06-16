@@ -1,4 +1,4 @@
-import { isFirstDateBeforeSecondDateIgnoringHours } from '../date.utils';
+import { getCurrentDateAtCanadaEasternTimeZone, isFirstDateBeforeSecondDateIgnoringHours } from '../date.utils';
 import { ClosingPeriodId } from '../type-aliases';
 import { ClosingPeriodInterface } from './closing-period.interface';
 import { NewClosingPeriodCommand } from './commands/new-closing-period-command';
@@ -28,7 +28,7 @@ export class ClosingPeriod implements ClosingPeriodInterface {
       throw new InvalidClosingPeriodError('start date has to be defined');
     }
 
-    const now: Date = new Date();
+    const now: Date = getCurrentDateAtCanadaEasternTimeZone();
     if (isFirstDateBeforeSecondDateIgnoringHours(startDate, now)) {
       throw new InvalidClosingPeriodError(`start date ${startDate.toISOString()} has to be in the future`);
     }
@@ -39,7 +39,7 @@ export class ClosingPeriod implements ClosingPeriodInterface {
       throw new InvalidClosingPeriodError('end date has to be defined');
     }
 
-    const now: Date = new Date();
+    const now: Date = getCurrentDateAtCanadaEasternTimeZone();
     if (isFirstDateBeforeSecondDateIgnoringHours(endDate, now)) {
       throw new InvalidClosingPeriodError(`end date ${endDate.toISOString()} has to be in the future`);
     }
