@@ -183,9 +183,11 @@ export class Order implements OrderInterface {
     if (type === OrderType.DELIVERY) {
       const now: Date = getCurrentDateAtCanadaEasternTimeZone();
       const numberOfDaysBetweenNowAndDeliveryDate: number = getNumberOfDaysBetweenFirstDateAndSecondDate(now, deliveryDate);
-      const isDeliveryDateIsInTheNextSixDays: boolean = numberOfDaysBetweenNowAndDeliveryDate < NUMBER_OF_DAYS_IN_A_WEEK;
+      const isDeliveryDateIsInTheSameWeekAsNow: boolean =
+        numberOfDaysBetweenNowAndDeliveryDate < NUMBER_OF_DAYS_IN_A_WEEK && now.getDay() <= deliveryDate.getDay();
+
       if (
-        isDeliveryDateIsInTheNextSixDays &&
+        isDeliveryDateIsInTheSameWeekAsNow &&
         (now.getDay() > MAXIMUM_DAY_FOR_DELIVERY_SAME_WEEK ||
           (now.getDay() === MAXIMUM_DAY_FOR_DELIVERY_SAME_WEEK && now.getHours() >= MAXIMUM_HOUR_FOR_DELIVERY_SAME_WEEK))
       ) {
@@ -268,5 +270,6 @@ export class Order implements OrderInterface {
 
 export interface OrderFactoryInterface {
   create(command: NewOrderCommand, activeProducts: ProductInterface[], closingPeriods: ClosingPeriodInterface[]): Order;
+
   copy(order: OrderInterface): Order;
 }

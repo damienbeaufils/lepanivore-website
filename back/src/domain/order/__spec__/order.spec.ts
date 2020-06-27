@@ -684,6 +684,7 @@ describe('domain/order/Order', () => {
         let tuesdayBeforeSevenPM: Date;
         let tuesdayAtSevenPM: Date;
         let wednesdayAfterTuesday: Date;
+        let saturdayAfterTuesday: Date;
         let firstThursdayAfterTuesday: Date;
         let secondThursdayAfterTuesday: Date;
         let thirdThursdayAfterTuesday: Date;
@@ -694,6 +695,7 @@ describe('domain/order/Order', () => {
           tuesdayBeforeSevenPM = new Date('2020-06-09T18:59:59');
           tuesdayAtSevenPM = new Date('2020-06-09T19:00:00');
           wednesdayAfterTuesday = new Date('2020-06-10T19:00:00');
+          saturdayAfterTuesday = new Date('2020-06-13T19:00:00');
           firstThursdayAfterTuesday = new Date('2020-06-11T19:00:00');
           secondThursdayAfterTuesday = new Date('2020-06-18T19:00:00');
           thirdThursdayAfterTuesday = new Date('2020-06-25T19:00:00');
@@ -880,6 +882,19 @@ describe('domain/order/Order', () => {
           newOrderCommand.deliveryDate = secondThursdayAfterTuesday;
           // @ts-ignore
           jest.spyOn(global, 'Date').mockImplementation(() => firstThursdayAfterTuesday);
+
+          // when
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+          // then
+          expect(result).not.toThrow();
+        });
+
+        it('should not fail when delivery date is the Thursday the week after now when creating the order Saturday', () => {
+          // given
+          newOrderCommand.deliveryDate = secondThursdayAfterTuesday;
+          // @ts-ignore
+          jest.spyOn(global, 'Date').mockImplementation(() => saturdayAfterTuesday);
 
           // when
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
