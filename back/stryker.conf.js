@@ -11,6 +11,6 @@ module.exports = {
   tsconfigFile: 'tsconfig.json',
   mutate: ['src/**/*.ts', '!src/**/*.spec.ts', '!src/**/*.module.ts'],
   jest: {
-    config: require('./jest-mutation.config.js'),
+    configFile: './jest-mutation.config.js',
   },
 };
