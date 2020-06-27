@@ -183,11 +183,11 @@ export class Order implements OrderInterface {
     if (type === OrderType.DELIVERY) {
       const now: Date = getCurrentDateAtCanadaEasternTimeZone();
       const numberOfDaysBetweenNowAndDeliveryDate: number = getNumberOfDaysBetweenFirstDateAndSecondDate(now, deliveryDate);
-      const isDeliveryDateIsInTheSameWeekAsNow: boolean =
+      const isDeliveryDateInTheSameWeekAsNow: boolean =
         numberOfDaysBetweenNowAndDeliveryDate < NUMBER_OF_DAYS_IN_A_WEEK && now.getDay() <= deliveryDate.getDay();
 
       if (
-        isDeliveryDateIsInTheSameWeekAsNow &&
+        isDeliveryDateInTheSameWeekAsNow &&
         (now.getDay() > MAXIMUM_DAY_FOR_DELIVERY_SAME_WEEK ||
           (now.getDay() === MAXIMUM_DAY_FOR_DELIVERY_SAME_WEEK && now.getHours() >= MAXIMUM_HOUR_FOR_DELIVERY_SAME_WEEK))
       ) {
