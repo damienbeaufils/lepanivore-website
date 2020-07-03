@@ -12,7 +12,7 @@
     "start:prod": "node dist/main.js",
     "lint": "tslint -p tsconfig.json -c tslint.json",
     "lintfix": "npm run lint -- --fix",
-    "pretest": "npm run test:cleanArchitecture && npm run lint",
+    "pretest": "rimraf .stryker-tmp && npm run test:cleanArchitecture && npm run lint",
     "pretest:e2e": "rimraf e2e.sqlite",
     "test": "npm run test:cov && npm run test:e2e",
     "test:watch": "jest --watch",
