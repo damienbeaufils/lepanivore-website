@@ -38,7 +38,7 @@ describe('infrastructure/config/authentication/LocalStrategy', () => {
       const result: Promise<User> = jwtStrategy.validate(username, password);
 
       // then
-      await expect(result).rejects.toThrow(new UnauthorizedException());
+      await expect(result).rejects.toThrow(new UnauthorizedException('Wrong username or password'));
     });
 
     it('should reject with UnauthorizedException when password is not the configured admin password', async () => {
@@ -49,7 +49,7 @@ describe('infrastructure/config/authentication/LocalStrategy', () => {
       const result: Promise<User> = jwtStrategy.validate(username, password);
 
       // then
-      await expect(result).rejects.toThrow(new UnauthorizedException());
+      await expect(result).rejects.toThrow(new UnauthorizedException('Wrong username or password'));
     });
 
     it('should reject with UnauthorizedException when configured password is not encrypted', async () => {
@@ -65,7 +65,7 @@ describe('infrastructure/config/authentication/LocalStrategy', () => {
       const result: Promise<User> = jwtStrategy.validate(username, password);
 
       // then
-      await expect(result).rejects.toThrow(new UnauthorizedException());
+      await expect(result).rejects.toThrow(new UnauthorizedException('Wrong username or password'));
     });
 
     it('should return ADMIN user when both username and password are correct', async () => {

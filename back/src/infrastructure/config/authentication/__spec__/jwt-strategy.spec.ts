@@ -31,7 +31,7 @@ describe('infrastructure/config/authentication/JwtStrategy', () => {
       const result: Promise<User> = jwtStrategy.validate(payload);
 
       // then
-      await expect(result).rejects.toThrow(new UnauthorizedException());
+      await expect(result).rejects.toThrow(new UnauthorizedException('Username in payload does not match expected ADMIN username'));
     });
 
     it('should return ADMIN user when payload username is ADMIN', async () => {
