@@ -124,8 +124,12 @@ export class Order implements OrderInterface {
   private static assertPickUpDateIsEqualOrAfterTheFirstAvailableDay(type: OrderType, pickUpDate: Date): void {
     if (type === OrderType.PICK_UP) {
       const now: Date = getCurrentDateAtCanadaEasternTimeZone();
+
+      const numberOfDaysBetweenNowAndPickUpDate: number = getNumberOfDaysBetweenFirstDateAndSecondDate(now, pickUpDate);
+      const isPickUpDateInTheNextSixDays: boolean = numberOfDaysBetweenNowAndPickUpDate < NUMBER_OF_DAYS_IN_A_WEEK;
+
       const currentDay: number = now.getDay();
-      if (currentDay - pickUpDate.getDay() === 0) {
+      if (isPickUpDateInTheNextSixDays && currentDay - pickUpDate.getDay() === 0) {
         throw new InvalidOrderError(`pick-up date ${pickUpDate.toISOString()} cannot be same day as now`);
       }
 
@@ -135,8 +139,6 @@ export class Order implements OrderInterface {
 
       let numberOfDaysBetweenNowAndFirstAvailableDay: number = Math.abs(firstAvailableDay - currentDay);
 
-      const numberOfDaysBetweenNowAndPickUpDate: number = getNumberOfDaysBetweenFirstDateAndSecondDate(now, pickUpDate);
-      const isPickUpDateInTheNextSixDays: boolean = numberOfDaysBetweenNowAndPickUpDate < NUMBER_OF_DAYS_IN_A_WEEK;
       const isPickUpDateInTheWeekAfter: boolean = isPickUpDateInTheNextSixDays && pickUpDate.getDay() < currentDay;
       if (isPickUpDateInTheWeekAfter) {
         numberOfDaysBetweenNowAndFirstAvailableDay = NUMBER_OF_DAYS_IN_A_WEEK - numberOfDaysBetweenNowAndFirstAvailableDay;

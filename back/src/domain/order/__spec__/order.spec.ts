@@ -450,6 +450,17 @@ describe('domain/order/Order', () => {
             expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-02T10:41:20.000Z cannot be same day as now'));
           });
 
+          it('should not fail when pick-up date is the same day as now but next week', () => {
+            // given
+            newOrderCommand.pickUpDate = aTuesdayInTheFutureTheWeekAfter;
+
+            // when
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+
+            // then
+            expect(result).not.toThrow();
+          });
+
           it('should fail when pick-up date is the following Wednesday', () => {
             // given
             newOrderCommand.pickUpDate = aWednesdayInTheFuture;
