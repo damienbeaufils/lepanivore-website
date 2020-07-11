@@ -2,7 +2,6 @@ import { Body, Controller, Delete, Get, HttpCode, Inject, Param, Post, Put, Req,
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { parseAsync } from 'json2csv';
-import * as os from 'os';
 import { DeleteOrderCommand } from '../../domain/order/commands/delete-order-command';
 import { NewOrderCommand } from '../../domain/order/commands/new-order-command';
 import { UpdateOrderCommand } from '../../domain/order/commands/update-order-command';
@@ -49,8 +48,8 @@ export class OrderController {
   @UseGuards(AuthGuard('jwt'))
   async getOrdersAsCsv(@Req() request: Request): Promise<string> {
     const orders: OrderInterface[] = await this.getOrdersProxyService.getInstance().execute();
+    const ordersAsCsvLines: OrderAsCsvLine[] = this.toOrderAsCsvLines(orders);
 
-    const ordersAsCsvLines: OrderAsCsvLine[] = orders.map(this.toOrderAsCsvLine);
     request.res.contentType('text/csv');
 
     return ordersAsCsvLines.length > 0 ? parseAsync(ordersAsCsvLines, { fields: Object.keys(ordersAsCsvLines[0]) }) : '';
@@ -119,18 +118,27 @@ export class OrderController {
     }
   }
 
-  private toOrderAsCsvLine(order: OrderInterface): OrderAsCsvLine {
-    const products: string = order.products
-      .map((productWithQuantity: ProductWithQuantity) => `- ${productWithQuantity.product.name} : ${productWithQuantity.quantity}`)
-      .join(os.EOL);
+  private toOrderAsCsvLines(orders: OrderInterface[]): OrderAsCsvLine[] {
+    let ordersAsCsvLines: OrderAsCsvLine[] = [];
+    orders.forEach((order: OrderInterface) => {
+      ordersAsCsvLines = ordersAsCsvLines.concat(
+        order.products.map((productWithQuantity: ProductWithQuantity) => this.toOrderAsCsvLine(order, productWithQuantity))
+      );
+    });
+
+    return ordersAsCsvLines;
+  }
+
+  private toOrderAsCsvLine(order: OrderInterface, productWithQuantity: ProductWithQuantity): OrderAsCsvLine {
     const type: string = order.type === OrderType.DELIVERY ? 'Livraison' : 'Cueillette';
 
     return {
-      id: order.id,
+      orderId: order.id,
       clientName: order.clientName,
       clientPhoneNumber: order.clientPhoneNumber,
       clientEmailAddress: order.clientEmailAddress,
-      products,
+      product: productWithQuantity.product.name,
+      quantity: productWithQuantity.quantity,
       type,
       pickUpDate: order.pickUpDate ? order.pickUpDate.toISOString().split('T')[0] : undefined,
       deliveryDate: order.deliveryDate ? order.deliveryDate.toISOString().split('T')[0] : undefined,
@@ -141,11 +149,12 @@ export class OrderController {
 }
 
 interface OrderAsCsvLine {
-  id: OrderId;
+  orderId: OrderId;
   clientName: string;
   clientPhoneNumber: string;
   clientEmailAddress: string;
-  products: string;
+  product: string;
+  quantity: number;
   type: string;
   pickUpDate?: string;
   deliveryDate?: string;

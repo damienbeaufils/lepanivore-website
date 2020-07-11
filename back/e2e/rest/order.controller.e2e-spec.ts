@@ -182,11 +182,11 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
             .expect('Content-Type', 'text/csv; charset=utf-8')
             .expect((response: Response) => {
               expect(response.text).toBe(
-                '"id","clientName","clientPhoneNumber","clientEmailAddress","products","type","pickUpDate","deliveryDate","deliveryAddress","note"\n' +
-                  '1,"fake order 1",,,"- product 1 : 1\n' +
-                  '- product 2 : 2","Cueillette","2020-07-01","2030-07-01",,\n' +
-                  '2,"fake order 2",,,"- product 3 : 3\n' +
-                  '- product 4 : 4","Cueillette","2020-08-15","2030-08-15",,'
+                '"orderId","clientName","clientPhoneNumber","clientEmailAddress","product","quantity","type","pickUpDate","deliveryDate","deliveryAddress","note"\n' +
+                  '1,"fake order 1",,,"product 1",1,"Cueillette","2020-07-01","2030-07-01",,\n' +
+                  '1,"fake order 1",,,"product 2",2,"Cueillette","2020-07-01","2030-07-01",,\n' +
+                  '2,"fake order 2",,,"product 3",3,"Cueillette","2020-08-15","2030-08-15",,\n' +
+                  '2,"fake order 2",,,"product 4",4,"Cueillette","2020-08-15","2030-08-15",,'
               );
             })
             .end(done);
