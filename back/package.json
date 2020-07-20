@@ -1,6 +1,6 @@
 {
   "name": "lepanivore-website-backend",
-  "version": "1.2.14",
+  "version": "1.2.15",
   "private": true,
   "scripts": {
     "postinstall": "[[ -n $APP_FOLDER ]] && npm run build && npm run typeorm:migration:run || exit 0",
@@ -60,7 +60,7 @@
     "@types/bcrypt": "3.0.0",
     "@types/express": "4.17.7",
     "@types/hapi__joi": "17.1.4",
-    "@types/jest": "26.0.4",
+    "@types/jest": "26.0.5",
     "@types/json2csv": "5.0.1",
     "@types/lodash": "4.14.157",
     "@types/node": "12.12.50",
