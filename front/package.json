@@ -1,6 +1,6 @@
 {
   "name": "front",
-  "version": "1.2.15",
+  "version": "1.2.16",
   "description": "lepanivore-website-frontend",
   "private": true,
   "scripts": {
@@ -27,7 +27,7 @@
     "@nuxt/typescript-build": "1.0.3",
     "@nuxtjs/google-analytics": "2.4.0",
     "@nuxtjs/vuetify": "1.11.2",
-    "@types/jest": "26.0.5",
+    "@types/jest": "26.0.7",
     "@vue/test-utils": "1.0.3",
     "babel-jest": "26.1.0",
     "jest": "26.1.0",
