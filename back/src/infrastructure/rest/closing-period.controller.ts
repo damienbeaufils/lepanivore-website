@@ -1,13 +1,14 @@
 import { Body, Controller, Delete, Get, HttpCode, Inject, Param, Post, Req, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { ClosingPeriodInterface } from '../../domain/closing-period/closing-period.interface';
 import { DeleteClosingPeriodCommand } from '../../domain/closing-period/commands/delete-closing-period-command';
 import { NewClosingPeriodCommand } from '../../domain/closing-period/commands/new-closing-period-command';
 import { ClosingPeriodId } from '../../domain/type-aliases';
+import { User } from '../../domain/user/user';
 import { AddNewClosingPeriod } from '../../use_cases/add-new-closing-period';
 import { DeleteClosingPeriod } from '../../use_cases/delete-closing-period';
 import { GetClosingPeriods } from '../../use_cases/get-closing-periods';
+import { JwtAuthGuard } from '../config/authentication/jwt-auth-guard';
 import { ProxyServicesDynamicModule } from '../use_cases_proxy/proxy-services-dynamic.module';
 import { UseCaseProxy } from '../use_cases_proxy/use-case-proxy';
 import { GetClosingPeriodResponse } from './models/get-closing-period-response';
@@ -40,11 +41,11 @@ export class ClosingPeriodController {
   }
 
   @Post('/')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   async postOrder(@Body() postClosingPeriodRequest: PostClosingPeriodRequest, @Req() request: Request): Promise<PostClosingPeriodResponse> {
     const closingPeriodId: ClosingPeriodId = await this.addNewClosingPeriodProxyService
       .getInstance()
-      .execute(this.toNewClosingPeriodCommand(postClosingPeriodRequest));
+      .execute(request.user as User, this.toNewClosingPeriodCommand(postClosingPeriodRequest));
 
     request.res.location(`${request.route.path}/${closingPeriodId}`);
 
@@ -53,9 +54,9 @@ export class ClosingPeriodController {
 
   @Delete('/:id')
   @HttpCode(204)
-  @UseGuards(AuthGuard('jwt'))
-  async deleteClosingPeriod(@Param('id') id: string): Promise<void> {
-    await this.deleteClosingPeriodProxyService.getInstance().execute(this.toDeleteCommand(id));
+  @UseGuards(JwtAuthGuard)
+  async deleteClosingPeriod(@Param('id') id: string, @Req() request: Request): Promise<void> {
+    await this.deleteClosingPeriodProxyService.getInstance().execute(request.user as User, this.toDeleteCommand(id));
   }
 
   private toNewClosingPeriodCommand(postClosingPeriodRequest: PostClosingPeriodRequest): NewClosingPeriodCommand {

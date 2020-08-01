@@ -126,7 +126,7 @@ describe('infrastructure/rest/ProductController (e2e)', () => {
           testRequest
             .expect(201)
             .expect((response: Response) => {
-              expect(mockAddNewProduct.execute).toHaveBeenCalledWith({
+              expect(mockAddNewProduct.execute).toHaveBeenCalledWith({ username: 'ADMIN' }, {
                 name: 'new product name',
                 description: 'new product description',
                 price: 12.34,
@@ -249,7 +249,7 @@ describe('infrastructure/rest/ProductController (e2e)', () => {
           testRequest
             .expect(200)
             .expect((response: Response) => {
-              expect(mockUpdateExistingProduct.execute).toHaveBeenCalledWith({
+              expect(mockUpdateExistingProduct.execute).toHaveBeenCalledWith({ username: 'ADMIN' }, {
                 productId: 1337,
                 description: 'updated product description',
               } as UpdateProductCommand);
@@ -371,7 +371,7 @@ describe('infrastructure/rest/ProductController (e2e)', () => {
           testRequest
             .expect(204)
             .expect((response: Response) => {
-              expect(mockArchiveProduct.execute).toHaveBeenCalledWith({ productId: 1337 } as ArchiveProductCommand);
+              expect(mockArchiveProduct.execute).toHaveBeenCalledWith({ username: 'ADMIN' }, { productId: 1337 } as ArchiveProductCommand);
             })
             .end(done);
         });

@@ -7,6 +7,8 @@ import { OrderRepository } from '../domain/order/order.repository';
 import { ProductStatus } from '../domain/product/product-status';
 import { ProductInterface } from '../domain/product/product.interface';
 import { ProductRepository } from '../domain/product/product.repository';
+import { InvalidUserError } from '../domain/user/errors/invalid-user.error';
+import { isAdmin, User } from '../domain/user/user';
 
 export class UpdateExistingOrder {
   constructor(
@@ -15,7 +17,11 @@ export class UpdateExistingOrder {
     private readonly orderRepository: OrderRepository
   ) {}
 
-  async execute(updateOrderCommand: UpdateOrderCommand): Promise<void> {
+  async execute(user: User, updateOrderCommand: UpdateOrderCommand): Promise<void> {
+    if (!isAdmin(user)) {
+      return Promise.reject(new InvalidUserError('User has to be ADMIN to execute this action'));
+    }
+
     const activeProducts: ProductInterface[] = await this.productRepository.findAllByStatus(ProductStatus.ACTIVE);
     const closingPeriods: ClosingPeriodInterface[] = await this.closingPeriodRepository.findAll();
 

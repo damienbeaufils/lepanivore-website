@@ -1,7 +1,10 @@
+import { OrderInterface } from '../../domain/order/order.interface';
 import { ArchiveProductCommand } from '../../domain/product/commands/archive-product-command';
 import { Product, ProductFactoryInterface } from '../../domain/product/product';
 import { ProductInterface } from '../../domain/product/product.interface';
 import { ProductRepository } from '../../domain/product/product.repository';
+import { InvalidUserError } from '../../domain/user/errors/invalid-user.error';
+import { ADMIN, User } from '../../domain/user/user';
 import { ArchiveProduct } from '../archive-product';
 
 describe('uses_cases/ArchiveProduct', () => {
@@ -35,7 +38,7 @@ describe('uses_cases/ArchiveProduct', () => {
       archiveProductCommand.productId = 1337;
 
       // when
-      await archiveProduct.execute(archiveProductCommand);
+      await archiveProduct.execute(ADMIN, archiveProductCommand);
 
       // then
       expect(mockProductRepository.findById).toHaveBeenCalledWith(1337);
@@ -47,7 +50,7 @@ describe('uses_cases/ArchiveProduct', () => {
       (mockProductRepository.findById as jest.Mock).mockReturnValue(Promise.resolve(existingProduct));
 
       // when
-      await archiveProduct.execute(archiveProductCommand);
+      await archiveProduct.execute(ADMIN, archiveProductCommand);
 
       // then
       expect(Product.factory.copy).toHaveBeenCalledWith(existingProduct);
@@ -55,7 +58,7 @@ describe('uses_cases/ArchiveProduct', () => {
 
     it('should archive product', async () => {
       // when
-      await archiveProduct.execute(archiveProductCommand);
+      await archiveProduct.execute(ADMIN, archiveProductCommand);
 
       // then
       expect(productToArchive.archive).toHaveBeenCalled();
@@ -63,10 +66,32 @@ describe('uses_cases/ArchiveProduct', () => {
 
     it('should save archived product', async () => {
       // when
-      await archiveProduct.execute(archiveProductCommand);
+      await archiveProduct.execute(ADMIN, archiveProductCommand);
 
       // then
       expect(mockProductRepository.save).toHaveBeenCalledWith(productToArchive);
+    });
+
+    it('should return invalid user error when no authenticated user', async () => {
+      // given
+      const user: User = undefined;
+
+      // when
+      const result: Promise<void> = archiveProduct.execute(user, archiveProductCommand);
+
+      // then
+      await expect(result).rejects.toThrow(new InvalidUserError('User has to be ADMIN to execute this action'));
+    });
+
+    it('should return invalid user error when user is not admin', async () => {
+      // given
+      const user: User = { username: '' };
+
+      // when
+      const result: Promise<void> = archiveProduct.execute(user, archiveProductCommand);
+
+      // then
+      await expect(result).rejects.toThrow(new InvalidUserError('User has to be ADMIN to execute this action'));
     });
   });
 });

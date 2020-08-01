@@ -14,6 +14,7 @@ import { Product } from '../../domain/product/product';
 import { ProductStatus } from '../../domain/product/product-status';
 import { ProductRepository } from '../../domain/product/product.repository';
 import { OrderId } from '../../domain/type-aliases';
+import { ADMIN, User } from '../../domain/user/user';
 import { OrderProducts } from '../order-products';
 
 describe('uses_cases/OrderProducts', () => {
@@ -23,6 +24,7 @@ describe('uses_cases/OrderProducts', () => {
   let mockOrderRepository: OrderRepository;
   let mockOrderNotificationRepository: OrderNotificationRepository;
   let mockFeatureRepository: FeatureRepository;
+  let user: User;
   let newOrderCommand: NewOrderCommand;
 
   beforeEach(() => {
@@ -55,6 +57,7 @@ describe('uses_cases/OrderProducts', () => {
       mockFeatureRepository
     );
 
+    user = { username: 'some-user' };
     newOrderCommand = {
       clientName: 'John Doe',
       clientPhoneNumber: '514-123-4567',
@@ -72,7 +75,7 @@ describe('uses_cases/OrderProducts', () => {
   describe('execute()', () => {
     it('should search for product ordering feature in order to know its status', async () => {
       // when
-      await orderProducts.execute(newOrderCommand);
+      await orderProducts.execute(user, newOrderCommand);
 
       // then
       expect(mockFeatureRepository.findByName).toHaveBeenCalledWith('PRODUCT_ORDERING');
@@ -85,7 +88,7 @@ describe('uses_cases/OrderProducts', () => {
       );
 
       // when
-      const result: Promise<OrderId> = orderProducts.execute(newOrderCommand);
+      const result: Promise<OrderId> = orderProducts.execute(user, newOrderCommand);
 
       // then
       await expect(result).rejects.toThrow(new ProductOrderingDisabledError('Product ordering feature has to be enabled to order products'));
@@ -93,21 +96,17 @@ describe('uses_cases/OrderProducts', () => {
 
     it('should search for active products', async () => {
       // when
-      await orderProducts.execute(newOrderCommand);
+      await orderProducts.execute(user, newOrderCommand);
 
       // then
       expect(mockProductRepository.findAllByStatus).toHaveBeenCalledWith(ProductStatus.ACTIVE);
     });
 
-    it('should create new order using given command, all products, and closing periods', async () => {
+    it('should create new order as admin using given command, all products, and closing periods when user is admin', async () => {
       // given
-      const activeProducts: Product[] = [
-        { id: 42, name: 'Product 1' } as Product,
-        {
-          id: 1337,
-          name: 'Product 2',
-        } as Product,
-      ];
+      user = ADMIN;
+
+      const activeProducts: Product[] = [{ id: 42, name: 'Product 1' } as Product, { id: 1337, name: 'Product 2' } as Product];
       (mockProductRepository.findAllByStatus as jest.Mock).mockReturnValue(Promise.resolve(activeProducts));
 
       const closingPeriods: ClosingPeriodInterface[] = [
@@ -117,10 +116,48 @@ describe('uses_cases/OrderProducts', () => {
       (mockClosingPeriodRepository.findAll as jest.Mock).mockReturnValue(Promise.resolve(closingPeriods));
 
       // when
-      await orderProducts.execute(newOrderCommand);
+      await orderProducts.execute(user, newOrderCommand);
 
       // then
-      expect(Order.factory.create).toHaveBeenCalledWith(newOrderCommand, activeProducts, closingPeriods);
+      expect(Order.factory.create).toHaveBeenCalledWith(newOrderCommand, activeProducts, closingPeriods, true);
+    });
+
+    it('should create new order using given command, all products, and closing periods', async () => {
+      // given
+      const activeProducts: Product[] = [{ id: 42, name: 'Product 1' } as Product, { id: 1337, name: 'Product 2' } as Product];
+      (mockProductRepository.findAllByStatus as jest.Mock).mockReturnValue(Promise.resolve(activeProducts));
+
+      const closingPeriods: ClosingPeriodInterface[] = [
+        { id: 1, startDate: new Date('2019-12-23T12:00:00.000Z'), endDate: new Date('2019-12-28T12:00:00.000Z') },
+        { id: 2, startDate: new Date('2020-07-15T12:00:00.000Z'), endDate: new Date('2020-08-15T12:00:00.000Z') },
+      ];
+      (mockClosingPeriodRepository.findAll as jest.Mock).mockReturnValue(Promise.resolve(closingPeriods));
+
+      // when
+      await orderProducts.execute(user, newOrderCommand);
+
+      // then
+      expect(Order.factory.create).toHaveBeenCalledWith(newOrderCommand, activeProducts, closingPeriods, false);
+    });
+
+    it('should create new order as admin using given command, all products, and closing periods when user is admin', async () => {
+      // given
+      const activeProducts: Product[] = [{ id: 42, name: 'Product 1' } as Product, { id: 1337, name: 'Product 2' } as Product];
+      (mockProductRepository.findAllByStatus as jest.Mock).mockReturnValue(Promise.resolve(activeProducts));
+
+      const closingPeriods: ClosingPeriodInterface[] = [
+        { id: 1, startDate: new Date('2019-12-23T12:00:00.000Z'), endDate: new Date('2019-12-28T12:00:00.000Z') },
+        { id: 2, startDate: new Date('2020-07-15T12:00:00.000Z'), endDate: new Date('2020-08-15T12:00:00.000Z') },
+      ];
+      (mockClosingPeriodRepository.findAll as jest.Mock).mockReturnValue(Promise.resolve(closingPeriods));
+
+      user = ADMIN;
+
+      // when
+      await orderProducts.execute(user, newOrderCommand);
+
+      // then
+      expect(Order.factory.create).toHaveBeenCalledWith(newOrderCommand, activeProducts, closingPeriods, true);
     });
 
     it('should save created order using repository', async () => {
@@ -129,7 +166,7 @@ describe('uses_cases/OrderProducts', () => {
       (Order.factory.create as jest.Mock).mockReturnValue(createdOrder);
 
       // when
-      await orderProducts.execute(newOrderCommand);
+      await orderProducts.execute(user, newOrderCommand);
 
       // then
       expect(mockOrderRepository.save).toHaveBeenCalledWith(createdOrder);
@@ -144,7 +181,7 @@ describe('uses_cases/OrderProducts', () => {
       (mockOrderRepository.save as jest.Mock).mockReturnValue(Promise.resolve(savedOrderId));
 
       // when
-      await orderProducts.execute(newOrderCommand);
+      await orderProducts.execute(user, newOrderCommand);
 
       // then
       expect(OrderNotification.factory.create).toHaveBeenCalledWith({ id: 42, clientName: 'Fake order' } as Order);
@@ -156,10 +193,22 @@ describe('uses_cases/OrderProducts', () => {
       (OrderNotification.factory.create as jest.Mock).mockReturnValue(createdOrderNotification);
 
       // when
-      await orderProducts.execute(newOrderCommand);
+      await orderProducts.execute(user, newOrderCommand);
 
       // then
       expect(mockOrderNotificationRepository.send).toHaveBeenCalledWith(createdOrderNotification);
+    });
+
+    it('should not create nor send any order notification when user is admin', async () => {
+      // given
+      user = ADMIN;
+
+      // when
+      await orderProducts.execute(user, newOrderCommand);
+
+      // then
+      expect(OrderNotification.factory.create).not.toHaveBeenCalled();
+      expect(mockOrderNotificationRepository.send).not.toHaveBeenCalled();
     });
 
     it('should return saved order id from repository', async () => {
@@ -168,7 +217,7 @@ describe('uses_cases/OrderProducts', () => {
       (mockOrderRepository.save as jest.Mock).mockReturnValue(Promise.resolve(savedOrderId));
 
       // when
-      const result: OrderId = await orderProducts.execute(newOrderCommand);
+      const result: OrderId = await orderProducts.execute(user, newOrderCommand);
 
       // then
       expect(result).toBe(savedOrderId);

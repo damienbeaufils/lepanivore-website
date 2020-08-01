@@ -121,7 +121,7 @@ describe('infrastructure/rest/ClosingPeriodController (e2e)', () => {
           testRequest
             .expect(201)
             .expect((response: Response) => {
-              expect(mockAddNewClosingPeriod.execute).toHaveBeenCalledWith({
+              expect(mockAddNewClosingPeriod.execute).toHaveBeenCalledWith({ username: 'ADMIN' }, {
                 startDate: new Date('2020-06-13T04:41:20'),
                 endDate: new Date('2030-06-13T04:41:20'),
               } as NewClosingPeriodCommand);
@@ -238,7 +238,9 @@ describe('infrastructure/rest/ClosingPeriodController (e2e)', () => {
           testRequest
             .expect(204)
             .expect((response: Response) => {
-              expect(mockDeleteClosingPeriod.execute).toHaveBeenCalledWith({ closingPeriodId: 1337 } as DeleteClosingPeriodCommand);
+              expect(mockDeleteClosingPeriod.execute).toHaveBeenCalledWith({ username: 'ADMIN' }, {
+                closingPeriodId: 1337,
+              } as DeleteClosingPeriodCommand);
             })
             .end(done);
         });

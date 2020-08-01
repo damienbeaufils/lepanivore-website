@@ -1,5 +1,4 @@
 import { Body, Controller, Delete, Get, HttpCode, Inject, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { parseAsync } from 'json2csv';
 import { DeleteOrderCommand } from '../../domain/order/commands/delete-order-command';
@@ -9,10 +8,12 @@ import { OrderType } from '../../domain/order/order-type';
 import { OrderInterface } from '../../domain/order/order.interface';
 import { ProductWithQuantity } from '../../domain/product/product-with-quantity';
 import { OrderId } from '../../domain/type-aliases';
+import { User } from '../../domain/user/user';
 import { DeleteOrder } from '../../use_cases/delete-order';
 import { GetOrders } from '../../use_cases/get-orders';
 import { OrderProducts } from '../../use_cases/order-products';
 import { UpdateExistingOrder } from '../../use_cases/update-existing-order';
+import { JwtAuthGuard, Public } from '../config/authentication/jwt-auth-guard';
 import { ProxyServicesDynamicModule } from '../use_cases_proxy/proxy-services-dynamic.module';
 import { UseCaseProxy } from '../use_cases_proxy/use-case-proxy';
 import { GetOrderResponse } from './models/get-order-response';
@@ -31,9 +32,9 @@ export class OrderController {
   ) {}
 
   @Get('/')
-  @UseGuards(AuthGuard('jwt'))
-  async getOrders(): Promise<GetOrderResponse[]> {
-    const orders: OrderInterface[] = await this.getOrdersProxyService.getInstance().execute();
+  @UseGuards(JwtAuthGuard)
+  async getOrders(@Req() request: Request): Promise<GetOrderResponse[]> {
+    const orders: OrderInterface[] = await this.getOrdersProxyService.getInstance().execute(request.user as User);
 
     return orders.map(
       (order: OrderInterface): GetOrderResponse => ({
@@ -45,9 +46,9 @@ export class OrderController {
   }
 
   @Get('/csv')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   async getOrdersAsCsv(@Req() request: Request): Promise<string> {
-    const orders: OrderInterface[] = await this.getOrdersProxyService.getInstance().execute();
+    const orders: OrderInterface[] = await this.getOrdersProxyService.getInstance().execute(request.user as User);
     const ordersAsCsvLines: OrderAsCsvLine[] = this.toOrderAsCsvLines(orders);
 
     request.res.contentType('text/csv');
@@ -56,8 +57,12 @@ export class OrderController {
   }
 
   @Post('/')
+  @UseGuards(JwtAuthGuard)
+  @Public()
   async postOrder(@Body() postOrderRequest: PostOrderRequest, @Req() request: Request): Promise<PostOrderResponse> {
-    const orderId: OrderId = await this.orderProductsProxyService.getInstance().execute(this.toNewOrderCommand(postOrderRequest));
+    const orderId: OrderId = await this.orderProductsProxyService
+      .getInstance()
+      .execute(request.user as User, this.toNewOrderCommand(postOrderRequest));
 
     request.res.location(`${request.route.path}/${orderId}`);
 
@@ -65,16 +70,16 @@ export class OrderController {
   }
 
   @Put('/:id')
-  @UseGuards(AuthGuard('jwt'))
-  async putOrder(@Param('id') id: string, @Body() putOrderRequest: PutOrderRequest): Promise<void> {
-    await this.updateExistingOrderProxyService.getInstance().execute(this.toUpdateOrderCommand(id, putOrderRequest));
+  @UseGuards(JwtAuthGuard)
+  async putOrder(@Param('id') id: string, @Body() putOrderRequest: PutOrderRequest, @Req() request: Request): Promise<void> {
+    await this.updateExistingOrderProxyService.getInstance().execute(request.user as User, this.toUpdateOrderCommand(id, putOrderRequest));
   }
 
   @Delete('/:id')
   @HttpCode(204)
-  @UseGuards(AuthGuard('jwt'))
-  async deleteOrder(@Param('id') id: string): Promise<void> {
-    await this.deleteOrderProxyService.getInstance().execute(this.toDeleteCommand(id));
+  @UseGuards(JwtAuthGuard)
+  async deleteOrder(@Param('id') id: string, @Req() request: Request): Promise<void> {
+    await this.deleteOrderProxyService.getInstance().execute(request.user as User, this.toDeleteCommand(id));
   }
 
   private toNewOrderCommand(postOrderRequest: PostOrderRequest): NewOrderCommand {

@@ -1,6 +1,9 @@
 import { Feature, FeatureFactoryInterface } from '../../domain/feature/feature';
 import { FeatureInterface } from '../../domain/feature/feature.interface';
 import { FeatureRepository } from '../../domain/feature/feature.repository';
+import { OrderInterface } from '../../domain/order/order.interface';
+import { InvalidUserError } from '../../domain/user/errors/invalid-user.error';
+import { ADMIN, User } from '../../domain/user/user';
 import { EnableProductOrdering } from '../enable-product-ordering';
 
 describe('uses_cases/EnableProductOrdering', () => {
@@ -26,7 +29,7 @@ describe('uses_cases/EnableProductOrdering', () => {
   describe('execute()', () => {
     it('should search for product ordering feature', async () => {
       // when
-      await enableProductOrdering.execute();
+      await enableProductOrdering.execute(ADMIN);
 
       // then
       expect(mockFeatureRepository.findByName).toHaveBeenCalledWith('PRODUCT_ORDERING');
@@ -38,7 +41,7 @@ describe('uses_cases/EnableProductOrdering', () => {
       (mockFeatureRepository.findByName as jest.Mock).mockReturnValue(Promise.resolve(existingFeature));
 
       // when
-      await enableProductOrdering.execute();
+      await enableProductOrdering.execute(ADMIN);
 
       // then
       expect(Feature.factory.copy).toHaveBeenCalledWith(existingFeature);
@@ -46,7 +49,7 @@ describe('uses_cases/EnableProductOrdering', () => {
 
     it('should enable feature', async () => {
       // when
-      await enableProductOrdering.execute();
+      await enableProductOrdering.execute(ADMIN);
 
       // then
       expect(featureToEnable.enable).toHaveBeenCalled();
@@ -54,10 +57,32 @@ describe('uses_cases/EnableProductOrdering', () => {
 
     it('should save enabled feature', async () => {
       // when
-      await enableProductOrdering.execute();
+      await enableProductOrdering.execute(ADMIN);
 
       // then
       expect(mockFeatureRepository.save).toHaveBeenCalledWith(featureToEnable);
+    });
+
+    it('should return invalid user error when no authenticated user', async () => {
+      // given
+      const user: User = undefined;
+
+      // when
+      const result: Promise<void> = enableProductOrdering.execute(user);
+
+      // then
+      await expect(result).rejects.toThrow(new InvalidUserError('User has to be ADMIN to execute this action'));
+    });
+
+    it('should return invalid user error when user is not admin', async () => {
+      // given
+      const user: User = { username: '' };
+
+      // when
+      const result: Promise<void> = enableProductOrdering.execute(user);
+
+      // then
+      await expect(result).rejects.toThrow(new InvalidUserError('User has to be ADMIN to execute this action'));
     });
   });
 });

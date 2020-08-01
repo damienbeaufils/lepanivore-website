@@ -1,18 +1,23 @@
 <template>
   <v-card>
     <v-card-title>
-      Vos coordonnées
+      {{ isInAdmin ? 'Coordonnées du client' : 'Vos coordonnées' }}
     </v-card-title>
     <v-container>
       <v-row>
         <v-col cols="12" sm="6" md="4">
-          <v-text-field v-model="value.clientName" :rules="[(v) => !!v || 'Votre nom est requis']" label="Votre nom" required></v-text-field>
+          <v-text-field
+            v-model="value.clientName"
+            :rules="[(v) => !!v || 'Le nom est requis']"
+            :label="isInAdmin ? 'Nom du client' : 'Votre nom'"
+            required
+          ></v-text-field>
         </v-col>
         <v-col cols="12" sm="6" md="4">
           <v-text-field
             v-model="value.clientPhoneNumber"
-            :rules="[(v) => !!v || 'Votre numéro de téléphone est requis']"
-            label="Votre numéro de téléphone"
+            :rules="[(v) => !!v || 'Le numéro de téléphone est requis']"
+            :label="isInAdmin ? 'Numéro de téléphone du client' : 'Votre numéro de téléphone'"
             required
           ></v-text-field>
         </v-col>
@@ -20,10 +25,10 @@
           <v-text-field
             v-model="value.clientEmailAddress"
             :rules="[
-              (v) => !!v || 'Votre adresse électronique est requise',
+              (v) => !!v || `L'adresse électronique est requise`,
               (v) => emailRegex.test(v) || `L'adresse électronique entrée n'est pas valide`,
             ]"
-            label="Votre adresse électronique"
+            :label="isInAdmin ? 'Adresse électronique du client' : 'Votre adresse électronique'"
             required
           ></v-text-field>
         </v-col>
@@ -50,6 +55,11 @@ export default Vue.extend({
     return {
       emailRegex: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
     } as ContactDetailsData;
+  },
+  computed: {
+    isInAdmin(): boolean {
+      return this.$route.path.includes('admin');
+    },
   },
 });
 </script>
