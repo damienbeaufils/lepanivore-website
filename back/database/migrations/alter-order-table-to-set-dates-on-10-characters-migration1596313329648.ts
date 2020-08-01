@@ -4,9 +4,9 @@ export class AlterOrderTableToSetDatesOn10CharactersMigration1596313329648 imple
   name: string = 'AlterOrderTableToSetDatesOn10CharactersMigration1596313329648';
 
   async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`UPDATE 'order' SET pick_up_date = substr(pick_up_date, 1, 10) WHERE pick_up_date IS NOT NULL`);
-    await queryRunner.query(`UPDATE 'order' SET delivery_date = substr(delivery_date, 1, 10) WHERE delivery_date IS NOT NULL`);
-    await queryRunner.query(`UPDATE 'order' SET reservation_date = substr(reservation_date, 1, 10) WHERE reservation_date IS NOT NULL`);
+    await queryRunner.query(`UPDATE "order" SET pick_up_date = substr(pick_up_date, 1, 10) WHERE pick_up_date IS NOT NULL`);
+    await queryRunner.query(`UPDATE "order" SET delivery_date = substr(delivery_date, 1, 10) WHERE delivery_date IS NOT NULL`);
+    await queryRunner.query(`UPDATE "order" SET reservation_date = substr(reservation_date, 1, 10) WHERE reservation_date IS NOT NULL`);
     await queryRunner.changeColumn(
       'order',
       'pick_up_date',
@@ -70,8 +70,8 @@ export class AlterOrderTableToSetDatesOn10CharactersMigration1596313329648 imple
         isNullable: true,
       })
     );
-    await queryRunner.query(`UPDATE 'order' SET reservation_date = reservation_date || 'T12:00:00.000Z' WHERE reservation_date IS NOT NULL`);
-    await queryRunner.query(`UPDATE 'order' SET delivery_date = delivery_date || 'T12:00:00.000Z' WHERE delivery_date IS NOT NULL`);
-    await queryRunner.query(`UPDATE 'order' SET pick_up_date = pick_up_date || 'T12:00:00.000Z' WHERE pick_up_date IS NOT NULL`);
+    await queryRunner.query(`UPDATE "order" SET reservation_date = reservation_date || 'T12:00:00.000Z' WHERE reservation_date IS NOT NULL`);
+    await queryRunner.query(`UPDATE "order" SET delivery_date = delivery_date || 'T12:00:00.000Z' WHERE delivery_date IS NOT NULL`);
+    await queryRunner.query(`UPDATE "order" SET pick_up_date = pick_up_date || 'T12:00:00.000Z' WHERE pick_up_date IS NOT NULL`);
   }
 }
