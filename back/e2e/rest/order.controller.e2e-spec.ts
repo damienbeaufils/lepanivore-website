@@ -234,9 +234,9 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
           clientEmailAddress: 'test@example.org',
           products: [{ productId: 42, quantity: 1 }],
           type: OrderType.DELIVERY,
-          pickUpDate: new Date('2020-06-13T04:41:20'),
+          pickUpDate: new Date('2020-06-13T12:00:00Z'),
           deliveryAddress: 'Montréal',
-          deliveryDate: new Date('2021-03-28T16:35:49'),
+          deliveryDate: new Date('2021-03-28T12:00:00Z'),
           note: 'a note',
         } as NewOrderCommand);
       });
@@ -284,9 +284,9 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
                 clientEmailAddress: 'test@example.org',
                 products: [{ productId: 42, quantity: 1 }],
                 type: OrderType.DELIVERY,
-                pickUpDate: new Date('2020-06-13T04:41:20'),
+                pickUpDate: new Date('2020-06-13T12:00:00Z'),
                 deliveryAddress: 'Montréal',
-                deliveryDate: new Date('2021-03-28T16:35:49'),
+                deliveryDate: new Date('2021-03-28T12:00:00Z'),
                 note: 'a note',
               } as NewOrderCommand);
             })
@@ -394,9 +394,9 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
                 orderId: 1337,
                 products: [{ productId: 42, quantity: 1 }],
                 type: OrderType.DELIVERY,
-                pickUpDate: new Date('2020-06-13T04:41:20'),
+                pickUpDate: new Date('2020-06-13T12:00:00Z'),
                 deliveryAddress: 'Montréal',
-                deliveryDate: new Date('2021-03-28T16:35:49'),
+                deliveryDate: new Date('2021-03-28T12:00:00Z'),
                 note: 'a note',
               } as UpdateOrderCommand);
             })

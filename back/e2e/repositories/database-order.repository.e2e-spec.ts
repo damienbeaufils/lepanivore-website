@@ -48,7 +48,7 @@ describe('infrastructure/repositories/DatabaseOrderRepository', () => {
         { product: { id: 2, name: 'product 2', description: 'product 2 description', price: 2.22 }, quantity: 2 },
       ],
       type: OrderType.PICK_UP,
-      pickUpDate: new Date('2020-06-13T04:41:20'),
+      pickUpDate: new Date('2020-06-13T12:00:00Z'),
       deliveryAddress: 'Montréal',
     } as OrderInterface;
   });

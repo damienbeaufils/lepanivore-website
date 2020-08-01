@@ -3,6 +3,7 @@ import { Request } from 'express';
 import { ClosingPeriodInterface } from '../../domain/closing-period/closing-period.interface';
 import { DeleteClosingPeriodCommand } from '../../domain/closing-period/commands/delete-closing-period-command';
 import { NewClosingPeriodCommand } from '../../domain/closing-period/commands/new-closing-period-command';
+import { getDateAsIsoStringWithoutTime, parseDateWithTimeAtNoonUTC } from '../../domain/date.utils';
 import { ClosingPeriodId } from '../../domain/type-aliases';
 import { User } from '../../domain/user/user';
 import { AddNewClosingPeriod } from '../../use_cases/add-new-closing-period';
@@ -34,8 +35,8 @@ export class ClosingPeriodController {
       (closingPeriod: ClosingPeriodInterface) =>
         ({
           id: closingPeriod.id,
-          startDate: closingPeriod.startDate.toISOString().split('T')[0],
-          endDate: closingPeriod.endDate.toISOString().split('T')[0],
+          startDate: getDateAsIsoStringWithoutTime(closingPeriod.startDate),
+          endDate: getDateAsIsoStringWithoutTime(closingPeriod.endDate),
         } as GetClosingPeriodResponse)
     );
   }
@@ -61,23 +62,12 @@ export class ClosingPeriodController {
 
   private toNewClosingPeriodCommand(postClosingPeriodRequest: PostClosingPeriodRequest): NewClosingPeriodCommand {
     return {
-      startDate: this.toDate(postClosingPeriodRequest.startDate),
-      endDate: this.toDate(postClosingPeriodRequest.endDate),
+      startDate: parseDateWithTimeAtNoonUTC(postClosingPeriodRequest.startDate),
+      endDate: parseDateWithTimeAtNoonUTC(postClosingPeriodRequest.endDate),
     };
   }
 
   private toDeleteCommand(id: string): DeleteClosingPeriodCommand {
     return { closingPeriodId: parseInt(id, 10) };
-  }
-
-  private toDate(dateAsString: string): Date {
-    if (!dateAsString) {
-      return undefined;
-    }
-    if (dateAsString.length > 10) {
-      return new Date(dateAsString);
-    } else {
-      return new Date(`${dateAsString}T12:00:00Z`);
-    }
   }
 }

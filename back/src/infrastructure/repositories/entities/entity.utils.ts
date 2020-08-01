@@ -1,7 +1,8 @@
 import { isEmpty } from 'lodash';
 import { ValueTransformer } from 'typeorm';
+import { getDateAsIsoStringWithoutTime, ISO_DATE_WITH_DASHES_AND_WITHOUT_TIME_LENGTH, parseDateWithTimeAtNoonUTC } from '../../../domain/date.utils';
 
-export const DATE_MAX_LENGTH: number = 24;
+export const DATE_MAX_LENGTH: number = ISO_DATE_WITH_DASHES_AND_WITHOUT_TIME_LENGTH;
 export const ENUM_VALUE_MAX_LENGTH: number = 8;
 export const DEFAULT_MAX_LENGTH: number = 255;
 
@@ -9,10 +10,10 @@ const ARRAY_ITEM_SEPARATOR: string = '|||';
 
 export const dateIsoStringValueTransformer: ValueTransformer = {
   from: (dateAsISOString: string): Date => {
-    return dateAsISOString ? new Date(dateAsISOString) : undefined;
+    return parseDateWithTimeAtNoonUTC(dateAsISOString);
   },
   to: (date: Date): string => {
-    return date ? date.toISOString() : undefined;
+    return getDateAsIsoStringWithoutTime(date);
   },
 } as ValueTransformer;
 

@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, HttpCode, Inject, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { parseAsync } from 'json2csv';
+import { getDateAsIsoStringWithoutTime, parseDateWithTimeAtNoonUTC } from '../../domain/date.utils';
 import { DeleteOrderCommand } from '../../domain/order/commands/delete-order-command';
 import { NewOrderCommand } from '../../domain/order/commands/new-order-command';
 import { UpdateOrderCommand } from '../../domain/order/commands/update-order-command';
@@ -39,9 +40,9 @@ export class OrderController {
     return orders.map(
       (order: OrderInterface): GetOrderResponse => ({
         ...order,
-        pickUpDate: order.pickUpDate ? order.pickUpDate.toISOString().split('T')[0] : undefined,
-        deliveryDate: order.deliveryDate ? order.deliveryDate.toISOString().split('T')[0] : undefined,
-        reservationDate: order.reservationDate ? order.reservationDate.toISOString().split('T')[0] : undefined,
+        pickUpDate: getDateAsIsoStringWithoutTime(order.pickUpDate),
+        deliveryDate: getDateAsIsoStringWithoutTime(order.deliveryDate),
+        reservationDate: getDateAsIsoStringWithoutTime(order.reservationDate),
       })
     );
   }
@@ -90,8 +91,8 @@ export class OrderController {
       clientEmailAddress: postOrderRequest.clientEmailAddress,
       products: postOrderRequest.products,
       type: postOrderRequest.type as OrderType,
-      pickUpDate: this.toDate(postOrderRequest.pickUpDate),
-      deliveryDate: this.toDate(postOrderRequest.deliveryDate),
+      pickUpDate: parseDateWithTimeAtNoonUTC(postOrderRequest.pickUpDate),
+      deliveryDate: parseDateWithTimeAtNoonUTC(postOrderRequest.deliveryDate),
       deliveryAddress: postOrderRequest.deliveryAddress,
       note: postOrderRequest.note,
     };
@@ -102,8 +103,8 @@ export class OrderController {
       orderId: parseInt(id, 10),
       products: putOrderRequest.products,
       type: putOrderRequest.type as OrderType,
-      pickUpDate: this.toDate(putOrderRequest.pickUpDate),
-      deliveryDate: this.toDate(putOrderRequest.deliveryDate),
+      pickUpDate: parseDateWithTimeAtNoonUTC(putOrderRequest.pickUpDate),
+      deliveryDate: parseDateWithTimeAtNoonUTC(putOrderRequest.deliveryDate),
       deliveryAddress: putOrderRequest.deliveryAddress,
       note: putOrderRequest.note,
     };
@@ -111,17 +112,6 @@ export class OrderController {
 
   private toDeleteCommand(id: string): DeleteOrderCommand {
     return { orderId: parseInt(id, 10) };
-  }
-
-  private toDate(dateAsString: string): Date {
-    if (!dateAsString) {
-      return undefined;
-    }
-    if (dateAsString.length > 10) {
-      return new Date(dateAsString);
-    } else {
-      return new Date(`${dateAsString}T12:00:00Z`);
-    }
   }
 
   private toOrderAsCsvLines(orders: OrderInterface[]): OrderAsCsvLine[] {
@@ -144,10 +134,10 @@ export class OrderController {
       product: productWithQuantity.product.name,
       quantity: productWithQuantity.quantity,
       type: getOrderTypeLabel(order.type),
-      pickUpDate: order.pickUpDate ? order.pickUpDate.toISOString().split('T')[0] : undefined,
-      deliveryDate: order.deliveryDate ? order.deliveryDate.toISOString().split('T')[0] : undefined,
+      pickUpDate: getDateAsIsoStringWithoutTime(order.pickUpDate),
+      deliveryDate: getDateAsIsoStringWithoutTime(order.deliveryDate),
       deliveryAddress: order.deliveryAddress,
-      reservationDate: order.reservationDate ? order.reservationDate.toISOString().split('T')[0] : undefined,
+      reservationDate: getDateAsIsoStringWithoutTime(order.reservationDate),
       note: order.note,
     };
   }

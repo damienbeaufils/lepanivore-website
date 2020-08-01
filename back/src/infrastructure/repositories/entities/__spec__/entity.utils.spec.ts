@@ -5,20 +5,30 @@ describe('infrastructure/repositories/entities/entity.utils', () => {
     describe('from()', () => {
       it('should transform ISO string to date', () => {
         // given
+        const value: string = '2019-11-15';
+
+        // when
+        const result: Date = dateIsoStringValueTransformer.from(value);
+
+        // then
+        expect(result).toStrictEqual(new Date('2019-11-15T12:00:00.000Z'));
+      });
+      it('should transform ISO string with time to date', () => {
+        // given
         const value: string = '2019-11-15T15:09:05.119Z';
 
         // when
-        const result: string = dateIsoStringValueTransformer.from(value);
+        const result: Date = dateIsoStringValueTransformer.from(value);
 
         // then
-        expect(result).toStrictEqual(new Date('2019-11-15T15:09:05.119Z'));
+        expect(result).toStrictEqual(new Date('2019-11-15T12:00:00.000Z'));
       });
       it('should not transform anything when value is undefined', () => {
         // given
         const value: string = undefined;
 
         // when
-        const result: string = dateIsoStringValueTransformer.from(value);
+        const result: Date = dateIsoStringValueTransformer.from(value);
 
         // then
         expect(result).toBeUndefined();
@@ -33,7 +43,7 @@ describe('infrastructure/repositories/entities/entity.utils', () => {
         const result: string = dateIsoStringValueTransformer.to(date);
 
         // then
-        expect(result).toBe('2019-11-15T15:09:05.119Z');
+        expect(result).toBe('2019-11-15');
       });
       it('should not transform anything when date is undefined', () => {
         // given

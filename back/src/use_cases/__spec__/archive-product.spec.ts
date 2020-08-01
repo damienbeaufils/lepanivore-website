@@ -1,4 +1,3 @@
-import { OrderInterface } from '../../domain/order/order.interface';
 import { ArchiveProductCommand } from '../../domain/product/commands/archive-product-command';
 import { Product, ProductFactoryInterface } from '../../domain/product/product';
 import { ProductInterface } from '../../domain/product/product.interface';

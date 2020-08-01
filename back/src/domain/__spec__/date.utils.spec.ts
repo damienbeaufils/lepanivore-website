@@ -1,4 +1,9 @@
-import { getNumberOfDaysBetweenFirstDateAndSecondDate, isFirstDateBeforeSecondDateIgnoringHours } from '../date.utils';
+import {
+  getDateAsIsoStringWithoutTime,
+  getNumberOfDaysBetweenFirstDateAndSecondDate,
+  isFirstDateBeforeSecondDateIgnoringHours,
+  parseDateWithTimeAtNoonUTC,
+} from '../date.utils';
 
 describe('domain/date.utils', () => {
   describe('isFirstDateBeforeSecondDateIgnoringHours()', () => {
@@ -112,6 +117,65 @@ describe('domain/date.utils', () => {
       // then
       expect(firstDate.toISOString()).toStrictEqual('2030-06-13T08:41:20.000Z');
       expect(secondDate.toISOString()).toStrictEqual('2030-06-14T08:41:20.000Z');
+    });
+  });
+
+  describe('parseDateWithTimeAtNoonUTC()', () => {
+    it('should transform ISO string to date', () => {
+      // given
+      const value: string = '2019-11-15';
+
+      // when
+      const result: Date = parseDateWithTimeAtNoonUTC(value);
+
+      // then
+      expect(result).toStrictEqual(new Date('2019-11-15T12:00:00.000Z'));
+    });
+
+    it('should transform ISO string with time to date', () => {
+      // given
+      const value: string = '2019-11-15T15:09:05.119Z';
+
+      // when
+      const result: Date = parseDateWithTimeAtNoonUTC(value);
+
+      // then
+      expect(result).toStrictEqual(new Date('2019-11-15T12:00:00.000Z'));
+    });
+
+    it('should not transform anything when value is undefined', () => {
+      // given
+      const value: string = undefined;
+
+      // when
+      const result: Date = parseDateWithTimeAtNoonUTC(value);
+
+      // then
+      expect(result).toBeUndefined();
+    });
+  });
+
+  describe('getDateAsIsoStringWithoutTime()', () => {
+    it('should transform date to ISO string', () => {
+      // given
+      const date: Date = new Date('2019-11-15T15:09:05.119Z');
+
+      // when
+      const result: string = getDateAsIsoStringWithoutTime(date);
+
+      // then
+      expect(result).toBe('2019-11-15');
+    });
+
+    it('should not transform anything when date is undefined', () => {
+      // given
+      const date: Date = undefined;
+
+      // when
+      const result: string = getDateAsIsoStringWithoutTime(date);
+
+      // then
+      expect(result).toBeUndefined();
     });
   });
 });

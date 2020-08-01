@@ -122,8 +122,8 @@ describe('infrastructure/rest/ClosingPeriodController (e2e)', () => {
             .expect(201)
             .expect((response: Response) => {
               expect(mockAddNewClosingPeriod.execute).toHaveBeenCalledWith({ username: 'ADMIN' }, {
-                startDate: new Date('2020-06-13T04:41:20'),
-                endDate: new Date('2030-06-13T04:41:20'),
+                startDate: new Date('2020-06-13T12:00:00Z'),
+                endDate: new Date('2030-06-13T12:00:00Z'),
               } as NewClosingPeriodCommand);
             })
             .end(done);

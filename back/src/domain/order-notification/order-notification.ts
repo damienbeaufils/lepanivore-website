@@ -1,5 +1,6 @@
 import { isEmpty } from 'lodash';
 import * as os from 'os';
+import { getDateAsIsoStringWithoutTime } from '../date.utils';
 import { getOrderTypeLabel, OrderType } from '../order/order-type';
 import { OrderInterface } from '../order/order.interface';
 import { ProductWithQuantity } from '../product/product-with-quantity';
@@ -32,8 +33,8 @@ export class OrderNotification implements OrderNotificationInterface {
     const orderType: string = `- Type de commande : ${getOrderTypeLabel(order.type)}`;
     const orderTypeDetails: string =
       order.type === OrderType.DELIVERY
-        ? `- Date de livraison : ${order.deliveryDate.toISOString().split('T')[0]}${os.EOL}- Adresse de livraison : ${order.deliveryAddress}`
-        : `- Date de cueillette : ${order.pickUpDate.toISOString().split('T')[0]}`;
+        ? `- Date de livraison : ${getDateAsIsoStringWithoutTime(order.deliveryDate)}${os.EOL}- Adresse de livraison : ${order.deliveryAddress}`
+        : `- Date de cueillette : ${getDateAsIsoStringWithoutTime(order.pickUpDate)}`;
     const products: string =
       `- Produits :${os.EOL}` +
       order.products

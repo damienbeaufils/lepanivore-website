@@ -1,7 +1,6 @@
 import { ClosingPeriodInterface } from '../../domain/closing-period/closing-period.interface';
 import { ClosingPeriodRepository } from '../../domain/closing-period/closing-period.repository';
 import { DeleteClosingPeriodCommand } from '../../domain/closing-period/commands/delete-closing-period-command';
-import { OrderInterface } from '../../domain/order/order.interface';
 import { InvalidUserError } from '../../domain/user/errors/invalid-user.error';
 import { ADMIN, User } from '../../domain/user/user';
 import { DeleteClosingPeriod } from '../delete-closing-period';

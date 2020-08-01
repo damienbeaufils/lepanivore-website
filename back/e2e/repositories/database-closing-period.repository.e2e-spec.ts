@@ -39,8 +39,8 @@ describe('infrastructure/repositories/DatabaseClosingPeriodRepository', () => {
     await closingPeriodEntityRepository.clear();
 
     closingPeriodWithoutId = {
-      startDate: new Date('2020-06-13T04:41:20'),
-      endDate: new Date('2030-06-13T04:41:20'),
+      startDate: new Date('2020-06-13T12:00:00Z'),
+      endDate: new Date('2030-06-13T12:00:00Z'),
     } as ClosingPeriodInterface;
   });
 
@@ -84,7 +84,7 @@ describe('infrastructure/repositories/DatabaseClosingPeriodRepository', () => {
       await databaseClosingPeriodRepository.save(closingPeriodWithoutId);
       const closingPeriodWithoutIdAndDifferentEndDate: ClosingPeriodInterface = {
         ...closingPeriodWithoutId,
-        endDate: new Date('2040-06-13T04:41:20'),
+        endDate: new Date('2040-06-13T12:00:00Z'),
       };
       const savedClosingPeriodIdDifferentEndDate: ClosingPeriodId = await databaseClosingPeriodRepository.save(
         closingPeriodWithoutIdAndDifferentEndDate
@@ -116,7 +116,7 @@ describe('infrastructure/repositories/DatabaseClosingPeriodRepository', () => {
       await databaseClosingPeriodRepository.save(closingPeriodWithoutId);
       const closingPeriodWithoutIdAndDifferentEndDate: ClosingPeriodInterface = {
         ...closingPeriodWithoutId,
-        endDate: new Date('2040-06-13T04:41:20'),
+        endDate: new Date('2040-06-13T12:00:00Z'),
       };
       await databaseClosingPeriodRepository.save(closingPeriodWithoutIdAndDifferentEndDate);
 

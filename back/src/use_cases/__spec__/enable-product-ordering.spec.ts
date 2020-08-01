@@ -1,7 +1,6 @@
 import { Feature, FeatureFactoryInterface } from '../../domain/feature/feature';
 import { FeatureInterface } from '../../domain/feature/feature.interface';
 import { FeatureRepository } from '../../domain/feature/feature.repository';
-import { OrderInterface } from '../../domain/order/order.interface';
 import { InvalidUserError } from '../../domain/user/errors/invalid-user.error';
 import { ADMIN, User } from '../../domain/user/user';
 import { EnableProductOrdering } from '../enable-product-ordering';
