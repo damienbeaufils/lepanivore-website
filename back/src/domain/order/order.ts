@@ -39,6 +39,7 @@ export class Order implements OrderInterface {
   pickUpDate?: Date;
   deliveryDate?: Date;
   deliveryAddress?: string;
+  reservationDate?: Date;
   note?: string;
 
   private constructor(
@@ -55,7 +56,7 @@ export class Order implements OrderInterface {
 
       this.bindContactDetails(command);
       this.bindProductSelection(command, activeProducts);
-      this.bindOrderTypeSelection(command, closingPeriods);
+      this.bindOrderTypeSelection(command, closingPeriods, isAdmin);
       this.note = command.note;
 
       if (!isAdmin) {
@@ -86,12 +87,15 @@ export class Order implements OrderInterface {
     }
   }
 
-  private static assertTypeIsValid(type: OrderType): void {
+  private static assertTypeIsValid(type: OrderType, isAdmin: boolean): void {
     if (isEmpty(type)) {
       throw new InvalidOrderError('order type has to be defined');
     }
     if (!Object.keys(OrderType).includes(type)) {
       throw new InvalidOrderError(`unknown order type ${type}`);
+    }
+    if (type === OrderType.RESERVATION && !isAdmin) {
+      throw new InvalidOrderError('RESERVATION order type requires to be ADMIN');
     }
   }
 
@@ -228,8 +232,9 @@ export class Order implements OrderInterface {
       throw new InvalidOrderError(`existing order id ${this.id} does not match command order id ${command.orderId}`);
     }
 
+    const isAdmin: boolean = true;
     this.bindProductSelection(command, activeProducts);
-    this.bindOrderTypeSelection(command, closingPeriods);
+    this.bindOrderTypeSelection(command, closingPeriods, isAdmin);
     this.note = command.note;
   }
 
@@ -260,21 +265,29 @@ export class Order implements OrderInterface {
     );
   }
 
-  private bindOrderTypeSelection(command: NewOrderCommand | UpdateOrderCommand, closingPeriods: ClosingPeriodInterface[]): void {
-    Order.assertTypeIsValid(command.type);
+  private bindOrderTypeSelection(command: NewOrderCommand | UpdateOrderCommand, closingPeriods: ClosingPeriodInterface[], isAdmin: boolean): void {
+    Order.assertTypeIsValid(command.type, isAdmin);
     Order.assertPickUpDateIsValid(command.type, closingPeriods, command.pickUpDate);
     Order.assertDeliveryDateIsValid(command.type, closingPeriods, command.deliveryDate);
     Order.assertDeliveryAddressIsValid(command.type, command.deliveryAddress);
 
     this.type = command.type;
-    if (this.type === OrderType.PICK_UP) {
-      this.pickUpDate = command.pickUpDate;
-      this.deliveryDate = null;
-      this.deliveryAddress = null;
-    } else {
-      this.pickUpDate = null;
-      this.deliveryDate = command.deliveryDate;
-      this.deliveryAddress = command.deliveryAddress;
+    this.pickUpDate = null;
+    this.deliveryDate = null;
+    this.deliveryAddress = null;
+    this.reservationDate = null;
+
+    switch (this.type) {
+      case OrderType.PICK_UP:
+        this.pickUpDate = command.pickUpDate;
+        break;
+      case OrderType.DELIVERY:
+        this.deliveryDate = command.deliveryDate;
+        this.deliveryAddress = command.deliveryAddress;
+        break;
+      case OrderType.RESERVATION:
+        this.reservationDate = new Date();
+        break;
     }
   }
 }

@@ -249,6 +249,30 @@ describe('domain/order/Order', () => {
           // then
           expect(result).toThrow(new InvalidOrderError('unknown order type UNKNOWN_TYPE'));
         });
+
+        it('should fail when type is RESERVATION and ordering as anonymous', () => {
+          // given
+          isAdmin = false;
+          newOrderCommand.type = 'RESERVATION' as OrderType;
+
+          // when
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
+
+          // then
+          expect(result).toThrow(new InvalidOrderError('RESERVATION order type requires to be ADMIN'));
+        });
+
+        it('should not fail when type is RESERVATION and ordering as admin', () => {
+          // given
+          isAdmin = true;
+          newOrderCommand.type = 'RESERVATION' as OrderType;
+
+          // when
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
+
+          // then
+          expect(result).not.toThrow();
+        });
       });
 
       describe('pickUpDate', () => {
@@ -291,7 +315,7 @@ describe('domain/order/Order', () => {
           expect(result.pickUpDate).toBe(aTuesdayInTheFuture);
         });
 
-        it('should not bind any pick-up date from command when order type is delivery', () => {
+        it('should not bind any pick-up date from command when order type is not pick-up', () => {
           // given
           newOrderCommand.pickUpDate = aTuesdayInTheFuture;
           newOrderCommand.type = OrderType.DELIVERY;
@@ -677,7 +701,7 @@ describe('domain/order/Order', () => {
           expect(result.deliveryAddress).toBe('1224 Rue Bélanger, Montréal, QC H2S 1H8');
         });
 
-        it('should not bind any delivery address from command when order type is pick-up', () => {
+        it('should not bind any delivery address from command when order type is not delivery', () => {
           // given
           newOrderCommand.deliveryAddress = '1224 Rue Bélanger, Montréal, QC H2S 1H8';
           newOrderCommand.type = OrderType.PICK_UP;
@@ -743,7 +767,7 @@ describe('domain/order/Order', () => {
           expect(result.deliveryDate).toBe(secondThursdayAfterTuesday);
         });
 
-        it('should not bind any delivery date from command when order type is pick-up', () => {
+        it('should not bind any delivery date from command when order type is not delivery', () => {
           // given
           newOrderCommand.deliveryDate = new Date('2020-06-05T04:41:20');
           newOrderCommand.type = OrderType.PICK_UP;
@@ -958,6 +982,38 @@ describe('domain/order/Order', () => {
             // then
             expect(result).not.toThrow();
           });
+        });
+      });
+
+      describe('reservationDate', () => {
+        let now: Date;
+
+        beforeEach(() => {
+          now = new Date('2020-06-03T04:41:20');
+          // @ts-ignore
+          jest.spyOn(global, 'Date').mockImplementation(() => now);
+
+          isAdmin = true;
+          newOrderCommand.type = OrderType.RESERVATION;
+        });
+
+        it('should bind reservation date using now', () => {
+          // when
+          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
+
+          // then
+          expect(result.reservationDate).toBe(now);
+        });
+
+        it('should not bind any reservation date when order type is not reservation', () => {
+          // given
+          newOrderCommand.type = OrderType.PICK_UP;
+
+          // when
+          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
+
+          // then
+          expect(result.reservationDate).toBeNull();
         });
       });
 
@@ -1253,7 +1309,7 @@ describe('domain/order/Order', () => {
         expect(existingOrder.pickUpDate).toBe(aTuesdayInTheFuture);
       });
 
-      it('should not bind any pick-up date from command when order type is delivery', () => {
+      it('should not bind any pick-up date from command when order type is not pick-up', () => {
         // given
         updateOrderCommand.pickUpDate = aTuesdayInTheFuture;
         updateOrderCommand.type = OrderType.DELIVERY;
@@ -1367,7 +1423,7 @@ describe('domain/order/Order', () => {
         expect(existingOrder.deliveryAddress).toBe('1224 Rue Bélanger, Montréal, QC H2S 1H8');
       });
 
-      it('should not bind any delivery address from command when order type is pick-up', () => {
+      it('should not bind any delivery address from command when order type is not delivery', () => {
         // given
         updateOrderCommand.deliveryAddress = '1224 Rue Bélanger, Montréal, QC H2S 1H8';
         updateOrderCommand.type = OrderType.PICK_UP;
@@ -1429,7 +1485,7 @@ describe('domain/order/Order', () => {
         expect(existingOrder.deliveryDate).toBe(secondThursdayAfterTuesday);
       });
 
-      it('should not bind any delivery date from command when order type is pick-up', () => {
+      it('should not bind any delivery date from command when order type is not delivery', () => {
         // given
         updateOrderCommand.deliveryDate = new Date('2020-06-05T04:41:20');
         updateOrderCommand.type = OrderType.PICK_UP;
@@ -1521,6 +1577,37 @@ describe('domain/order/Order', () => {
 
         // then
         expect(result).toThrow(new InvalidOrderError('delivery date 2020-06-10T23:00:00.000Z has to be a Thursday'));
+      });
+    });
+
+    describe('reservationDate', () => {
+      let now: Date;
+
+      beforeEach(() => {
+        now = new Date('2020-06-03T04:41:20');
+        // @ts-ignore
+        jest.spyOn(global, 'Date').mockImplementation(() => now);
+
+        updateOrderCommand.type = OrderType.RESERVATION;
+      });
+
+      it('should bind reservation date using now', () => {
+        // when
+        existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
+
+        // then
+        expect(existingOrder.reservationDate).toBe(now);
+      });
+
+      it('should not bind any reservation date when order type is not reservation', () => {
+        // given
+        updateOrderCommand.type = OrderType.PICK_UP;
+
+        // when
+        existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
+
+        // then
+        expect(existingOrder.reservationDate).toBeNull();
       });
     });
 

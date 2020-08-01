@@ -12,5 +12,6 @@ export interface OrderInterface {
   pickUpDate?: Date;
   deliveryDate?: Date;
   deliveryAddress?: string;
+  reservationDate?: Date;
   note?: string;
 }

@@ -42,6 +42,15 @@ export class OrderEntity {
   @Column({ name: 'delivery_address', type: 'text', nullable: true })
   deliveryAddress?: string;
 
+  @Column({
+    name: 'reservation_date',
+    type: 'varchar',
+    nullable: true,
+    length: DATE_MAX_LENGTH,
+    transformer: dateIsoStringValueTransformer,
+  })
+  reservationDate?: Date;
+
   @Column({ name: 'note', type: 'text', nullable: true })
   note?: string;
 }

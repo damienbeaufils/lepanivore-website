@@ -4,7 +4,7 @@ import { parseAsync } from 'json2csv';
 import { DeleteOrderCommand } from '../../domain/order/commands/delete-order-command';
 import { NewOrderCommand } from '../../domain/order/commands/new-order-command';
 import { UpdateOrderCommand } from '../../domain/order/commands/update-order-command';
-import { OrderType } from '../../domain/order/order-type';
+import { getOrderTypeLabel, OrderType } from '../../domain/order/order-type';
 import { OrderInterface } from '../../domain/order/order.interface';
 import { ProductWithQuantity } from '../../domain/product/product-with-quantity';
 import { OrderId } from '../../domain/type-aliases';
@@ -41,6 +41,7 @@ export class OrderController {
         ...order,
         pickUpDate: order.pickUpDate ? order.pickUpDate.toISOString().split('T')[0] : undefined,
         deliveryDate: order.deliveryDate ? order.deliveryDate.toISOString().split('T')[0] : undefined,
+        reservationDate: order.reservationDate ? order.reservationDate.toISOString().split('T')[0] : undefined,
       })
     );
   }
@@ -135,8 +136,6 @@ export class OrderController {
   }
 
   private toOrderAsCsvLine(order: OrderInterface, productWithQuantity: ProductWithQuantity): OrderAsCsvLine {
-    const type: string = order.type === OrderType.DELIVERY ? 'Livraison' : 'Cueillette';
-
     return {
       orderId: order.id,
       clientName: order.clientName,
@@ -144,10 +143,11 @@ export class OrderController {
       clientEmailAddress: order.clientEmailAddress,
       product: productWithQuantity.product.name,
       quantity: productWithQuantity.quantity,
-      type,
+      type: getOrderTypeLabel(order.type),
       pickUpDate: order.pickUpDate ? order.pickUpDate.toISOString().split('T')[0] : undefined,
       deliveryDate: order.deliveryDate ? order.deliveryDate.toISOString().split('T')[0] : undefined,
       deliveryAddress: order.deliveryAddress,
+      reservationDate: order.reservationDate ? order.reservationDate.toISOString().split('T')[0] : undefined,
       note: order.note,
     };
   }
@@ -164,5 +164,6 @@ interface OrderAsCsvLine {
   pickUpDate?: string;
   deliveryDate?: string;
   deliveryAddress?: string;
+  reservationDate?: string;
   note?: string;
 }

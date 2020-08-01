@@ -27,7 +27,6 @@
           <v-btn :loading="isLoading" color="primary" type="submit" x-large>
             Valider la commande
           </v-btn>
-          <div class="mt-2">Après avoir validé votre commande, nous vous recontacterons pour vous confirmer sa prise en compte.</div>
         </v-container>
       </v-form>
       <div v-else>
