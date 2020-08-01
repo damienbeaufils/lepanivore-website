@@ -1,5 +1,4 @@
 import { Body, Controller, Delete, Get, HttpCode, Inject, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { ArchiveProductCommand } from '../../domain/product/commands/archive-product-command';
 import { NewProductCommand } from '../../domain/product/commands/new-product-command';
@@ -10,6 +9,7 @@ import { AddNewProduct } from '../../use_cases/add-new-product';
 import { ArchiveProduct } from '../../use_cases/archive-product';
 import { GetActiveProducts } from '../../use_cases/get-active-products';
 import { UpdateExistingProduct } from '../../use_cases/update-existing-product';
+import { JwtAuthGuard } from '../config/authentication/jwt-auth-guard';
 import { ProxyServicesDynamicModule } from '../use_cases_proxy/proxy-services-dynamic.module';
 import { UseCaseProxy } from '../use_cases_proxy/use-case-proxy';
 import { GetProductResponse } from './models/get-product-response';
@@ -31,12 +31,12 @@ export class ProductController {
   ) {}
 
   @Get('/')
-  async getProducts(@Req() request: Request): Promise<GetProductResponse[]> {
-    return this.getActiveProductsProxyService.getInstance().execute(request.user as User);
+  async getProducts(): Promise<GetProductResponse[]> {
+    return this.getActiveProductsProxyService.getInstance().execute();
   }
 
   @Post('/')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   async postProduct(@Body() postProductRequest: PostProductRequest, @Req() request: Request): Promise<PostProductResponse> {
     const productId: ProductId = await this.addNewProductProxyService
       .getInstance()
@@ -48,14 +48,14 @@ export class ProductController {
   }
 
   @Put('/:id')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   async putProduct(@Param('id') id: string, @Body() putProductRequest: PutProductRequest, @Req() request: Request): Promise<void> {
     await this.updateExistingProductProxyService.getInstance().execute(request.user as User, this.toUpdateProductCommand(id, putProductRequest));
   }
 
   @Delete('/:id')
   @HttpCode(204)
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   async deleteProduct(@Param('id') id: string, @Req() request: Request): Promise<void> {
     await this.archiveProductProxyService.getInstance().execute(request.user as User, this.toArchiveCommand(id));
   }

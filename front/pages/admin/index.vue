@@ -11,6 +11,11 @@
               </v-btn>
             </v-col>
             <v-col cols="12">
+              <v-btn color="primary" nuxt to="/admin/commande-manuelle" height="60">
+                Passer une commande manuelle (sans restriction de dates)<br />ou une réservation (mise de côté)
+              </v-btn>
+            </v-col>
+            <v-col cols="12">
               <v-btn color="primary" nuxt to="/admin/produits">
                 Configuration des produits
               </v-btn>

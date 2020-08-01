@@ -26,9 +26,11 @@ describe('domain/order/Order', () => {
 
   describe('factory', () => {
     describe('create()', () => {
+      let isAdmin: boolean;
       let newOrderCommand: NewOrderCommand;
 
       beforeEach(() => {
+        isAdmin = false;
         newOrderCommand = {
           clientName: 'John Doe',
           clientPhoneNumber: '514-123-4567',
@@ -45,7 +47,7 @@ describe('domain/order/Order', () => {
       describe('id', () => {
         it('should initialize with no id', () => {
           // when
-          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result.id).toBeUndefined();
@@ -58,7 +60,7 @@ describe('domain/order/Order', () => {
           newOrderCommand.clientName = 'Harry Potter';
 
           // when
-          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result.clientName).toBe('Harry Potter');
@@ -69,7 +71,7 @@ describe('domain/order/Order', () => {
           newOrderCommand.clientName = '';
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result).toThrow(new InvalidOrderError('client name has to be defined'));
@@ -82,7 +84,7 @@ describe('domain/order/Order', () => {
           newOrderCommand.clientPhoneNumber = '+1-514-987-6543';
 
           // when
-          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result.clientPhoneNumber).toBe('+1-514-987-6543');
@@ -93,7 +95,7 @@ describe('domain/order/Order', () => {
           newOrderCommand.clientPhoneNumber = '';
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result).toThrow(new InvalidOrderError('client phone number has to be defined'));
@@ -106,7 +108,7 @@ describe('domain/order/Order', () => {
           newOrderCommand.clientEmailAddress = 'test@example.org';
 
           // when
-          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result.clientEmailAddress).toBe('test@example.org');
@@ -117,7 +119,7 @@ describe('domain/order/Order', () => {
           newOrderCommand.clientEmailAddress = '';
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result).toThrow(new InvalidOrderError('client email address has to be defined'));
@@ -128,7 +130,7 @@ describe('domain/order/Order', () => {
           newOrderCommand.clientEmailAddress = 'not-a-valid-email';
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result).toThrow(new InvalidOrderError('invalid client email address not-a-valid-email'));
@@ -148,7 +150,7 @@ describe('domain/order/Order', () => {
           activeProducts = [product1, product2];
 
           // when
-          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result.products).toStrictEqual([
@@ -162,7 +164,7 @@ describe('domain/order/Order', () => {
           newOrderCommand.products = [];
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result).toThrow(new InvalidOrderError('an order must have at least one product'));
@@ -176,7 +178,7 @@ describe('domain/order/Order', () => {
           ];
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result).toThrow(new InvalidOrderError('product quantity 0 has to be positive'));
@@ -190,7 +192,7 @@ describe('domain/order/Order', () => {
           ];
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result).toThrow(new InvalidOrderError('product quantity -1 has to be positive'));
@@ -207,7 +209,7 @@ describe('domain/order/Order', () => {
           activeProducts = [product1];
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result).toThrow(new InvalidOrderError('product with id 1337 not found'));
@@ -220,7 +222,7 @@ describe('domain/order/Order', () => {
           newOrderCommand.type = OrderType.DELIVERY;
 
           // when
-          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result.type).toBe(OrderType.DELIVERY);
@@ -231,7 +233,7 @@ describe('domain/order/Order', () => {
           newOrderCommand.type = undefined;
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result).toThrow(new InvalidOrderError('order type has to be defined'));
@@ -242,7 +244,7 @@ describe('domain/order/Order', () => {
           newOrderCommand.type = 'UNKNOWN_TYPE' as OrderType;
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result).toThrow(new InvalidOrderError('unknown order type UNKNOWN_TYPE'));
@@ -283,7 +285,7 @@ describe('domain/order/Order', () => {
           newOrderCommand.pickUpDate = aTuesdayInTheFuture;
 
           // when
-          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result.pickUpDate).toBe(aTuesdayInTheFuture);
@@ -295,7 +297,7 @@ describe('domain/order/Order', () => {
           newOrderCommand.type = OrderType.DELIVERY;
 
           // when
-          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result.pickUpDate).toBeNull();
@@ -306,7 +308,7 @@ describe('domain/order/Order', () => {
           newOrderCommand.pickUpDate = null;
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result).toThrow(new InvalidOrderError('a pick-up date has to be defined when order type is pick-up'));
@@ -317,7 +319,7 @@ describe('domain/order/Order', () => {
           newOrderCommand.pickUpDate = nowMinusOneDay;
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result).toThrow(new InvalidOrderError('pick-up date 2020-06-02T08:41:20.000Z has to be in the future'));
@@ -328,7 +330,7 @@ describe('domain/order/Order', () => {
           newOrderCommand.pickUpDate = aSundayInTheFuture;
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result).toThrow(new InvalidOrderError('pick-up date 2030-03-31T08:41:20.000Z has to be between a Tuesday and a Saturday'));
@@ -339,7 +341,7 @@ describe('domain/order/Order', () => {
           newOrderCommand.pickUpDate = aMondayInTheFuture;
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-01T09:41:20.000Z has to be between a Tuesday and a Saturday'));
@@ -354,7 +356,7 @@ describe('domain/order/Order', () => {
           newOrderCommand.pickUpDate = aTuesdayInTheFuture;
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-02T10:41:20.000Z has to be outside closing periods'));
@@ -369,10 +371,24 @@ describe('domain/order/Order', () => {
           newOrderCommand.pickUpDate = aThursdayInTheFuture;
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result).not.toThrow();
+        });
+
+        describe('when ordering as an admin', () => {
+          it('should not fail when pick-up date is the same day as now', () => {
+            // given
+            newOrderCommand.pickUpDate = now;
+            isAdmin = true;
+
+            // when
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
+
+            // then
+            expect(result).not.toThrow();
+          });
         });
 
         describe('when ordering a Sunday', () => {
@@ -386,7 +402,7 @@ describe('domain/order/Order', () => {
             newOrderCommand.pickUpDate = aTuesdayInTheFuture;
 
             // when
-            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
             // then
             expect(result).not.toThrow();
@@ -404,7 +420,7 @@ describe('domain/order/Order', () => {
             newOrderCommand.pickUpDate = aTuesdayInTheFuture;
 
             // when
-            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
             // then
             expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-02T10:41:20.000Z has to be at least 3 days after now'));
@@ -415,7 +431,7 @@ describe('domain/order/Order', () => {
             newOrderCommand.pickUpDate = aWednesdayInTheFuture;
 
             // when
-            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
             // then
             expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-03T11:41:20.000Z has to be at least 3 days after now'));
@@ -426,7 +442,7 @@ describe('domain/order/Order', () => {
             newOrderCommand.pickUpDate = aThursdayInTheFuture;
 
             // when
-            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
             // then
             expect(result).not.toThrow();
@@ -444,7 +460,7 @@ describe('domain/order/Order', () => {
             newOrderCommand.pickUpDate = aTuesdayInTheFuture;
 
             // when
-            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
             // then
             expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-02T10:41:20.000Z cannot be same day as now'));
@@ -455,7 +471,7 @@ describe('domain/order/Order', () => {
             newOrderCommand.pickUpDate = aTuesdayInTheFutureTheWeekAfter;
 
             // when
-            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
             // then
             expect(result).not.toThrow();
@@ -466,7 +482,7 @@ describe('domain/order/Order', () => {
             newOrderCommand.pickUpDate = aWednesdayInTheFuture;
 
             // when
-            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
             // then
             expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-03T11:41:20.000Z has to be at least 2 days after now'));
@@ -477,7 +493,7 @@ describe('domain/order/Order', () => {
             newOrderCommand.pickUpDate = aThursdayInTheFuture;
 
             // when
-            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
             // then
             expect(result).not.toThrow();
@@ -495,7 +511,7 @@ describe('domain/order/Order', () => {
             newOrderCommand.pickUpDate = aWednesdayInTheFuture;
 
             // when
-            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
             // then
             expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-03T11:41:20.000Z cannot be same day as now'));
@@ -506,7 +522,7 @@ describe('domain/order/Order', () => {
             newOrderCommand.pickUpDate = aThursdayInTheFuture;
 
             // when
-            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
             // then
             expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-04T12:41:20.000Z has to be at least 3 days after now'));
@@ -517,7 +533,7 @@ describe('domain/order/Order', () => {
             newOrderCommand.pickUpDate = aFridayInTheFuture;
 
             // when
-            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
             // then
             expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-05T13:41:20.000Z has to be at least 3 days after now'));
@@ -528,7 +544,7 @@ describe('domain/order/Order', () => {
             newOrderCommand.pickUpDate = aSaturdayInTheFuture;
 
             // when
-            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
             // then
             expect(result).not.toThrow();
@@ -546,7 +562,7 @@ describe('domain/order/Order', () => {
             newOrderCommand.pickUpDate = aThursdayInTheFuture;
 
             // when
-            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
             // then
             expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-04T12:41:20.000Z cannot be same day as now'));
@@ -557,7 +573,7 @@ describe('domain/order/Order', () => {
             newOrderCommand.pickUpDate = aFridayInTheFuture;
 
             // when
-            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
             // then
             expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-05T13:41:20.000Z has to be at least 2 days after now'));
@@ -568,7 +584,7 @@ describe('domain/order/Order', () => {
             newOrderCommand.pickUpDate = aSaturdayInTheFuture;
 
             // when
-            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
             // then
             expect(result).not.toThrow();
@@ -586,7 +602,7 @@ describe('domain/order/Order', () => {
             newOrderCommand.pickUpDate = aFridayInTheFuture;
 
             // when
-            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
             // then
             expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-05T13:41:20.000Z cannot be same day as now'));
@@ -597,7 +613,7 @@ describe('domain/order/Order', () => {
             newOrderCommand.pickUpDate = aSaturdayInTheFuture;
 
             // when
-            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
             // then
             expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-06T14:41:20.000Z has to be at least 3 days after now'));
@@ -608,7 +624,7 @@ describe('domain/order/Order', () => {
             newOrderCommand.pickUpDate = aTuesdayInTheFutureTheWeekAfter;
 
             // when
-            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
             // then
             expect(result).not.toThrow();
@@ -626,7 +642,7 @@ describe('domain/order/Order', () => {
             newOrderCommand.pickUpDate = aSaturdayInTheFuture;
 
             // when
-            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
             // then
             expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-06T14:41:20.000Z cannot be same day as now'));
@@ -637,7 +653,7 @@ describe('domain/order/Order', () => {
             newOrderCommand.pickUpDate = aTuesdayInTheFutureTheWeekAfter;
 
             // when
-            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
             // then
             expect(result).not.toThrow();
@@ -655,7 +671,7 @@ describe('domain/order/Order', () => {
           newOrderCommand.deliveryAddress = '1224 Rue Bélanger, Montréal, QC H2S 1H8';
 
           // when
-          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result.deliveryAddress).toBe('1224 Rue Bélanger, Montréal, QC H2S 1H8');
@@ -671,7 +687,7 @@ describe('domain/order/Order', () => {
           jest.spyOn(global, 'Date').mockImplementation(() => now);
 
           // when
-          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result.deliveryAddress).toBeNull();
@@ -682,7 +698,7 @@ describe('domain/order/Order', () => {
           newOrderCommand.deliveryAddress = '';
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result).toThrow(new InvalidOrderError('a delivery address has to be defined when order type is delivery'));
@@ -721,7 +737,7 @@ describe('domain/order/Order', () => {
           newOrderCommand.deliveryDate = secondThursdayAfterTuesday;
 
           // when
-          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result.deliveryDate).toBe(secondThursdayAfterTuesday);
@@ -733,7 +749,7 @@ describe('domain/order/Order', () => {
           newOrderCommand.type = OrderType.PICK_UP;
 
           // when
-          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result.deliveryDate).toBeNull();
@@ -744,7 +760,7 @@ describe('domain/order/Order', () => {
           newOrderCommand.deliveryDate = undefined;
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result).toThrow(new InvalidOrderError('a delivery date has to be defined when order type is delivery'));
@@ -755,7 +771,7 @@ describe('domain/order/Order', () => {
           newOrderCommand.deliveryDate = nowMinusOneDay;
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result).toThrow(new InvalidOrderError('delivery date 2020-06-02T08:41:20.000Z has to be in the future'));
@@ -774,7 +790,7 @@ describe('domain/order/Order', () => {
           jest.spyOn(global, 'Date').mockImplementation(() => tuesdayBeforeSevenPM);
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result).toThrow(new InvalidOrderError('delivery date 2020-06-11T23:00:00.000Z has to be outside closing periods'));
@@ -793,7 +809,7 @@ describe('domain/order/Order', () => {
           jest.spyOn(global, 'Date').mockImplementation(() => tuesdayBeforeSevenPM);
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result).not.toThrow();
@@ -804,7 +820,7 @@ describe('domain/order/Order', () => {
           newOrderCommand.deliveryDate = wednesdayAfterTuesday;
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result).toThrow(new InvalidOrderError('delivery date 2020-06-10T23:00:00.000Z has to be a Thursday'));
@@ -817,7 +833,7 @@ describe('domain/order/Order', () => {
           jest.spyOn(global, 'Date').mockImplementation(() => tuesdayBeforeSevenPM);
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result).not.toThrow();
@@ -830,7 +846,7 @@ describe('domain/order/Order', () => {
           jest.spyOn(global, 'Date').mockImplementation(() => tuesdayAtSevenPM);
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result).toThrow(new InvalidOrderError('delivery date 2020-06-11T23:00:00.000Z has to be one of the next available Thursday'));
@@ -843,7 +859,7 @@ describe('domain/order/Order', () => {
           jest.spyOn(global, 'Date').mockImplementation(() => tuesdayAtSevenPM);
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result).not.toThrow();
@@ -856,7 +872,7 @@ describe('domain/order/Order', () => {
           jest.spyOn(global, 'Date').mockImplementation(() => wednesdayAfterTuesday);
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result).toThrow(new InvalidOrderError('delivery date 2020-06-11T23:00:00.000Z has to be one of the next available Thursday'));
@@ -869,7 +885,7 @@ describe('domain/order/Order', () => {
           jest.spyOn(global, 'Date').mockImplementation(() => wednesdayAfterTuesday);
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result).not.toThrow();
@@ -882,7 +898,7 @@ describe('domain/order/Order', () => {
           jest.spyOn(global, 'Date').mockImplementation(() => firstThursdayAfterTuesday);
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result).toThrow(new InvalidOrderError('delivery date 2020-06-11T23:00:00.000Z has to be one of the next available Thursday'));
@@ -895,7 +911,7 @@ describe('domain/order/Order', () => {
           jest.spyOn(global, 'Date').mockImplementation(() => firstThursdayAfterTuesday);
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result).not.toThrow();
@@ -908,7 +924,7 @@ describe('domain/order/Order', () => {
           jest.spyOn(global, 'Date').mockImplementation(() => saturdayAfterTuesday);
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result).not.toThrow();
@@ -922,10 +938,26 @@ describe('domain/order/Order', () => {
           jest.spyOn(global, 'Date').mockImplementation(() => firstThursdayAfterTuesday);
 
           // when
-          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result).not.toThrow();
+        });
+
+        describe('when ordering as an admin', () => {
+          it('should not fail when delivery date is the Thursday same week as now when creating the order Tuesday after 7 PM', () => {
+            // given
+            newOrderCommand.deliveryDate = firstThursdayAfterTuesday;
+            // @ts-ignore
+            jest.spyOn(global, 'Date').mockImplementation(() => tuesdayAtSevenPM);
+            isAdmin = true;
+
+            // when
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
+
+            // then
+            expect(result).not.toThrow();
+          });
         });
       });
 
@@ -935,7 +967,7 @@ describe('domain/order/Order', () => {
           newOrderCommand.note = 'Without something please';
 
           // when
-          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods);
+          const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result.note).toBe('Without something please');

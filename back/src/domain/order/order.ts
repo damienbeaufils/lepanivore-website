@@ -20,11 +20,11 @@ import { OrderInterface } from './order.interface';
 
 export class Order implements OrderInterface {
   static factory: OrderFactoryInterface = {
-    create(command: NewOrderCommand, activeProducts: ProductInterface[], closingPeriods: ClosingPeriodInterface[]): Order {
-      return new Order({} as OrderInterface, command, activeProducts, closingPeriods);
+    create(command: NewOrderCommand, activeProducts: ProductInterface[], closingPeriods: ClosingPeriodInterface[], isAdmin: boolean): Order {
+      return new Order({} as OrderInterface, command, activeProducts, closingPeriods, isAdmin);
     },
     copy(order: OrderInterface): Order {
-      return new Order(order, {} as NewOrderCommand, [], []);
+      return new Order(order, {} as NewOrderCommand, [], [], false);
     },
   };
 
@@ -41,7 +41,13 @@ export class Order implements OrderInterface {
   deliveryAddress?: string;
   note?: string;
 
-  private constructor(order: OrderInterface, command: NewOrderCommand, activeProducts: ProductInterface[], closingPeriods: ClosingPeriodInterface[]) {
+  private constructor(
+    order: OrderInterface,
+    command: NewOrderCommand,
+    activeProducts: ProductInterface[],
+    closingPeriods: ClosingPeriodInterface[],
+    isAdmin: boolean
+  ) {
     if (!isEmpty(order)) {
       this.copy(order);
     } else {
@@ -50,9 +56,12 @@ export class Order implements OrderInterface {
       this.bindContactDetails(command);
       this.bindProductSelection(command, activeProducts);
       this.bindOrderTypeSelection(command, closingPeriods);
-      Order.assertPickUpDateIsEqualOrAfterTheFirstAvailableDay(command.type, command.pickUpDate);
-      Order.assertDeliveryDateIsEqualOrAfterTheFirstAvailableDay(command.type, command.deliveryDate);
       this.note = command.note;
+
+      if (!isAdmin) {
+        Order.assertPickUpDateIsEqualOrAfterTheFirstAvailableDay(command.type, command.pickUpDate);
+        Order.assertDeliveryDateIsEqualOrAfterTheFirstAvailableDay(command.type, command.deliveryDate);
+      }
     }
   }
 
@@ -271,7 +280,7 @@ export class Order implements OrderInterface {
 }
 
 export interface OrderFactoryInterface {
-  create(command: NewOrderCommand, activeProducts: ProductInterface[], closingPeriods: ClosingPeriodInterface[]): Order;
+  create(command: NewOrderCommand, activeProducts: ProductInterface[], closingPeriods: ClosingPeriodInterface[], isAdmin: boolean): Order;
 
   copy(order: OrderInterface): Order;
 }

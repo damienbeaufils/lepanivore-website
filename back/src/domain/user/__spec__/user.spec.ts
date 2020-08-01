@@ -1,4 +1,4 @@
-import { ADMIN, isAdmin, User } from '../user';
+import { ADMIN, ANONYMOUS, isAdmin, User } from '../user';
 
 describe('domain/user', () => {
   describe('ADMIN', () => {
@@ -11,10 +11,20 @@ describe('domain/user', () => {
     });
   });
 
+  describe('ANONYMOUS', () => {
+    it('should be a user having the username ANONYMOUS', () => {
+      // when
+      const result: string = ANONYMOUS.username;
+
+      // then
+      expect(result).toBe('ANONYMOUS');
+    });
+  });
+
   describe('isAdmin()', () => {
     it('should return true when username is ADMIN', () => {
       // given
-      const user: User = { username: 'ADMIN' };
+      const user: User = ADMIN;
 
       // when
       const result: boolean = isAdmin(user);
@@ -25,7 +35,7 @@ describe('domain/user', () => {
 
     it('should return false when username is not ADMIN', () => {
       // given
-      const user: User = { username: '' };
+      const user: User = ANONYMOUS;
 
       // when
       const result: boolean = isAdmin(user);

@@ -10,7 +10,6 @@ import { OrderNotFoundError } from '../../src/domain/order/errors/order-not-foun
 import { Order } from '../../src/domain/order/order';
 import { OrderType } from '../../src/domain/order/order-type';
 import { OrderId } from '../../src/domain/type-aliases';
-import { ADMIN } from '../../src/domain/user/user';
 import { EnvironmentConfigService } from '../../src/infrastructure/config/environment-config/environment-config.service';
 import { PostOrderRequest } from '../../src/infrastructure/rest/models/post-order-request';
 import { PutOrderRequest } from '../../src/infrastructure/rest/models/put-order-request';
@@ -204,7 +203,7 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
   });
 
   describe('POST /api/orders', () => {
-    it('should create order using body request transformed to command', () => {
+    it('should create order using body request transformed to command when user is anonymous', () => {
       // given
       const postOrderRequest: PostOrderRequest = {
         clientName: 'John Doe',
@@ -223,7 +222,7 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
 
       // then
       return testRequest.expect(201).expect((response: Response) => {
-        expect(mockOrderProducts.execute).toHaveBeenCalledWith({
+        expect(mockOrderProducts.execute).toHaveBeenCalledWith({ username: 'ANONYMOUS' }, {
           clientName: 'John Doe',
           clientPhoneNumber: '514-123-4567',
           clientEmailAddress: 'test@example.org',
@@ -235,6 +234,58 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
           note: 'a note',
         } as NewOrderCommand);
       });
+    });
+
+    it('should create order using body request transformed to command when user is admin', (done: DoneCallback) => {
+      // given
+      const postOrderRequest: PostOrderRequest = {
+        clientName: 'John Doe',
+        clientPhoneNumber: '514-123-4567',
+        clientEmailAddress: 'test@example.org',
+        products: [{ productId: 42, quantity: 1 }],
+        type: 'DELIVERY',
+        pickUpDate: '2020-06-13T04:41:20',
+        deliveryAddress: 'Montréal',
+        deliveryDate: '2021-03-28T16:35:49',
+        note: 'a note',
+      };
+
+      const loginRequest: request.Test = request(app.getHttpServer()).post('/api/authentication/login').send({
+        username: ADMIN_E2E_USERNAME,
+        password: ADMIN_E2E_PASSWORD,
+      });
+
+      let accessToken: string;
+      loginRequest
+        .expect(200)
+        .expect((loginResponse: Response) => {
+          accessToken = loginResponse.body.accessToken;
+        })
+        .end(() => {
+          // when
+          const testRequest: request.Test = request(app.getHttpServer())
+            .post('/api/orders')
+            .send(postOrderRequest)
+            .set({ Authorization: `Bearer ${accessToken}` });
+
+          // then
+          testRequest
+            .expect(201)
+            .expect((response: Response) => {
+              expect(mockOrderProducts.execute).toHaveBeenCalledWith({ username: 'ADMIN' }, {
+                clientName: 'John Doe',
+                clientPhoneNumber: '514-123-4567',
+                clientEmailAddress: 'test@example.org',
+                products: [{ productId: 42, quantity: 1 }],
+                type: OrderType.DELIVERY,
+                pickUpDate: new Date('2020-06-13T04:41:20'),
+                deliveryAddress: 'Montréal',
+                deliveryDate: new Date('2021-03-28T16:35:49'),
+                note: 'a note',
+              } as NewOrderCommand);
+            })
+            .end(done);
+        });
     });
 
     it('should return http status code CREATED with created order id and location to it', () => {
@@ -333,7 +384,7 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
           testRequest
             .expect(200)
             .expect((response: Response) => {
-              expect(mockUpdateExistingOrder.execute).toHaveBeenCalledWith(ADMIN, {
+              expect(mockUpdateExistingOrder.execute).toHaveBeenCalledWith({ username: 'ADMIN' }, {
                 orderId: 1337,
                 products: [{ productId: 42, quantity: 1 }],
                 type: OrderType.DELIVERY,
@@ -460,7 +511,7 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
           testRequest
             .expect(204)
             .expect((response: Response) => {
-              expect(mockDeleteOrder.execute).toHaveBeenCalledWith(ADMIN, { orderId: 1337 } as DeleteOrderCommand);
+              expect(mockDeleteOrder.execute).toHaveBeenCalledWith({ username: 'ADMIN' }, { orderId: 1337 } as DeleteOrderCommand);
             })
             .end(done);
         });

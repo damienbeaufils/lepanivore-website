@@ -8,7 +8,6 @@ import { InvalidProductError } from '../../src/domain/product/errors/invalid-pro
 import { ProductNotFoundError } from '../../src/domain/product/errors/product-not-found.error';
 import { Product } from '../../src/domain/product/product';
 import { ProductId } from '../../src/domain/type-aliases';
-import { ADMIN } from '../../src/domain/user/user';
 import { EnvironmentConfigService } from '../../src/infrastructure/config/environment-config/environment-config.service';
 import { GetProductResponse } from '../../src/infrastructure/rest/models/get-product-response';
 import { PostProductRequest } from '../../src/infrastructure/rest/models/post-product-request';
@@ -127,7 +126,7 @@ describe('infrastructure/rest/ProductController (e2e)', () => {
           testRequest
             .expect(201)
             .expect((response: Response) => {
-              expect(mockAddNewProduct.execute).toHaveBeenCalledWith(ADMIN, {
+              expect(mockAddNewProduct.execute).toHaveBeenCalledWith({ username: 'ADMIN' }, {
                 name: 'new product name',
                 description: 'new product description',
                 price: 12.34,
@@ -250,7 +249,7 @@ describe('infrastructure/rest/ProductController (e2e)', () => {
           testRequest
             .expect(200)
             .expect((response: Response) => {
-              expect(mockUpdateExistingProduct.execute).toHaveBeenCalledWith(ADMIN, {
+              expect(mockUpdateExistingProduct.execute).toHaveBeenCalledWith({ username: 'ADMIN' }, {
                 productId: 1337,
                 description: 'updated product description',
               } as UpdateProductCommand);
@@ -372,7 +371,7 @@ describe('infrastructure/rest/ProductController (e2e)', () => {
           testRequest
             .expect(204)
             .expect((response: Response) => {
-              expect(mockArchiveProduct.execute).toHaveBeenCalledWith(ADMIN, { productId: 1337 } as ArchiveProductCommand);
+              expect(mockArchiveProduct.execute).toHaveBeenCalledWith({ username: 'ADMIN' }, { productId: 1337 } as ArchiveProductCommand);
             })
             .end(done);
         });

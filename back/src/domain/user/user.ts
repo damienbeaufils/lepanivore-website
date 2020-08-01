@@ -5,6 +5,8 @@ export interface User {
 }
 
 export const ADMIN: User = { username: 'ADMIN' };
+export const ANONYMOUS: User = { username: 'ANONYMOUS' };
+
 export const isAdmin = (user: User): boolean => {
   return !isEmpty(user) && user.username === ADMIN.username;
 };

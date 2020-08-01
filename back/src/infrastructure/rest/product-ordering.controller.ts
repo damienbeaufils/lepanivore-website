@@ -1,10 +1,10 @@
 import { Controller, Get, Inject, Put, Req, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { User } from '../../domain/user/user';
 import { DisableProductOrdering } from '../../use_cases/disable-product-ordering';
 import { EnableProductOrdering } from '../../use_cases/enable-product-ordering';
 import { GetProductOrderingStatus } from '../../use_cases/get-product-ordering-status';
+import { JwtAuthGuard } from '../config/authentication/jwt-auth-guard';
 import { ProxyServicesDynamicModule } from '../use_cases_proxy/proxy-services-dynamic.module';
 import { UseCaseProxy } from '../use_cases_proxy/use-case-proxy';
 import { GetProductOrderingResponse } from './models/get-product-ordering-response';
@@ -26,13 +26,13 @@ export class ProductOrderingController {
   }
 
   @Put('/enable')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   async putEnableProductOrdering(@Req() request: Request): Promise<void> {
     return this.enableProductOrderingProxyService.getInstance().execute(request.user as User);
   }
 
   @Put('/disable')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   async putDisableProductOrdering(@Req() request: Request): Promise<void> {
     return this.disableProductOrderingProxyService.getInstance().execute(request.user as User);
   }
