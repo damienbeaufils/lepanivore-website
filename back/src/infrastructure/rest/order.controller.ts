@@ -9,6 +9,7 @@ import { OrderType } from '../../domain/order/order-type';
 import { OrderInterface } from '../../domain/order/order.interface';
 import { ProductWithQuantity } from '../../domain/product/product-with-quantity';
 import { OrderId } from '../../domain/type-aliases';
+import { User } from '../../domain/user/user';
 import { DeleteOrder } from '../../use_cases/delete-order';
 import { GetOrders } from '../../use_cases/get-orders';
 import { OrderProducts } from '../../use_cases/order-products';
@@ -32,8 +33,8 @@ export class OrderController {
 
   @Get('/')
   @UseGuards(AuthGuard('jwt'))
-  async getOrders(): Promise<GetOrderResponse[]> {
-    const orders: OrderInterface[] = await this.getOrdersProxyService.getInstance().execute();
+  async getOrders(@Req() request: Request): Promise<GetOrderResponse[]> {
+    const orders: OrderInterface[] = await this.getOrdersProxyService.getInstance().execute(request.user as User);
 
     return orders.map(
       (order: OrderInterface): GetOrderResponse => ({
@@ -47,7 +48,7 @@ export class OrderController {
   @Get('/csv')
   @UseGuards(AuthGuard('jwt'))
   async getOrdersAsCsv(@Req() request: Request): Promise<string> {
-    const orders: OrderInterface[] = await this.getOrdersProxyService.getInstance().execute();
+    const orders: OrderInterface[] = await this.getOrdersProxyService.getInstance().execute(request.user as User);
     const ordersAsCsvLines: OrderAsCsvLine[] = this.toOrderAsCsvLines(orders);
 
     request.res.contentType('text/csv');
@@ -66,15 +67,15 @@ export class OrderController {
 
   @Put('/:id')
   @UseGuards(AuthGuard('jwt'))
-  async putOrder(@Param('id') id: string, @Body() putOrderRequest: PutOrderRequest): Promise<void> {
-    await this.updateExistingOrderProxyService.getInstance().execute(this.toUpdateOrderCommand(id, putOrderRequest));
+  async putOrder(@Param('id') id: string, @Body() putOrderRequest: PutOrderRequest, @Req() request: Request): Promise<void> {
+    await this.updateExistingOrderProxyService.getInstance().execute(request.user as User, this.toUpdateOrderCommand(id, putOrderRequest));
   }
 
   @Delete('/:id')
   @HttpCode(204)
   @UseGuards(AuthGuard('jwt'))
-  async deleteOrder(@Param('id') id: string): Promise<void> {
-    await this.deleteOrderProxyService.getInstance().execute(this.toDeleteCommand(id));
+  async deleteOrder(@Param('id') id: string, @Req() request: Request): Promise<void> {
+    await this.deleteOrderProxyService.getInstance().execute(request.user as User, this.toDeleteCommand(id));
   }
 
   private toNewOrderCommand(postOrderRequest: PostOrderRequest): NewOrderCommand {

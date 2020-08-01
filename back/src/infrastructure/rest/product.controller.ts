@@ -5,6 +5,7 @@ import { ArchiveProductCommand } from '../../domain/product/commands/archive-pro
 import { NewProductCommand } from '../../domain/product/commands/new-product-command';
 import { UpdateProductCommand } from '../../domain/product/commands/update-product-command';
 import { ProductId } from '../../domain/type-aliases';
+import { User } from '../../domain/user/user';
 import { AddNewProduct } from '../../use_cases/add-new-product';
 import { ArchiveProduct } from '../../use_cases/archive-product';
 import { GetActiveProducts } from '../../use_cases/get-active-products';
@@ -30,14 +31,16 @@ export class ProductController {
   ) {}
 
   @Get('/')
-  async getProducts(): Promise<GetProductResponse[]> {
-    return this.getActiveProductsProxyService.getInstance().execute();
+  async getProducts(@Req() request: Request): Promise<GetProductResponse[]> {
+    return this.getActiveProductsProxyService.getInstance().execute(request.user as User);
   }
 
   @Post('/')
   @UseGuards(AuthGuard('jwt'))
   async postProduct(@Body() postProductRequest: PostProductRequest, @Req() request: Request): Promise<PostProductResponse> {
-    const productId: ProductId = await this.addNewProductProxyService.getInstance().execute(this.toNewProductCommand(postProductRequest));
+    const productId: ProductId = await this.addNewProductProxyService
+      .getInstance()
+      .execute(request.user as User, this.toNewProductCommand(postProductRequest));
 
     request.res.location(`${request.route.path}/${productId}`);
 
@@ -46,15 +49,15 @@ export class ProductController {
 
   @Put('/:id')
   @UseGuards(AuthGuard('jwt'))
-  async putProduct(@Param('id') id: string, @Body() putProductRequest: PutProductRequest): Promise<void> {
-    await this.updateExistingProductProxyService.getInstance().execute(this.toUpdateProductCommand(id, putProductRequest));
+  async putProduct(@Param('id') id: string, @Body() putProductRequest: PutProductRequest, @Req() request: Request): Promise<void> {
+    await this.updateExistingProductProxyService.getInstance().execute(request.user as User, this.toUpdateProductCommand(id, putProductRequest));
   }
 
   @Delete('/:id')
   @HttpCode(204)
   @UseGuards(AuthGuard('jwt'))
-  async deleteProduct(@Param('id') id: string): Promise<void> {
-    await this.archiveProductProxyService.getInstance().execute(this.toArchiveCommand(id));
+  async deleteProduct(@Param('id') id: string, @Req() request: Request): Promise<void> {
+    await this.archiveProductProxyService.getInstance().execute(request.user as User, this.toArchiveCommand(id));
   }
 
   private toNewProductCommand(postProductRequest: PostProductRequest): NewProductCommand {

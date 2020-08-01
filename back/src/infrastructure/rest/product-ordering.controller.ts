@@ -1,5 +1,7 @@
-import { Controller, Get, Inject, Put, UseGuards } from '@nestjs/common';
+import { Controller, Get, Inject, Put, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
+import { User } from '../../domain/user/user';
 import { DisableProductOrdering } from '../../use_cases/disable-product-ordering';
 import { EnableProductOrdering } from '../../use_cases/enable-product-ordering';
 import { GetProductOrderingStatus } from '../../use_cases/get-product-ordering-status';
@@ -25,13 +27,13 @@ export class ProductOrderingController {
 
   @Put('/enable')
   @UseGuards(AuthGuard('jwt'))
-  async putEnableProductOrdering(): Promise<void> {
-    return this.enableProductOrderingProxyService.getInstance().execute();
+  async putEnableProductOrdering(@Req() request: Request): Promise<void> {
+    return this.enableProductOrderingProxyService.getInstance().execute(request.user as User);
   }
 
   @Put('/disable')
   @UseGuards(AuthGuard('jwt'))
-  async putDisableProductOrdering(): Promise<void> {
-    return this.disableProductOrderingProxyService.getInstance().execute();
+  async putDisableProductOrdering(@Req() request: Request): Promise<void> {
+    return this.disableProductOrderingProxyService.getInstance().execute(request.user as User);
   }
 }

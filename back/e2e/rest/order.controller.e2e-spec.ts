@@ -10,6 +10,7 @@ import { OrderNotFoundError } from '../../src/domain/order/errors/order-not-foun
 import { Order } from '../../src/domain/order/order';
 import { OrderType } from '../../src/domain/order/order-type';
 import { OrderId } from '../../src/domain/type-aliases';
+import { ADMIN } from '../../src/domain/user/user';
 import { EnvironmentConfigService } from '../../src/infrastructure/config/environment-config/environment-config.service';
 import { PostOrderRequest } from '../../src/infrastructure/rest/models/post-order-request';
 import { PutOrderRequest } from '../../src/infrastructure/rest/models/put-order-request';
@@ -332,7 +333,7 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
           testRequest
             .expect(200)
             .expect((response: Response) => {
-              expect(mockUpdateExistingOrder.execute).toHaveBeenCalledWith({
+              expect(mockUpdateExistingOrder.execute).toHaveBeenCalledWith(ADMIN, {
                 orderId: 1337,
                 products: [{ productId: 42, quantity: 1 }],
                 type: OrderType.DELIVERY,
@@ -459,7 +460,7 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
           testRequest
             .expect(204)
             .expect((response: Response) => {
-              expect(mockDeleteOrder.execute).toHaveBeenCalledWith({ orderId: 1337 } as DeleteOrderCommand);
+              expect(mockDeleteOrder.execute).toHaveBeenCalledWith(ADMIN, { orderId: 1337 } as DeleteOrderCommand);
             })
             .end(done);
         });

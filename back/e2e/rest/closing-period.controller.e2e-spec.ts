@@ -7,6 +7,7 @@ import { NewClosingPeriodCommand } from '../../src/domain/closing-period/command
 import { ClosingPeriodNotFoundError } from '../../src/domain/closing-period/errors/closing-period-not-found.error';
 import { InvalidClosingPeriodError } from '../../src/domain/closing-period/errors/invalid-closing-period.error';
 import { ClosingPeriodId } from '../../src/domain/type-aliases';
+import { ADMIN, User } from '../../src/domain/user/user';
 import { EnvironmentConfigService } from '../../src/infrastructure/config/environment-config/environment-config.service';
 import { GetClosingPeriodResponse } from '../../src/infrastructure/rest/models/get-closing-period-response';
 import { PostClosingPeriodRequest } from '../../src/infrastructure/rest/models/post-closing-period-request';
@@ -121,7 +122,7 @@ describe('infrastructure/rest/ClosingPeriodController (e2e)', () => {
           testRequest
             .expect(201)
             .expect((response: Response) => {
-              expect(mockAddNewClosingPeriod.execute).toHaveBeenCalledWith({
+              expect(mockAddNewClosingPeriod.execute).toHaveBeenCalledWith(ADMIN, {
                 startDate: new Date('2020-06-13T04:41:20'),
                 endDate: new Date('2030-06-13T04:41:20'),
               } as NewClosingPeriodCommand);
@@ -238,7 +239,7 @@ describe('infrastructure/rest/ClosingPeriodController (e2e)', () => {
           testRequest
             .expect(204)
             .expect((response: Response) => {
-              expect(mockDeleteClosingPeriod.execute).toHaveBeenCalledWith({ closingPeriodId: 1337 } as DeleteClosingPeriodCommand);
+              expect(mockDeleteClosingPeriod.execute).toHaveBeenCalledWith(ADMIN, { closingPeriodId: 1337 } as DeleteClosingPeriodCommand);
             })
             .end(done);
         });

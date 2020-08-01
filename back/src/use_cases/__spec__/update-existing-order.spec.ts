@@ -8,6 +8,8 @@ import { OrderRepository } from '../../domain/order/order.repository';
 import { Product } from '../../domain/product/product';
 import { ProductStatus } from '../../domain/product/product-status';
 import { ProductRepository } from '../../domain/product/product.repository';
+import { InvalidUserError } from '../../domain/user/errors/invalid-user.error';
+import { ADMIN, User } from '../../domain/user/user';
 import { UpdateExistingOrder } from '../update-existing-order';
 
 describe('uses_cases/UpdateExistingOrder', () => {
@@ -52,7 +54,7 @@ describe('uses_cases/UpdateExistingOrder', () => {
       updateOrderCommand.orderId = 1337;
 
       // when
-      await updateExistingOrder.execute(updateOrderCommand);
+      await updateExistingOrder.execute(ADMIN, updateOrderCommand);
 
       // then
       expect(mockOrderRepository.findById).toHaveBeenCalledWith(1337);
@@ -60,7 +62,7 @@ describe('uses_cases/UpdateExistingOrder', () => {
 
     it('should search for active products', async () => {
       // when
-      await updateExistingOrder.execute(updateOrderCommand);
+      await updateExistingOrder.execute(ADMIN, updateOrderCommand);
 
       // then
       expect(mockProductRepository.findAllByStatus).toHaveBeenCalledWith(ProductStatus.ACTIVE);
@@ -72,7 +74,7 @@ describe('uses_cases/UpdateExistingOrder', () => {
       (mockOrderRepository.findById as jest.Mock).mockReturnValue(Promise.resolve(existingOrder));
 
       // when
-      await updateExistingOrder.execute(updateOrderCommand);
+      await updateExistingOrder.execute(ADMIN, updateOrderCommand);
 
       // then
       expect(Order.factory.copy).toHaveBeenCalledWith(existingOrder);
@@ -90,7 +92,7 @@ describe('uses_cases/UpdateExistingOrder', () => {
       (mockClosingPeriodRepository.findAll as jest.Mock).mockReturnValue(Promise.resolve(closingPeriods));
 
       // when
-      await updateExistingOrder.execute(updateOrderCommand);
+      await updateExistingOrder.execute(ADMIN, updateOrderCommand);
 
       // then
       expect(orderToUpdate.updateWith).toHaveBeenCalledWith(updateOrderCommand, activeProducts, closingPeriods);
@@ -98,10 +100,32 @@ describe('uses_cases/UpdateExistingOrder', () => {
 
     it('should save updated order', async () => {
       // when
-      await updateExistingOrder.execute(updateOrderCommand);
+      await updateExistingOrder.execute(ADMIN, updateOrderCommand);
 
       // then
       expect(mockOrderRepository.save).toHaveBeenCalledWith(orderToUpdate);
+    });
+
+    it('should return invalid user error when no authenticated user', async () => {
+      // given
+      const user: User = undefined;
+
+      // when
+      const result: Promise<void> = updateExistingOrder.execute(user, updateOrderCommand);
+
+      // then
+      await expect(result).rejects.toThrow(new InvalidUserError('User has to be ADMIN to execute this action'));
+    });
+
+    it('should return invalid user error when user is not admin', async () => {
+      // given
+      const user: User = { username: '' };
+
+      // when
+      const result: Promise<void> = updateExistingOrder.execute(user, updateOrderCommand);
+
+      // then
+      await expect(result).rejects.toThrow(new InvalidUserError('User has to be ADMIN to execute this action'));
     });
   });
 });

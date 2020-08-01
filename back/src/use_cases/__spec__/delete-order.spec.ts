@@ -1,6 +1,8 @@
 import { DeleteOrderCommand } from '../../domain/order/commands/delete-order-command';
 import { OrderInterface } from '../../domain/order/order.interface';
 import { OrderRepository } from '../../domain/order/order.repository';
+import { InvalidUserError } from '../../domain/user/errors/invalid-user.error';
+import { ADMIN, User } from '../../domain/user/user';
 import { DeleteOrder } from '../delete-order';
 
 describe('uses_cases/DeleteOrder', () => {
@@ -26,7 +28,7 @@ describe('uses_cases/DeleteOrder', () => {
       deleteOrderCommand.orderId = 1337;
 
       // when
-      await deleteOrder.execute(deleteOrderCommand);
+      await deleteOrder.execute(ADMIN, deleteOrderCommand);
 
       // then
       expect(mockOrderRepository.findById).toHaveBeenCalledWith(1337);
@@ -38,10 +40,32 @@ describe('uses_cases/DeleteOrder', () => {
       (mockOrderRepository.findById as jest.Mock).mockReturnValue(Promise.resolve(existingOrder));
 
       // when
-      await deleteOrder.execute(deleteOrderCommand);
+      await deleteOrder.execute(ADMIN, deleteOrderCommand);
 
       // then
       expect(mockOrderRepository.delete).toHaveBeenCalledWith(existingOrder);
+    });
+
+    it('should return invalid user error when no authenticated user', async () => {
+      // given
+      const user: User = undefined;
+
+      // when
+      const result: Promise<void> = deleteOrder.execute(user, deleteOrderCommand);
+
+      // then
+      await expect(result).rejects.toThrow(new InvalidUserError('User has to be ADMIN to execute this action'));
+    });
+
+    it('should return invalid user error when user is not admin', async () => {
+      // given
+      const user: User = { username: '' };
+
+      // when
+      const result: Promise<void> = deleteOrder.execute(user, deleteOrderCommand);
+
+      // then
+      await expect(result).rejects.toThrow(new InvalidUserError('User has to be ADMIN to execute this action'));
     });
   });
 });
