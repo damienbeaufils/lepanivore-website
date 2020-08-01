@@ -83,12 +83,14 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
           clientName: 'fake order 1',
           pickUpDate: new Date('2020-07-01T12:00:00Z'),
           deliveryDate: new Date('2030-07-01T12:00:00Z'),
+          reservationDate: new Date('2040-07-01T12:00:00Z'),
         } as Order,
         {
           id: 2,
           clientName: 'fake order 2',
           pickUpDate: new Date('2020-08-15T12:00:00Z'),
           deliveryDate: new Date('2030-08-15T12:00:00Z'),
+          reservationDate: new Date('2040-08-15T12:00:00Z'),
         } as Order,
       ];
       (mockGetOrders.execute as jest.Mock).mockReturnValue(Promise.resolve(orders));
@@ -115,8 +117,8 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
             .expect(200)
             .expect((response: Response) => {
               expect(response.body).toStrictEqual([
-                { id: 1, clientName: 'fake order 1', pickUpDate: '2020-07-01', deliveryDate: '2030-07-01' },
-                { id: 2, clientName: 'fake order 2', pickUpDate: '2020-08-15', deliveryDate: '2030-08-15' },
+                { id: 1, clientName: 'fake order 1', pickUpDate: '2020-07-01', deliveryDate: '2030-07-01', reservationDate: '2040-07-01' },
+                { id: 2, clientName: 'fake order 2', pickUpDate: '2020-08-15', deliveryDate: '2030-08-15', reservationDate: '2040-08-15' },
               ]);
             })
             .end(done);
@@ -143,8 +145,10 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
             { product: { id: 1, name: 'product 1', description: 'product 1 description', price: 1.11 }, quantity: 1 },
             { product: { id: 2, name: 'product 2', description: 'product 2 description', price: 2.22 }, quantity: 2 },
           ],
+          type: OrderType.PICK_UP,
           pickUpDate: new Date('2020-07-01T12:00:00Z'),
           deliveryDate: new Date('2030-07-01T12:00:00Z'),
+          reservationDate: new Date('2040-07-01T12:00:00Z'),
         } as Order,
         {
           id: 2,
@@ -153,8 +157,10 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
             { product: { id: 3, name: 'product 3', description: 'product 3 description', price: 3.33 }, quantity: 3 },
             { product: { id: 4, name: 'product 4', description: 'product 4 description', price: 4.44 }, quantity: 4 },
           ],
+          type: OrderType.DELIVERY,
           pickUpDate: new Date('2020-08-15T12:00:00Z'),
           deliveryDate: new Date('2030-08-15T12:00:00Z'),
+          reservationDate: new Date('2040-08-15T12:00:00Z'),
         } as Order,
       ];
       (mockGetOrders.execute as jest.Mock).mockReturnValue(Promise.resolve(orders));
@@ -182,11 +188,11 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
             .expect('Content-Type', 'text/csv; charset=utf-8')
             .expect((response: Response) => {
               expect(response.text).toBe(
-                '"orderId","clientName","clientPhoneNumber","clientEmailAddress","product","quantity","type","pickUpDate","deliveryDate","deliveryAddress","note"\n' +
-                  '1,"fake order 1",,,"product 1",1,"Cueillette","2020-07-01","2030-07-01",,\n' +
-                  '1,"fake order 1",,,"product 2",2,"Cueillette","2020-07-01","2030-07-01",,\n' +
-                  '2,"fake order 2",,,"product 3",3,"Cueillette","2020-08-15","2030-08-15",,\n' +
-                  '2,"fake order 2",,,"product 4",4,"Cueillette","2020-08-15","2030-08-15",,'
+                '"orderId","clientName","clientPhoneNumber","clientEmailAddress","product","quantity","type","pickUpDate","deliveryDate","deliveryAddress","reservationDate","note"\n' +
+                  '1,"fake order 1",,,"product 1",1,"Cueillette","2020-07-01","2030-07-01",,"2040-07-01",\n' +
+                  '1,"fake order 1",,,"product 2",2,"Cueillette","2020-07-01","2030-07-01",,"2040-07-01",\n' +
+                  '2,"fake order 2",,,"product 3",3,"Livraison","2020-08-15","2030-08-15",,"2040-08-15",\n' +
+                  '2,"fake order 2",,,"product 4",4,"Livraison","2020-08-15","2030-08-15",,"2040-08-15",'
               );
             })
             .end(done);

@@ -25,6 +25,7 @@ describe('infrastructure/repositories/entities/OrderEntityTransformer', () => {
         type: 'PICK_UP',
         pickUpDate: new Date('2020-06-13T04:41:20'),
         deliveryDate: new Date('2030-06-13T04:41:20'),
+        reservationDate: new Date('2040-06-13T04:41:20'),
         deliveryAddress: 'Montréal',
         note: 'a note',
       } as OrderEntity;
@@ -45,6 +46,7 @@ describe('infrastructure/repositories/entities/OrderEntityTransformer', () => {
         type: OrderType.PICK_UP,
         pickUpDate: new Date('2020-06-13T04:41:20'),
         deliveryDate: new Date('2030-06-13T04:41:20'),
+        reservationDate: new Date('2040-06-13T04:41:20'),
         deliveryAddress: 'Montréal',
         note: 'a note',
       } as OrderInterface);
@@ -66,6 +68,7 @@ describe('infrastructure/repositories/entities/OrderEntityTransformer', () => {
         type: OrderType.PICK_UP,
         pickUpDate: new Date('2020-06-13T04:41:20'),
         deliveryDate: new Date('2030-06-13T04:41:20'),
+        reservationDate: new Date('2040-06-13T04:41:20'),
         deliveryAddress: 'Montréal',
         note: 'a note',
       };
@@ -86,6 +89,7 @@ describe('infrastructure/repositories/entities/OrderEntityTransformer', () => {
         type: 'PICK_UP',
         pickUpDate: new Date('2020-06-13T04:41:20'),
         deliveryDate: new Date('2030-06-13T04:41:20'),
+        reservationDate: new Date('2040-06-13T04:41:20'),
         deliveryAddress: 'Montréal',
         note: 'a note',
       } as OrderEntity);

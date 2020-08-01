@@ -16,11 +16,8 @@
       </template>
 
       <template v-slot:item.type="{ item }">
-        <span v-if="isDeliveryOrder(item)">
-          Livraison
-        </span>
-        <span v-else>
-          Cueillette
+        <span>
+          {{ orderTypeLabel(item) }}
         </span>
       </template>
 
@@ -76,7 +73,7 @@ import Vue from 'vue';
 import OrderNote from '~/components/OrderNote.vue';
 import OrderTypeSelection from '~/components/OrderTypeSelection.vue';
 import ProductSelection from '~/components/ProductSelection.vue';
-import { OrderType } from '../../../back/src/domain/order/order-type';
+import { getOrderTypeLabel } from '../../../back/src/domain/order/order-type';
 import { ProductIdWithQuantity, ProductWithQuantity } from '../../../back/src/domain/product/product-with-quantity';
 import { OrderId } from '../../../back/src/domain/type-aliases';
 import { GetClosingPeriodResponse } from '../../../back/src/infrastructure/rest/models/get-closing-period-response';
@@ -118,6 +115,7 @@ export default Vue.extend({
         { text: 'Date de cueillette', value: 'pickUpDate' },
         { text: 'Date de livraison', value: 'deliveryDate' },
         { text: 'Adresse de livraison', value: 'deliveryAddress' },
+        { text: 'Date de réservation', value: 'reservationDate' },
         { text: 'Note', value: 'note', sortable: false },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
@@ -196,8 +194,8 @@ export default Vue.extend({
       }
     },
 
-    isDeliveryOrder(order: GetOrderResponse): boolean {
-      return order.type === OrderType.DELIVERY;
+    orderTypeLabel(order: GetOrderResponse): string {
+      return getOrderTypeLabel(order.type);
     },
 
     handleError(e: NuxtError): void {

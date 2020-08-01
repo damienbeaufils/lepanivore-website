@@ -18,6 +18,9 @@
             <br />Pour une livraison en dehors de cette zone,
             <a href="https://www.lepanivore.com/Home/Contact" target="_blank">veuillez nous contacter</a>.
           </p>
+          <p class="text-left caption" v-if="isReservationOrderTypeSelected">
+            Dans le cas d'une réservation, la date du jour est utilisée en tant que date de réservation.
+          </p>
         </v-col>
         <v-col cols="12" sm="6" md="8" v-if="isPickUpOrderTypeSelected">
           <v-menu v-model="showPickUpDatePicker" :nudge-right="40" transition="scale-transition" offset-y min-width="290px">
@@ -79,14 +82,14 @@ import Vue, { PropOptions } from 'vue';
 import { Day, NUMBER_OF_DAYS_IN_A_WEEK } from '../../back/src/domain/date.constants';
 import { MAXIMUM_HOUR_FOR_DELIVERY_SAME_WEEK } from '../../back/src/domain/order/order-delivery-constraints';
 import { AVAILABLE_DAYS_FOR_A_PICK_UP_ORDER, AvailableDayForAPickUpOrder, CLOSING_DAYS } from '../../back/src/domain/order/order-pick-up-constraints';
-import { OrderType } from '../../back/src/domain/order/order-type';
+import { getOrderTypeLabel, OrderType } from '../../back/src/domain/order/order-type';
 import { GetClosingPeriodResponse } from '../../back/src/infrastructure/rest/models/get-closing-period-response';
 import { PostOrderRequest } from '../../back/src/infrastructure/rest/models/post-order-request';
 import { PutOrderRequest } from '../../back/src/infrastructure/rest/models/put-order-request';
 
 interface OrderTypeSelectionData {
-  orderTypeItems: Array<{ value: OrderType; text: string }>;
   showPickUpDatePicker: boolean;
+  showDeliveryDatePicker: boolean;
 }
 
 export default Vue.extend({
@@ -97,10 +100,6 @@ export default Vue.extend({
   },
   data() {
     return {
-      orderTypeItems: [
-        { value: OrderType.DELIVERY, text: 'Livraison' },
-        { value: OrderType.PICK_UP, text: 'Cueillette' },
-      ],
       showPickUpDatePicker: false,
       showDeliveryDatePicker: false,
     } as OrderTypeSelectionData;
@@ -142,11 +141,24 @@ export default Vue.extend({
     },
   },
   computed: {
+    orderTypeItems(): Array<{ value: OrderType; text: string }> {
+      const orderTypes:Array<{ value: OrderType; text: string }> = [
+        { value: OrderType.DELIVERY, text: getOrderTypeLabel(OrderType.DELIVERY) },
+        { value: OrderType.PICK_UP, text: getOrderTypeLabel(OrderType.PICK_UP) }
+      ];
+      if (this.isInAdmin) {
+        orderTypes.push({ value: OrderType.RESERVATION, text: getOrderTypeLabel(OrderType.RESERVATION) })
+      }
+      return orderTypes;
+    },
     isPickUpOrderTypeSelected(): boolean {
       return this.value.type === OrderType.PICK_UP;
     },
     isDeliveryOrderTypeSelected(): boolean {
       return this.value.type === OrderType.DELIVERY;
+    },
+    isReservationOrderTypeSelected(): boolean {
+      return this.value.type === OrderType.RESERVATION;
     },
     pickUpDateMin(): string {
       const now: Date = new Date();
