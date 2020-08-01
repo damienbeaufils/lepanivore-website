@@ -3,7 +3,7 @@ import { ValueTransformer } from 'typeorm';
 import { getDateAsIsoStringWithoutTime, ISO_DATE_WITH_DASHES_AND_WITHOUT_TIME_LENGTH, parseDateWithTimeAtNoonUTC } from '../../../domain/date.utils';
 
 export const DATE_MAX_LENGTH: number = ISO_DATE_WITH_DASHES_AND_WITHOUT_TIME_LENGTH;
-export const ENUM_VALUE_MAX_LENGTH: number = 8;
+export const ENUM_VALUE_MAX_LENGTH: number = 12;
 export const DEFAULT_MAX_LENGTH: number = 255;
 
 const ARRAY_ITEM_SEPARATOR: string = '|||';
