@@ -100,7 +100,7 @@ export default Vue.extend({
           this.isLoading = true;
           this.resetErrors();
           const postOrderResponse: PostOrderResponse = await this.$apiService.postOrder(this.order);
-          this.$router.push(`/confirmation-de-commande?orderId=${postOrderResponse.id}`);
+          this.$router.push(`/admin/confirmation-de-commande-manuelle?orderId=${postOrderResponse.id}`);
         } catch (e) {
           this.isLoading = false;
           if (e.statusCode === 400) {
