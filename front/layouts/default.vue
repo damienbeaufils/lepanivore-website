@@ -18,11 +18,11 @@
         </v-btn>
       </v-toolbar-items>
     </v-app-bar>
-    <v-content class="main-content">
+    <v-main class="main-content">
       <v-container fluid>
         <nuxt />
       </v-container>
-    </v-content>
+    </v-main>
     <Footer />
   </v-app>
 </template>

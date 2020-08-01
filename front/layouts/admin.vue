@@ -9,11 +9,11 @@
         </v-btn>
       </v-toolbar-items>
     </v-app-bar>
-    <v-content>
+    <v-main>
       <v-container fluid>
         <nuxt />
       </v-container>
-    </v-content>
+    </v-main>
     <Footer />
   </v-app>
 </template>
