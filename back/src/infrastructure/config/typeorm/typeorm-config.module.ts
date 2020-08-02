@@ -19,6 +19,7 @@ export const getTypeOrmModuleOptions = (environmentConfigService: EnvironmentCon
     ssl: {
       rejectUnauthorized: false,
     },
+    synchronize: false,
   } as TypeOrmModuleOptions);
 
 export const getTypeOrmMigrationsOptions = (environmentConfigService: EnvironmentConfigService) => ({
