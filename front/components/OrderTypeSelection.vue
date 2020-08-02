@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title>
-      Livraison ou cueillette ?
+      {{ isInAdmin ? 'Livraison, cueillette ou réservation ?' : 'Livraison ou cueillette ?' }}
     </v-card-title>
     <v-container>
       <v-row>
