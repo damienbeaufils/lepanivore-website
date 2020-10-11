@@ -139,6 +139,12 @@ export default Vue.extend({
       futureDate.setDate(futureDate.getDate() + numberOfDays);
       return futureDate.getDay() < now.getDay();
     },
+    toISOStringWithoutTimeAndIgnoringTimeZone(date: Date): string {
+      const dateCopy: Date = new Date(date.getTime());
+      dateCopy.setHours(12, 0, 0, 0);
+
+      return dateCopy.toISOString().split('T')[0];
+    }
   },
   computed: {
     orderTypeItems(): Array<{ value: OrderType; text: string }> {
@@ -179,7 +185,7 @@ export default Vue.extend({
         now.setDate(now.getDate() + numberOfDaysBetweenNowAndFirstAvailableDay);
       }
 
-      return now.toISOString();
+      return this.toISOStringWithoutTimeAndIgnoringTimeZone(now);
     },
     deliveryDateMin(): string {
       const now = new Date();
@@ -195,7 +201,7 @@ export default Vue.extend({
         }
       }
 
-      return now.toISOString();
+      return this.toISOStringWithoutTimeAndIgnoringTimeZone(now);
     },
     isInAdmin(): boolean {
       return this.$route.path.includes('admin');

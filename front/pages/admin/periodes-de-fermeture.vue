@@ -144,7 +144,9 @@ export default Vue.extend({
   },
   computed: {
     startDateMin(): string {
-      return new Date().toISOString();
+      const now:Date = new Date();
+
+      return this.toISOStringWithoutTimeAndIgnoringTimeZone(now);
     },
 
     endDateMin(): string {
@@ -153,7 +155,7 @@ export default Vue.extend({
         date.setDate(this.toDate(this.newClosingPeriod.startDate).getDate() + 1);
       }
 
-      return date.toISOString();
+      return this.toISOStringWithoutTimeAndIgnoringTimeZone(date);
     },
   },
   methods: {
@@ -209,6 +211,13 @@ export default Vue.extend({
         return new Date(`${dateAsIsoString}T12:00:00Z`);
       }
     },
+
+    toISOStringWithoutTimeAndIgnoringTimeZone(date: Date): string {
+      const dateCopy: Date = new Date(date.getTime());
+      dateCopy.setHours(12, 0, 0, 0);
+
+      return dateCopy.toISOString().split('T')[0];
+    }
   },
 });
 </script>
