@@ -81,7 +81,12 @@
 import Vue, { PropOptions } from 'vue';
 import { Day, NUMBER_OF_DAYS_IN_A_WEEK } from '../../back/src/domain/date.constants';
 import { MAXIMUM_HOUR_FOR_DELIVERY_SAME_WEEK } from '../../back/src/domain/order/order-delivery-constraints';
-import { AVAILABLE_DAYS_FOR_A_PICK_UP_ORDER, AvailableDayForAPickUpOrder, CLOSING_DAYS } from '../../back/src/domain/order/order-pick-up-constraints';
+import {
+  AVAILABLE_DAYS_FOR_A_PICK_UP_ORDER,
+  AvailableDayForAPickUpOrder,
+  CLOSING_DAYS,
+  MAXIMUM_HOUR_TO_PLACE_A_PICK_UP_ORDER_BEFORE_BEING_CONSIDERED_AS_PLACED_THE_FOLLOWING_DAY,
+} from '../../back/src/domain/order/order-pick-up-constraints';
 import { getOrderTypeLabel, OrderType } from '../../back/src/domain/order/order-type';
 import { GetClosingPeriodResponse } from '../../back/src/infrastructure/rest/models/get-closing-period-response';
 import { PostOrderRequest } from '../../back/src/infrastructure/rest/models/post-order-request';
@@ -170,7 +175,11 @@ export default Vue.extend({
       const now: Date = new Date();
 
       if (!this.isInAdmin) {
+        if (now.getHours() >= MAXIMUM_HOUR_TO_PLACE_A_PICK_UP_ORDER_BEFORE_BEING_CONSIDERED_AS_PLACED_THE_FOLLOWING_DAY) {
+          now.setDate(now.getDate() + 1);
+        }
         const currentDay: number = now.getDay();
+
         const firstAvailableDay: Day = AVAILABLE_DAYS_FOR_A_PICK_UP_ORDER.filter(
           (availableDayForAPickUpOrder: AvailableDayForAPickUpOrder) => availableDayForAPickUpOrder.whenOrderIsPlacedOn === currentDay
         ).map((availableDayForAPickUpOrder: AvailableDayForAPickUpOrder) => availableDayForAPickUpOrder.firstAvailableDay)[0];
