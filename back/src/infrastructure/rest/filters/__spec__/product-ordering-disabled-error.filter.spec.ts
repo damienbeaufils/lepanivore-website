@@ -1,4 +1,5 @@
 import { ArgumentsHost } from '@nestjs/common';
+import { cloneDeep } from 'lodash';
 import { ProductOrderingDisabledError } from '../../../../domain/feature/errors/product-ordering-disabled.error';
 import { ProductOrderingDisabledErrorFilter } from '../product-ordering-disabled-error.filter';
 
@@ -46,7 +47,7 @@ describe('infrastructure/rest/filters/ProductOrderingDisabledErrorFilter', () =>
       // given
       const fixedDate: Date = new Date('2017-06-13T04:41:20');
       // @ts-ignore
-      jest.spyOn(global, 'Date').mockImplementationOnce(() => fixedDate);
+      jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(fixedDate));
 
       const productOrderingDisabledError: ProductOrderingDisabledError = {
         name: 'ProductOrderingDisabledError',
