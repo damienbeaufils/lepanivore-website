@@ -14,7 +14,12 @@ import { NewOrderCommand } from './commands/new-order-command';
 import { UpdateOrderCommand } from './commands/update-order-command';
 import { InvalidOrderError } from './errors/invalid-order.error';
 import { DELIVERY_DAY, MAXIMUM_DAY_FOR_DELIVERY_SAME_WEEK, MAXIMUM_HOUR_FOR_DELIVERY_SAME_WEEK } from './order-delivery-constraints';
-import { AVAILABLE_DAYS_FOR_A_PICK_UP_ORDER, AvailableDayForAPickUpOrder, CLOSING_DAYS } from './order-pick-up-constraints';
+import {
+  AVAILABLE_DAYS_FOR_A_PICK_UP_ORDER,
+  AvailableDayForAPickUpOrder,
+  CLOSING_DAYS,
+  MAXIMUM_HOUR_TO_PLACE_A_PICK_UP_ORDER_BEFORE_BEING_CONSIDERED_AS_PLACED_THE_FOLLOWING_DAY,
+} from './order-pick-up-constraints';
 import { OrderType } from './order-type';
 import { OrderInterface } from './order.interface';
 
@@ -137,6 +142,9 @@ export class Order implements OrderInterface {
   private static assertPickUpDateIsEqualOrAfterTheFirstAvailableDay(type: OrderType, pickUpDate: Date): void {
     if (type === OrderType.PICK_UP) {
       const now: Date = getCurrentDateAtCanadaEasternTimeZone();
+      if (now.getHours() >= MAXIMUM_HOUR_TO_PLACE_A_PICK_UP_ORDER_BEFORE_BEING_CONSIDERED_AS_PLACED_THE_FOLLOWING_DAY) {
+        now.setDate(now.getDate() + 1);
+      }
 
       const numberOfDaysBetweenNowAndPickUpDate: number = getNumberOfDaysBetweenFirstDateAndSecondDate(now, pickUpDate);
       const isPickUpDateInTheNextSixDays: boolean = numberOfDaysBetweenNowAndPickUpDate < NUMBER_OF_DAYS_IN_A_WEEK;

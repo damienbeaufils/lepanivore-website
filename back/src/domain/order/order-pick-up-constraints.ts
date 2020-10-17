@@ -14,5 +14,6 @@ export const AVAILABLE_DAYS_FOR_A_PICK_UP_ORDER: AvailableDayForAPickUpOrder[] =
   { whenOrderIsPlacedOn: Day.FRIDAY, firstAvailableDay: Day.TUESDAY },
   { whenOrderIsPlacedOn: Day.SATURDAY, firstAvailableDay: Day.TUESDAY },
 ];
+export const MAXIMUM_HOUR_TO_PLACE_A_PICK_UP_ORDER_BEFORE_BEING_CONSIDERED_AS_PLACED_THE_FOLLOWING_DAY: number = 19;
 
 export const CLOSING_DAYS: Day[] = [Day.SUNDAY, Day.MONDAY];
