@@ -1,4 +1,5 @@
 import { ArgumentsHost } from '@nestjs/common';
+import { cloneDeep } from 'lodash';
 import { InvalidUserError } from '../../../../domain/user/errors/invalid-user.error';
 import { InvalidUserErrorFilter } from '../invalid-user-error.filter';
 
@@ -46,7 +47,7 @@ describe('infrastructure/rest/filters/InvalidUserErrorFilter', () => {
       // given
       const fixedDate: Date = new Date('2017-06-13T04:41:20');
       // @ts-ignore
-      jest.spyOn(global, 'Date').mockImplementationOnce(() => fixedDate);
+      jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(fixedDate));
 
       const invalidUserError: InvalidUserError = {
         name: 'InvalidUserError',

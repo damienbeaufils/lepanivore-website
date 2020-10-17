@@ -1,4 +1,5 @@
 import { ArgumentsHost } from '@nestjs/common';
+import { cloneDeep } from 'lodash';
 import { InvalidItemError } from '../../../../domain/errors/invalid-item.error';
 import { InvalidItemErrorFilter } from '../invalid-item-error.filter';
 
@@ -46,7 +47,7 @@ describe('infrastructure/rest/filters/InvalidItemErrorFilter', () => {
       // given
       const fixedDate: Date = new Date('2017-06-13T04:41:20');
       // @ts-ignore
-      jest.spyOn(global, 'Date').mockImplementationOnce(() => fixedDate);
+      jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(fixedDate));
 
       const invalidItemError: InvalidItemError = {
         name: 'InvalidItemError',

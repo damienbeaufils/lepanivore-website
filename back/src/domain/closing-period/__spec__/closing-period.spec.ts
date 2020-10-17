@@ -1,3 +1,4 @@
+import { cloneDeep } from 'lodash';
 import { ClosingPeriod } from '../closing-period';
 import { NewClosingPeriodCommand } from '../commands/new-closing-period-command';
 import { InvalidClosingPeriodError } from '../errors/invalid-closing-period.error';
@@ -63,7 +64,7 @@ describe('domain/closing-period/ClosingPeriod', () => {
           newClosingPeriodCommand.startDate = new Date('2020-06-02T04:41:20');
           const now: Date = new Date('2020-06-03T04:41:20');
           // @ts-ignore
-          jest.spyOn(global, 'Date').mockImplementation(() => now);
+          jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(now));
 
           // when
           const result = () => ClosingPeriod.factory.create(newClosingPeriodCommand);
@@ -77,7 +78,7 @@ describe('domain/closing-period/ClosingPeriod', () => {
           newClosingPeriodCommand.startDate = new Date('2020-06-03T12:41:20');
           const now: Date = new Date('2020-06-03T13:41:20');
           // @ts-ignore
-          jest.spyOn(global, 'Date').mockImplementation(() => now);
+          jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(now));
 
           // when
           const result = () => ClosingPeriod.factory.create(newClosingPeriodCommand);
@@ -116,7 +117,7 @@ describe('domain/closing-period/ClosingPeriod', () => {
           newClosingPeriodCommand.endDate = new Date('2020-06-02T04:41:20');
           const now: Date = new Date('2020-06-03T04:41:20');
           // @ts-ignore
-          jest.spyOn(global, 'Date').mockImplementation(() => now);
+          jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(now));
 
           // when
           const result = () => ClosingPeriod.factory.create(newClosingPeriodCommand);
