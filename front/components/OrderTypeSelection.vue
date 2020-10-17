@@ -14,8 +14,9 @@
             required
           ></v-select>
           <p class="text-left caption" v-if="isDeliveryOrderTypeSelected">
-            Livraison à domicile le jeudi soir. Service gratuit pour la Petite-Patrie (Jean Talon - Des Carrières - Des Érables - Christophe-Colomb).
-            <br />Pour une livraison en dehors de cette zone,
+            Livraison à domicile le jeudi soir. Service gratuit pour la Petite-Patrie (Jean Talon - Des Carrières - Des
+            Érables - Christophe-Colomb).
+            <br/>Pour une livraison en dehors de cette zone,
             <a href="https://www.lepanivore.com/Home/Contact" target="_blank">veuillez nous contacter</a>.
           </p>
           <p class="text-left caption" v-if="isReservationOrderTypeSelected">
@@ -23,7 +24,8 @@
           </p>
         </v-col>
         <v-col cols="12" sm="6" md="8" v-if="isPickUpOrderTypeSelected">
-          <v-menu v-model="showPickUpDatePicker" :nudge-right="40" transition="scale-transition" offset-y min-width="290px">
+          <v-menu v-model="showPickUpDatePicker" :nudge-right="40" transition="scale-transition" offset-y
+                  min-width="290px">
             <template v-slot:activator="{ on }">
               <v-text-field
                 v-model="value.pickUpDate"
@@ -45,7 +47,8 @@
           </v-menu>
         </v-col>
         <v-col cols="12" sm="6" md="8" v-if="isDeliveryOrderTypeSelected">
-          <v-menu v-model="showDeliveryDatePicker" :nudge-right="40" transition="scale-transition" offset-y min-width="290px">
+          <v-menu v-model="showDeliveryDatePicker" :nudge-right="40" transition="scale-transition" offset-y
+                  min-width="290px">
             <template v-slot:activator="{ on }">
               <v-text-field
                 v-model="value.deliveryDate"
@@ -79,7 +82,7 @@
 
 <script lang="ts">
 import Vue, { PropOptions } from 'vue';
-import { Day, NUMBER_OF_DAYS_IN_A_WEEK } from '../../back/src/domain/date.constants';
+import { Day } from '../../back/src/domain/date.constants';
 import { MAXIMUM_HOUR_FOR_DELIVERY_SAME_WEEK } from '../../back/src/domain/order/order-delivery-constraints';
 import {
   AVAILABLE_DAYS_FOR_A_PICK_UP_ORDER,
@@ -138,27 +141,21 @@ export default Vue.extend({
 
       return true;
     },
-    isAddingGivenDaysWillPassedToNextWeek(numberOfDays: number): boolean {
-      const now: Date = new Date();
-      const futureDate: Date = new Date();
-      futureDate.setDate(futureDate.getDate() + numberOfDays);
-      return futureDate.getDay() < now.getDay();
-    },
     toISOStringWithoutTimeAndIgnoringTimeZone(date: Date): string {
       const dateCopy: Date = new Date(date.getTime());
       dateCopy.setHours(12, 0, 0, 0);
 
       return dateCopy.toISOString().split('T')[0];
-    }
+    },
   },
   computed: {
     orderTypeItems(): Array<{ value: OrderType; text: string }> {
-      const orderTypes:Array<{ value: OrderType; text: string }> = [
+      const orderTypes: Array<{ value: OrderType; text: string }> = [
         { value: OrderType.DELIVERY, text: getOrderTypeLabel(OrderType.DELIVERY) },
-        { value: OrderType.PICK_UP, text: getOrderTypeLabel(OrderType.PICK_UP) }
+        { value: OrderType.PICK_UP, text: getOrderTypeLabel(OrderType.PICK_UP) },
       ];
       if (this.isInAdmin) {
-        orderTypes.push({ value: OrderType.RESERVATION, text: getOrderTypeLabel(OrderType.RESERVATION) })
+        orderTypes.push({ value: OrderType.RESERVATION, text: getOrderTypeLabel(OrderType.RESERVATION) });
       }
       return orderTypes;
     },
@@ -181,17 +178,12 @@ export default Vue.extend({
         const currentDay: number = now.getDay();
 
         const firstAvailableDay: Day = AVAILABLE_DAYS_FOR_A_PICK_UP_ORDER.filter(
-          (availableDayForAPickUpOrder: AvailableDayForAPickUpOrder) => availableDayForAPickUpOrder.whenOrderIsPlacedOn === currentDay
+          (availableDayForAPickUpOrder: AvailableDayForAPickUpOrder) => availableDayForAPickUpOrder.whenOrderIsPlacedOn === currentDay,
         ).map((availableDayForAPickUpOrder: AvailableDayForAPickUpOrder) => availableDayForAPickUpOrder.firstAvailableDay)[0];
 
-        let numberOfDaysBetweenNowAndFirstAvailableDay: number = Math.abs(firstAvailableDay - currentDay);
-        if (
-          numberOfDaysBetweenNowAndFirstAvailableDay < NUMBER_OF_DAYS_IN_A_WEEK &&
-          this.isAddingGivenDaysWillPassedToNextWeek(numberOfDaysBetweenNowAndFirstAvailableDay)
-        ) {
-          numberOfDaysBetweenNowAndFirstAvailableDay = NUMBER_OF_DAYS_IN_A_WEEK - numberOfDaysBetweenNowAndFirstAvailableDay;
-        }
-        now.setDate(now.getDate() + numberOfDaysBetweenNowAndFirstAvailableDay);
+        do {
+          now.setDate(now.getDate() + 1);
+        } while (now.getDay() !== firstAvailableDay);
       }
 
       return this.toISOStringWithoutTimeAndIgnoringTimeZone(now);

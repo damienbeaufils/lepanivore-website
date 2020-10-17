@@ -157,17 +157,12 @@ export class Order implements OrderInterface {
       const firstAvailableDay: Day = AVAILABLE_DAYS_FOR_A_PICK_UP_ORDER.filter(
         (availableDayForAPickUpOrder: AvailableDayForAPickUpOrder) => availableDayForAPickUpOrder.whenOrderIsPlacedOn === currentDay
       ).map((availableDayForAPickUpOrder: AvailableDayForAPickUpOrder) => availableDayForAPickUpOrder.firstAvailableDay)[0];
+      const firstAvailableDate: Date = this.getNextDateHavingDay(firstAvailableDay);
 
-      let numberOfDaysBetweenNowAndFirstAvailableDay: number = Math.abs(firstAvailableDay - currentDay);
-
-      const isPickUpDateInTheWeekAfter: boolean = isPickUpDateInTheNextSixDays && pickUpDate.getDay() < currentDay;
-      if (isPickUpDateInTheWeekAfter) {
-        numberOfDaysBetweenNowAndFirstAvailableDay = NUMBER_OF_DAYS_IN_A_WEEK - numberOfDaysBetweenNowAndFirstAvailableDay;
-      }
-
-      if (isFirstDateBeforeSecondDateIgnoringHours(pickUpDate, Order.getCurrentDatePlusDays(numberOfDaysBetweenNowAndFirstAvailableDay))) {
+      if (isFirstDateBeforeSecondDateIgnoringHours(pickUpDate, firstAvailableDate)) {
+        const numberOfDaysBetweenNowAndFirstAvailableDate: number = getNumberOfDaysBetweenFirstDateAndSecondDate(now, firstAvailableDate);
         throw new InvalidOrderError(
-          `pick-up date ${pickUpDate.toISOString()} has to be at least ${numberOfDaysBetweenNowAndFirstAvailableDay} days after now`
+          `pick-up date ${pickUpDate.toISOString()} has to be at least ${numberOfDaysBetweenNowAndFirstAvailableDate} days after now`
         );
       }
     }
@@ -228,11 +223,13 @@ export class Order implements OrderInterface {
     return { product: foundProduct, quantity: productIdWithQuantity.quantity } as ProductWithQuantity;
   }
 
-  private static getCurrentDatePlusDays(numberOfDaysToAdd: number): Date {
-    const date: Date = getCurrentDateAtCanadaEasternTimeZone();
-    date.setDate(date.getDate() + numberOfDaysToAdd);
+  private static getNextDateHavingDay(day: Day): Date {
+    const firstAvailableDate: Date = new Date();
+    do {
+      firstAvailableDate.setDate(firstAvailableDate.getDate() + 1);
+    } while (firstAvailableDate.getDay() !== day);
 
-    return date;
+    return firstAvailableDate;
   }
 
   updateWith(command: UpdateOrderCommand, activeProducts: ProductInterface[], closingPeriods: ClosingPeriodInterface[]): void {

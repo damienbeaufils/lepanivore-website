@@ -1,3 +1,4 @@
+import { cloneDeep } from 'lodash';
 import { ClosingPeriodInterface } from '../../closing-period/closing-period.interface';
 import { ProductStatus } from '../../product/product-status';
 import { ProductInterface } from '../../product/product.interface';
@@ -313,7 +314,7 @@ describe('domain/order/Order', () => {
           aSaturdayInTheFutureAtSevenPM = new Date('2030-04-06T19:00:00');
           aTuesdayInTheFutureTheWeekAfter = new Date('2030-04-09T18:59:59');
           // @ts-ignore
-          jest.spyOn(global, 'Date').mockImplementation(() => now);
+          jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(now));
 
           newOrderCommand.type = OrderType.PICK_UP;
         });
@@ -432,7 +433,7 @@ describe('domain/order/Order', () => {
         describe('when ordering a Sunday', () => {
           beforeEach(() => {
             // @ts-ignore
-            jest.spyOn(global, 'Date').mockImplementation(() => aSundayInTheFutureBeforeSevenPM);
+            jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(aSundayInTheFutureBeforeSevenPM));
           });
 
           it('should not fail when pick-up date is the following Tuesday', () => {
@@ -449,7 +450,7 @@ describe('domain/order/Order', () => {
           describe('after 7 PM', () => {
             beforeEach(() => {
               // @ts-ignore
-              jest.spyOn(global, 'Date').mockImplementation(() => aSundayInTheFutureAtSevenPM);
+              jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(aSundayInTheFutureAtSevenPM));
             });
 
             it('should fail when pick-up date is the following Tuesday', () => {
@@ -490,7 +491,7 @@ describe('domain/order/Order', () => {
         describe('when ordering a Monday', () => {
           beforeEach(() => {
             // @ts-ignore
-            jest.spyOn(global, 'Date').mockImplementation(() => aMondayInTheFutureBeforeSevenPM);
+            jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(aMondayInTheFutureBeforeSevenPM));
           });
 
           it('should fail when pick-up date is the following Tuesday', () => {
@@ -529,7 +530,7 @@ describe('domain/order/Order', () => {
           describe('after 7 PM', () => {
             beforeEach(() => {
               // @ts-ignore
-              jest.spyOn(global, 'Date').mockImplementation(() => aMondayInTheFutureAtSevenPM);
+              jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(aMondayInTheFutureAtSevenPM));
             });
 
             it('should fail when pick-up date is the same Tuesday', () => {
@@ -581,7 +582,7 @@ describe('domain/order/Order', () => {
         describe('when ordering a Tuesday', () => {
           beforeEach(() => {
             // @ts-ignore
-            jest.spyOn(global, 'Date').mockImplementation(() => aTuesdayInTheFutureBeforeSevenPM);
+            jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(aTuesdayInTheFutureBeforeSevenPM));
           });
 
           it('should fail when pick-up date is the same Tuesday', () => {
@@ -631,7 +632,7 @@ describe('domain/order/Order', () => {
           describe('after 7 PM', () => {
             beforeEach(() => {
               // @ts-ignore
-              jest.spyOn(global, 'Date').mockImplementation(() => aTuesdayInTheFutureAtSevenPM);
+              jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(aTuesdayInTheFutureAtSevenPM));
             });
 
             it('should fail when pick-up date is the same Wednesday', () => {
@@ -683,7 +684,7 @@ describe('domain/order/Order', () => {
         describe('when ordering a Wednesday', () => {
           beforeEach(() => {
             // @ts-ignore
-            jest.spyOn(global, 'Date').mockImplementation(() => aWednesdayInTheFutureBeforeSevenPM);
+            jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(aWednesdayInTheFutureBeforeSevenPM));
           });
 
           it('should fail when pick-up date is the same Wednesday', () => {
@@ -733,7 +734,7 @@ describe('domain/order/Order', () => {
           describe('after 7 PM', () => {
             beforeEach(() => {
               // @ts-ignore
-              jest.spyOn(global, 'Date').mockImplementation(() => aWednesdayInTheFutureAtSevenPM);
+              jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(aWednesdayInTheFutureAtSevenPM));
             });
 
             it('should fail when pick-up date is the same Thursday', () => {
@@ -755,12 +756,23 @@ describe('domain/order/Order', () => {
               const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
               // then
-              expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-05T22:59:59.000Z has to be at least 2 days after now'));
+              expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-05T22:59:59.000Z has to be at least 5 days after now'));
             });
 
-            it('should not fail when pick-up date is the following Saturday', () => {
+            it('should fail when pick-up date is the following Saturday', () => {
               // given
               newOrderCommand.pickUpDate = aSaturdayInTheFutureBeforeSevenPM;
+
+              // when
+              const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
+
+              // then
+              expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-06T22:59:59.000Z has to be at least 5 days after now'));
+            });
+
+            it('should not fail when pick-up date is the following Tuesday', () => {
+              // given
+              newOrderCommand.pickUpDate = aTuesdayInTheFutureTheWeekAfter;
 
               // when
               const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
@@ -774,7 +786,7 @@ describe('domain/order/Order', () => {
         describe('when ordering a Thursday', () => {
           beforeEach(() => {
             // @ts-ignore
-            jest.spyOn(global, 'Date').mockImplementation(() => aThursdayInTheFutureBeforeSevenPM);
+            jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(aThursdayInTheFutureBeforeSevenPM));
           });
 
           it('should fail when pick-up date is the same Thursday', () => {
@@ -796,12 +808,23 @@ describe('domain/order/Order', () => {
             const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
             // then
-            expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-05T22:59:59.000Z has to be at least 2 days after now'));
+            expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-05T22:59:59.000Z has to be at least 5 days after now'));
           });
 
-          it('should not fail when pick-up date is the following Saturday', () => {
+          it('should fail when pick-up date is the following Saturday', () => {
             // given
             newOrderCommand.pickUpDate = aSaturdayInTheFutureBeforeSevenPM;
+
+            // when
+            const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
+
+            // then
+            expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-06T22:59:59.000Z has to be at least 5 days after now'));
+          });
+
+          it('should not fail when pick-up date is the following Tuesday', () => {
+            // given
+            newOrderCommand.pickUpDate = aTuesdayInTheFutureTheWeekAfter;
 
             // when
             const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
@@ -813,7 +836,7 @@ describe('domain/order/Order', () => {
           describe('after 7 PM', () => {
             beforeEach(() => {
               // @ts-ignore
-              jest.spyOn(global, 'Date').mockImplementation(() => aThursdayInTheFutureAtSevenPM);
+              jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(aThursdayInTheFutureAtSevenPM));
             });
 
             it('should fail when pick-up date is the same Friday', () => {
@@ -835,7 +858,7 @@ describe('domain/order/Order', () => {
               const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
               // then
-              expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-06T22:59:59.000Z has to be at least 3 days after now'));
+              expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-06T22:59:59.000Z has to be at least 4 days after now'));
             });
 
             it('should not fail when pick-up date is the following Tuesday', () => {
@@ -854,7 +877,7 @@ describe('domain/order/Order', () => {
         describe('when ordering a Friday', () => {
           beforeEach(() => {
             // @ts-ignore
-            jest.spyOn(global, 'Date').mockImplementation(() => aFridayInTheFutureBeforeSevenPM);
+            jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(aFridayInTheFutureBeforeSevenPM));
           });
 
           it('should fail when pick-up date is the same Friday', () => {
@@ -876,7 +899,7 @@ describe('domain/order/Order', () => {
             const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
             // then
-            expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-06T22:59:59.000Z has to be at least 3 days after now'));
+            expect(result).toThrow(new InvalidOrderError('pick-up date 2030-04-06T22:59:59.000Z has to be at least 4 days after now'));
           });
 
           it('should not fail when pick-up date is the following Tuesday', () => {
@@ -893,7 +916,7 @@ describe('domain/order/Order', () => {
           describe('after 7 PM', () => {
             beforeEach(() => {
               // @ts-ignore
-              jest.spyOn(global, 'Date').mockImplementation(() => aFridayInTheFutureAtSevenPM);
+              jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(aFridayInTheFutureAtSevenPM));
             });
 
             it('should fail when pick-up date is the same Saturday', () => {
@@ -923,7 +946,7 @@ describe('domain/order/Order', () => {
         describe('when ordering a Saturday', () => {
           beforeEach(() => {
             // @ts-ignore
-            jest.spyOn(global, 'Date').mockImplementation(() => aSaturdayInTheFutureBeforeSevenPM);
+            jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(aSaturdayInTheFutureBeforeSevenPM));
           });
 
           it('should fail when pick-up date is the same Saturday', () => {
@@ -951,7 +974,7 @@ describe('domain/order/Order', () => {
           describe('after 7 PM', () => {
             beforeEach(() => {
               // @ts-ignore
-              jest.spyOn(global, 'Date').mockImplementation(() => aSaturdayInTheFutureAtSevenPM);
+              jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(aSaturdayInTheFutureAtSevenPM));
             });
 
             it('should not fail when pick-up date is the following Tuesday', () => {
@@ -991,7 +1014,7 @@ describe('domain/order/Order', () => {
 
           const now: Date = new Date('2020-06-03T04:41:20');
           // @ts-ignore
-          jest.spyOn(global, 'Date').mockImplementation(() => now);
+          jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(now));
 
           // when
           const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
@@ -1034,7 +1057,7 @@ describe('domain/order/Order', () => {
           secondThursdayAfterTuesday = new Date('2020-06-18T19:00:00');
           thirdThursdayAfterTuesday = new Date('2020-06-25T19:00:00');
           // @ts-ignore
-          jest.spyOn(global, 'Date').mockImplementation(() => now);
+          jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(now));
 
           newOrderCommand.type = OrderType.DELIVERY;
         });
@@ -1094,7 +1117,7 @@ describe('domain/order/Order', () => {
           ];
           newOrderCommand.deliveryDate = firstThursdayAfterTuesday;
           // @ts-ignore
-          jest.spyOn(global, 'Date').mockImplementation(() => tuesdayBeforeSevenPM);
+          jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(tuesdayBeforeSevenPM));
 
           // when
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
@@ -1113,7 +1136,7 @@ describe('domain/order/Order', () => {
           ];
           newOrderCommand.deliveryDate = thirdThursdayAfterTuesday;
           // @ts-ignore
-          jest.spyOn(global, 'Date').mockImplementation(() => tuesdayBeforeSevenPM);
+          jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(tuesdayBeforeSevenPM));
 
           // when
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
@@ -1137,7 +1160,7 @@ describe('domain/order/Order', () => {
           // given
           newOrderCommand.deliveryDate = firstThursdayAfterTuesday;
           // @ts-ignore
-          jest.spyOn(global, 'Date').mockImplementation(() => tuesdayBeforeSevenPM);
+          jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(tuesdayBeforeSevenPM));
 
           // when
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
@@ -1150,7 +1173,7 @@ describe('domain/order/Order', () => {
           // given
           newOrderCommand.deliveryDate = firstThursdayAfterTuesday;
           // @ts-ignore
-          jest.spyOn(global, 'Date').mockImplementation(() => tuesdayAtSevenPM);
+          jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(tuesdayAtSevenPM));
 
           // when
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
@@ -1163,7 +1186,7 @@ describe('domain/order/Order', () => {
           // given
           newOrderCommand.deliveryDate = secondThursdayAfterTuesday;
           // @ts-ignore
-          jest.spyOn(global, 'Date').mockImplementation(() => tuesdayAtSevenPM);
+          jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(tuesdayAtSevenPM));
 
           // when
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
@@ -1176,7 +1199,7 @@ describe('domain/order/Order', () => {
           // given
           newOrderCommand.deliveryDate = firstThursdayAfterTuesday;
           // @ts-ignore
-          jest.spyOn(global, 'Date').mockImplementation(() => wednesdayAfterTuesday);
+          jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(wednesdayAfterTuesday));
 
           // when
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
@@ -1189,7 +1212,7 @@ describe('domain/order/Order', () => {
           // given
           newOrderCommand.deliveryDate = secondThursdayAfterTuesday;
           // @ts-ignore
-          jest.spyOn(global, 'Date').mockImplementation(() => wednesdayAfterTuesday);
+          jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(wednesdayAfterTuesday));
 
           // when
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
@@ -1202,7 +1225,7 @@ describe('domain/order/Order', () => {
           // given
           newOrderCommand.deliveryDate = firstThursdayAfterTuesday;
           // @ts-ignore
-          jest.spyOn(global, 'Date').mockImplementation(() => firstThursdayAfterTuesday);
+          jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(firstThursdayAfterTuesday));
 
           // when
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
@@ -1215,7 +1238,7 @@ describe('domain/order/Order', () => {
           // given
           newOrderCommand.deliveryDate = secondThursdayAfterTuesday;
           // @ts-ignore
-          jest.spyOn(global, 'Date').mockImplementation(() => firstThursdayAfterTuesday);
+          jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(firstThursdayAfterTuesday));
 
           // when
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
@@ -1228,7 +1251,7 @@ describe('domain/order/Order', () => {
           // given
           newOrderCommand.deliveryDate = secondThursdayAfterTuesday;
           // @ts-ignore
-          jest.spyOn(global, 'Date').mockImplementation(() => saturdayAfterTuesday);
+          jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(saturdayAfterTuesday));
 
           // when
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
@@ -1242,7 +1265,7 @@ describe('domain/order/Order', () => {
           secondThursdayAfterTuesday.setHours(1, 1, 1, 1);
           newOrderCommand.deliveryDate = secondThursdayAfterTuesday;
           // @ts-ignore
-          jest.spyOn(global, 'Date').mockImplementation(() => firstThursdayAfterTuesday);
+          jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(firstThursdayAfterTuesday));
 
           // when
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
@@ -1256,7 +1279,7 @@ describe('domain/order/Order', () => {
             // given
             newOrderCommand.deliveryDate = firstThursdayAfterTuesday;
             // @ts-ignore
-            jest.spyOn(global, 'Date').mockImplementation(() => tuesdayAtSevenPM);
+            jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(tuesdayAtSevenPM));
             isAdmin = true;
 
             // when
@@ -1274,7 +1297,7 @@ describe('domain/order/Order', () => {
         beforeEach(() => {
           now = new Date('2020-06-03T04:41:20');
           // @ts-ignore
-          jest.spyOn(global, 'Date').mockImplementation(() => now);
+          jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(now));
 
           isAdmin = true;
           newOrderCommand.type = OrderType.RESERVATION;
@@ -1285,7 +1308,7 @@ describe('domain/order/Order', () => {
           const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
-          expect(result.reservationDate).toBe(now);
+          expect(result.reservationDate).toStrictEqual(now);
         });
 
         it('should not bind any reservation date when order type is not reservation', () => {
@@ -1576,7 +1599,7 @@ describe('domain/order/Order', () => {
         aWednesdayInTheFuture = new Date('2030-04-03T07:41:20');
         aThursdayInTheFuture = new Date('2030-04-04T08:41:20');
         // @ts-ignore
-        jest.spyOn(global, 'Date').mockImplementation(() => now);
+        jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(now));
 
         updateOrderCommand.type = OrderType.PICK_UP;
       });
@@ -1752,7 +1775,7 @@ describe('domain/order/Order', () => {
         secondThursdayAfterTuesday = new Date('2020-06-18T19:00:00');
         thirdThursdayAfterTuesday = new Date('2020-06-25T19:00:00');
         // @ts-ignore
-        jest.spyOn(global, 'Date').mockImplementation(() => now);
+        jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(now));
 
         updateOrderCommand.type = OrderType.DELIVERY;
       });
@@ -1823,7 +1846,7 @@ describe('domain/order/Order', () => {
         ];
         updateOrderCommand.deliveryDate = firstThursdayAfterTuesday;
         // @ts-ignore
-        jest.spyOn(global, 'Date').mockImplementation(() => tuesdayBeforeSevenPM);
+        jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(tuesdayBeforeSevenPM));
 
         // when
         const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
@@ -1842,7 +1865,7 @@ describe('domain/order/Order', () => {
         ];
         updateOrderCommand.deliveryDate = thirdThursdayAfterTuesday;
         // @ts-ignore
-        jest.spyOn(global, 'Date').mockImplementation(() => tuesdayBeforeSevenPM);
+        jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(tuesdayBeforeSevenPM));
 
         // when
         const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
@@ -1869,7 +1892,7 @@ describe('domain/order/Order', () => {
       beforeEach(() => {
         now = new Date('2020-06-03T04:41:20');
         // @ts-ignore
-        jest.spyOn(global, 'Date').mockImplementation(() => now);
+        jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(now));
 
         updateOrderCommand.type = OrderType.RESERVATION;
       });
@@ -1879,7 +1902,7 @@ describe('domain/order/Order', () => {
         existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
-        expect(existingOrder.reservationDate).toBe(now);
+        expect(existingOrder.reservationDate).toStrictEqual(now);
       });
 
       it('should not bind any reservation date when order type is not reservation', () => {
