@@ -152,6 +152,7 @@ export default Vue.extend({
       orderToEdit.deliveryDate = order.deliveryDate;
       orderToEdit.deliveryAddress = order.deliveryAddress;
       orderToEdit.pickUpDate = order.pickUpDate;
+      orderToEdit.reservationDate = order.reservationDate;
       orderToEdit.note = order.note;
 
       this.editedOrder = Object.assign({}, orderToEdit);

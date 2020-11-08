@@ -267,6 +267,7 @@ describe('domain/order/Order', () => {
           // given
           isAdmin = true;
           newOrderCommand.type = 'RESERVATION' as OrderType;
+          newOrderCommand.reservationDate = new Date('2030-04-02T12:00:00Z');
 
           // when
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
@@ -1293,33 +1294,136 @@ describe('domain/order/Order', () => {
 
       describe('reservationDate', () => {
         let now: Date;
+        let nowMinusOneDay: Date;
+        let nowMinusOneHour: Date;
+        let aSundayInTheFuture: Date;
+        let aMondayInTheFuture: Date;
+        let aTuesdayInTheFuture: Date;
+        let aWednesdayInTheFuture: Date;
+        let aThursdayInTheFuture: Date;
 
         beforeEach(() => {
           now = new Date('2020-06-03T04:41:20');
+          nowMinusOneDay = new Date('2020-06-02T04:41:20');
+          nowMinusOneHour = new Date('2020-06-04T06:41:20');
+          aSundayInTheFuture = new Date('2030-03-31T04:41:20');
+          aMondayInTheFuture = new Date('2030-04-01T05:41:20');
+          aTuesdayInTheFuture = new Date('2030-04-02T06:41:20');
+          aWednesdayInTheFuture = new Date('2030-04-03T07:41:20');
+          aThursdayInTheFuture = new Date('2030-04-04T08:41:20');
           // @ts-ignore
           jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(now));
 
-          isAdmin = true;
           newOrderCommand.type = OrderType.RESERVATION;
+          isAdmin = true;
         });
 
-        it('should bind reservation date using now', () => {
+        it('should bind reservation date from command', () => {
+          // given
+          newOrderCommand.reservationDate = aTuesdayInTheFuture;
+
           // when
           const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
-          expect(result.reservationDate).toStrictEqual(now);
+          expect(result.reservationDate).toBe(aTuesdayInTheFuture);
         });
 
-        it('should not bind any reservation date when order type is not reservation', () => {
+        it('should not bind any reservation date from command when order type is not reservation', () => {
           // given
-          newOrderCommand.type = OrderType.PICK_UP;
+          newOrderCommand.reservationDate = aTuesdayInTheFuture;
+          newOrderCommand.type = OrderType.DELIVERY;
 
           // when
           const result: Order = Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
           expect(result.reservationDate).toBeNull();
+        });
+
+        it('should fail when no reservation date and order type is reservation', () => {
+          // given
+          newOrderCommand.reservationDate = null;
+
+          // when
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
+
+          // then
+          expect(result).toThrow(new InvalidOrderError('a reservation date has to be defined when order type is reservation'));
+        });
+
+        it('should fail when reservation date is in the past', () => {
+          // given
+          newOrderCommand.reservationDate = nowMinusOneDay;
+
+          // when
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
+
+          // then
+          expect(result).toThrow(new InvalidOrderError('reservation date 2020-06-02T08:41:20.000Z has to be in the future'));
+        });
+
+        it('should not fail when reservation date is in the past but at same date and different time', () => {
+          // given
+          newOrderCommand.reservationDate = nowMinusOneHour;
+
+          // when
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
+
+          // then
+          expect(result).not.toThrow();
+        });
+
+        it('should fail when reservation date is a Sunday', () => {
+          // given
+          newOrderCommand.reservationDate = aSundayInTheFuture;
+
+          // when
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
+
+          // then
+          expect(result).toThrow(new InvalidOrderError('reservation date 2030-03-31T08:41:20.000Z has to be between a Tuesday and a Saturday'));
+        });
+
+        it('should fail when reservation date is a Monday', () => {
+          // given
+          newOrderCommand.reservationDate = aMondayInTheFuture;
+
+          // when
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
+
+          // then
+          expect(result).toThrow(new InvalidOrderError('reservation date 2030-04-01T09:41:20.000Z has to be between a Tuesday and a Saturday'));
+        });
+
+        it('should fail when reservation date is in a closing period', () => {
+          // given
+          closingPeriods = [
+            { startDate: nowMinusOneDay, endDate: aSundayInTheFuture } as ClosingPeriodInterface,
+            { startDate: aMondayInTheFuture, endDate: aWednesdayInTheFuture } as ClosingPeriodInterface,
+          ];
+          newOrderCommand.reservationDate = aTuesdayInTheFuture;
+
+          // when
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
+
+          // then
+          expect(result).toThrow(new InvalidOrderError('reservation date 2030-04-02T10:41:20.000Z has to be outside closing periods'));
+        });
+
+        it('should not fail when reservation date is outside closing periods', () => {
+          // given
+          closingPeriods = [
+            { startDate: nowMinusOneDay, endDate: aSundayInTheFuture } as ClosingPeriodInterface,
+            { startDate: aMondayInTheFuture, endDate: aWednesdayInTheFuture } as ClosingPeriodInterface,
+          ];
+          newOrderCommand.reservationDate = aThursdayInTheFuture;
+
+          // when
+          const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
+
+          // then
+          expect(result).not.toThrow();
         });
       });
 
@@ -1888,32 +1992,135 @@ describe('domain/order/Order', () => {
 
     describe('reservationDate', () => {
       let now: Date;
+      let nowMinusOneDay: Date;
+      let nowMinusOneHour: Date;
+      let aSundayInTheFuture: Date;
+      let aMondayInTheFuture: Date;
+      let aTuesdayInTheFuture: Date;
+      let aWednesdayInTheFuture: Date;
+      let aThursdayInTheFuture: Date;
 
       beforeEach(() => {
         now = new Date('2020-06-03T04:41:20');
+        nowMinusOneDay = new Date('2020-06-02T04:41:20');
+        nowMinusOneHour = new Date('2020-06-04T06:41:20');
+        aSundayInTheFuture = new Date('2030-03-31T04:41:20');
+        aMondayInTheFuture = new Date('2030-04-01T05:41:20');
+        aTuesdayInTheFuture = new Date('2030-04-02T06:41:20');
+        aWednesdayInTheFuture = new Date('2030-04-03T07:41:20');
+        aThursdayInTheFuture = new Date('2030-04-04T08:41:20');
         // @ts-ignore
         jest.spyOn(global, 'Date').mockImplementation(() => cloneDeep(now));
 
         updateOrderCommand.type = OrderType.RESERVATION;
       });
 
-      it('should bind reservation date using now', () => {
+      it('should bind reservation date from command', () => {
+        // given
+        updateOrderCommand.reservationDate = aTuesdayInTheFuture;
+
         // when
         existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
-        expect(existingOrder.reservationDate).toStrictEqual(now);
+        expect(existingOrder.reservationDate).toBe(aTuesdayInTheFuture);
       });
 
-      it('should not bind any reservation date when order type is not reservation', () => {
+      it('should not bind any reservation date from command when order type is not reservation', () => {
         // given
-        updateOrderCommand.type = OrderType.PICK_UP;
+        updateOrderCommand.reservationDate = aTuesdayInTheFuture;
+        updateOrderCommand.type = OrderType.DELIVERY;
 
         // when
         existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
 
         // then
         expect(existingOrder.reservationDate).toBeNull();
+      });
+
+      it('should fail when no reservation date and order type is reservation', () => {
+        // given
+        updateOrderCommand.reservationDate = null;
+
+        // when
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
+
+        // then
+        expect(result).toThrow(new InvalidOrderError('a reservation date has to be defined when order type is reservation'));
+      });
+
+      it('should fail when reservation date is in the past', () => {
+        // given
+        updateOrderCommand.reservationDate = nowMinusOneDay;
+
+        // when
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
+
+        // then
+        expect(result).toThrow(new InvalidOrderError('reservation date 2020-06-02T08:41:20.000Z has to be in the future'));
+      });
+
+      it('should not fail when reservation date is in the past but at same date and different time', () => {
+        // given
+        updateOrderCommand.reservationDate = nowMinusOneHour;
+
+        // when
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
+
+        // then
+        expect(result).not.toThrow();
+      });
+
+      it('should fail when reservation date is a Sunday', () => {
+        // given
+        updateOrderCommand.reservationDate = aSundayInTheFuture;
+
+        // when
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
+
+        // then
+        expect(result).toThrow(new InvalidOrderError('reservation date 2030-03-31T08:41:20.000Z has to be between a Tuesday and a Saturday'));
+      });
+
+      it('should fail when reservation date is a Monday', () => {
+        // given
+        updateOrderCommand.reservationDate = aMondayInTheFuture;
+
+        // when
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
+
+        // then
+        expect(result).toThrow(new InvalidOrderError('reservation date 2030-04-01T09:41:20.000Z has to be between a Tuesday and a Saturday'));
+      });
+
+      it('should fail when reservation date is in a closing period', () => {
+        // given
+        closingPeriods = [
+          { startDate: nowMinusOneDay, endDate: aSundayInTheFuture } as ClosingPeriodInterface,
+          { startDate: aMondayInTheFuture, endDate: aWednesdayInTheFuture } as ClosingPeriodInterface,
+        ];
+        updateOrderCommand.reservationDate = aTuesdayInTheFuture;
+
+        // when
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
+
+        // then
+        expect(result).toThrow(new InvalidOrderError('reservation date 2030-04-02T10:41:20.000Z has to be outside closing periods'));
+      });
+
+      it('should not fail when reservation date is outside closing periods', () => {
+        // given
+        closingPeriods = [
+          { startDate: nowMinusOneDay, endDate: aSundayInTheFuture } as ClosingPeriodInterface,
+          { startDate: aMondayInTheFuture, endDate: aWednesdayInTheFuture } as ClosingPeriodInterface,
+        ];
+        updateOrderCommand.reservationDate = aThursdayInTheFuture;
+
+        // when
+        const result = () => existingOrder.updateWith(updateOrderCommand, activeProducts, closingPeriods);
+
+        // then
+        expect(result).not.toThrow();
       });
     });
 

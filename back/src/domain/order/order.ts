@@ -214,6 +214,29 @@ export class Order implements OrderInterface {
     }
   }
 
+  private static assertReservationDateIsValid(type: OrderType, closingPeriods: ClosingPeriodInterface[], reservationDate?: Date): void {
+    if (type === OrderType.RESERVATION) {
+      if (!reservationDate) {
+        throw new InvalidOrderError('a reservation date has to be defined when order type is reservation');
+      }
+
+      const now: Date = getCurrentDateAtCanadaEasternTimeZone();
+      if (isFirstDateBeforeSecondDateIgnoringHours(reservationDate, now)) {
+        throw new InvalidOrderError(`reservation date ${reservationDate.toISOString()} has to be in the future`);
+      }
+
+      if (CLOSING_DAYS.includes(reservationDate.getDay())) {
+        throw new InvalidOrderError(`reservation date ${reservationDate.toISOString()} has to be between a Tuesday and a Saturday`);
+      }
+
+      closingPeriods.forEach((closingPeriod: ClosingPeriodInterface) => {
+        if (reservationDate.getTime() >= closingPeriod.startDate.getTime() && reservationDate.getTime() <= closingPeriod.endDate.getTime()) {
+          throw new InvalidOrderError(`reservation date ${reservationDate.toISOString()} has to be outside closing periods`);
+        }
+      });
+    }
+  }
+
   private static toProductWithQuantity(productIdWithQuantity: ProductIdWithQuantity, activeProducts: ProductInterface[]): ProductWithQuantity {
     const foundProduct: ProductInterface | undefined = activeProducts.find((product: Product) => product.id === productIdWithQuantity.productId);
     if (!foundProduct) {
@@ -275,6 +298,7 @@ export class Order implements OrderInterface {
     Order.assertPickUpDateIsValid(command.type, closingPeriods, command.pickUpDate);
     Order.assertDeliveryDateIsValid(command.type, closingPeriods, command.deliveryDate);
     Order.assertDeliveryAddressIsValid(command.type, command.deliveryAddress);
+    Order.assertReservationDateIsValid(command.type, closingPeriods, command.reservationDate);
 
     this.type = command.type;
     this.pickUpDate = null;
@@ -291,7 +315,7 @@ export class Order implements OrderInterface {
         this.deliveryAddress = command.deliveryAddress;
         break;
       case OrderType.RESERVATION:
-        this.reservationDate = new Date();
+        this.reservationDate = command.reservationDate;
         break;
     }
   }
