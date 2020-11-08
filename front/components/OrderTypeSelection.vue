@@ -19,9 +19,6 @@
             <br/>Pour une livraison en dehors de cette zone,
             <a href="https://www.lepanivore.com/Home/Contact" target="_blank">veuillez nous contacter</a>.
           </p>
-          <p class="text-left caption" v-if="isReservationOrderTypeSelected">
-            Dans le cas d'une réservation, la date du jour est utilisée en tant que date de réservation.
-          </p>
         </v-col>
         <v-col cols="12" sm="6" md="8" v-if="isPickUpOrderTypeSelected">
           <v-menu v-model="showPickUpDatePicker" :nudge-right="40" transition="scale-transition" offset-y
@@ -75,6 +72,29 @@
             required
           ></v-text-field>
         </v-col>
+        <v-col cols="12" sm="6" md="8" v-if="isReservationOrderTypeSelected">
+          <v-menu v-model="showReservationDatePicker" :nudge-right="40" transition="scale-transition" offset-y
+                  min-width="290px">
+            <template v-slot:activator="{ on }">
+              <v-text-field
+                v-model="value.reservationDate"
+                label="Date de réservation"
+                prepend-icon="mdi-calendar"
+                readonly
+                v-on="on"
+                required
+                :rules="[(v) => !!v || 'La date de réservation est requise']"
+              ></v-text-field>
+            </template>
+            <v-date-picker
+              v-model="value.reservationDate"
+              @input="showReservationDatePicker = false"
+              :min="reservationDateMin"
+              :allowed-dates="reservationAllowedDates"
+              locale="fr-ca"
+            ></v-date-picker>
+          </v-menu>
+        </v-col>
       </v-row>
     </v-container>
   </v-card>
@@ -98,6 +118,7 @@ import { PutOrderRequest } from '../../back/src/infrastructure/rest/models/put-o
 interface OrderTypeSelectionData {
   showPickUpDatePicker: boolean;
   showDeliveryDatePicker: boolean;
+  showReservationDatePicker: boolean;
 }
 
 export default Vue.extend({
@@ -110,16 +131,24 @@ export default Vue.extend({
     return {
       showPickUpDatePicker: false,
       showDeliveryDatePicker: false,
+      showReservationDatePicker: false,
     } as OrderTypeSelectionData;
   },
   methods: {
     pickUpAllowedDates(dateAsIsoString: string): boolean {
       const date: Date = this.toDate(dateAsIsoString);
+
       return this.isStoreOpen(date);
     },
     deliveryAllowedDates(dateAsIsoString: string): boolean {
       const date: Date = this.toDate(dateAsIsoString);
+
       return this.isStoreOpen(date) && date.getDay() === Day.THURSDAY;
+    },
+    reservationAllowedDates(dateAsIsoString: string): boolean {
+      const date: Date = this.toDate(dateAsIsoString);
+
+      return this.isStoreOpen(date);
     },
     toDate(dateAsIsoString: string): Date {
       if (dateAsIsoString.length > 10) {
@@ -201,6 +230,11 @@ export default Vue.extend({
           now.setDate(now.getDate() + numberOfDaysToAddToOverlapNextThursday);
         }
       }
+
+      return this.toISOStringWithoutTimeAndIgnoringTimeZone(now);
+    },
+    reservationDateMin(): string {
+      const now: Date = new Date();
 
       return this.toISOStringWithoutTimeAndIgnoringTimeZone(now);
     },

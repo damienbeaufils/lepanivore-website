@@ -6,5 +6,6 @@ export interface PutOrderRequest {
   pickUpDate?: string;
   deliveryDate?: string;
   deliveryAddress?: string;
+  reservationDate?: string;
   note?: string;
 }

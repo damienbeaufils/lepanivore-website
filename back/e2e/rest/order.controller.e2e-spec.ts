@@ -220,6 +220,7 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
         pickUpDate: '2020-06-13T04:41:20',
         deliveryAddress: 'Montréal',
         deliveryDate: '2021-03-28T16:35:49',
+        reservationDate: '2022-11-12T13:27:39',
         note: 'a note',
       };
 
@@ -237,6 +238,7 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
           pickUpDate: new Date('2020-06-13T12:00:00Z'),
           deliveryAddress: 'Montréal',
           deliveryDate: new Date('2021-03-28T12:00:00Z'),
+          reservationDate: new Date('2022-11-12T12:00:00Z'),
           note: 'a note',
         } as NewOrderCommand);
       });
@@ -253,6 +255,7 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
         pickUpDate: '2020-06-13T04:41:20',
         deliveryAddress: 'Montréal',
         deliveryDate: '2021-03-28T16:35:49',
+        reservationDate: '2022-11-12T13:27:39',
         note: 'a note',
       };
 
@@ -287,6 +290,7 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
                 pickUpDate: new Date('2020-06-13T12:00:00Z'),
                 deliveryAddress: 'Montréal',
                 deliveryDate: new Date('2021-03-28T12:00:00Z'),
+                reservationDate: new Date('2022-11-12T12:00:00Z'),
                 note: 'a note',
               } as NewOrderCommand);
             })
@@ -365,6 +369,7 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
         pickUpDate: '2020-06-13T04:41:20',
         deliveryAddress: 'Montréal',
         deliveryDate: '2021-03-28T16:35:49',
+        reservationDate: '2022-11-12T13:27:39',
         note: 'a note',
       };
 
@@ -397,6 +402,7 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
                 pickUpDate: new Date('2020-06-13T12:00:00Z'),
                 deliveryAddress: 'Montréal',
                 deliveryDate: new Date('2021-03-28T12:00:00Z'),
+                reservationDate: new Date('2022-11-12T12:00:00Z'),
                 note: 'a note',
               } as UpdateOrderCommand);
             })

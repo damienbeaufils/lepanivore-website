@@ -94,6 +94,7 @@ export class OrderController {
       pickUpDate: parseDateWithTimeAtNoonUTC(postOrderRequest.pickUpDate),
       deliveryDate: parseDateWithTimeAtNoonUTC(postOrderRequest.deliveryDate),
       deliveryAddress: postOrderRequest.deliveryAddress,
+      reservationDate: parseDateWithTimeAtNoonUTC(postOrderRequest.reservationDate),
       note: postOrderRequest.note,
     };
   }
@@ -106,6 +107,7 @@ export class OrderController {
       pickUpDate: parseDateWithTimeAtNoonUTC(putOrderRequest.pickUpDate),
       deliveryDate: parseDateWithTimeAtNoonUTC(putOrderRequest.deliveryDate),
       deliveryAddress: putOrderRequest.deliveryAddress,
+      reservationDate: parseDateWithTimeAtNoonUTC(putOrderRequest.reservationDate),
       note: putOrderRequest.note,
     };
   }
