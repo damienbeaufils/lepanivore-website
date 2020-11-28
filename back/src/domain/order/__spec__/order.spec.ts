@@ -2,6 +2,7 @@ import { cloneDeep } from 'lodash';
 import { ClosingPeriodInterface } from '../../closing-period/closing-period.interface';
 import { ProductStatus } from '../../product/product-status';
 import { ProductInterface } from '../../product/product.interface';
+import { InvalidUserError } from '../../user/errors/invalid-user.error';
 import { NewOrderCommand } from '../commands/new-order-command';
 import { UpdateOrderCommand } from '../commands/update-order-command';
 import { InvalidOrderError } from '../errors/invalid-order.error';
@@ -260,7 +261,7 @@ describe('domain/order/Order', () => {
           const result = () => Order.factory.create(newOrderCommand, activeProducts, closingPeriods, isAdmin);
 
           // then
-          expect(result).toThrow(new InvalidOrderError('RESERVATION order type requires to be ADMIN'));
+          expect(result).toThrow(new InvalidUserError('RESERVATION order type requires to be ADMIN'));
         });
 
         it('should not fail when type is RESERVATION and ordering as admin', () => {
@@ -391,7 +392,10 @@ describe('domain/order/Order', () => {
           // given
           closingPeriods = [
             { startDate: nowMinusOneDay, endDate: aSundayInTheFutureBeforeSevenPM } as ClosingPeriodInterface,
-            { startDate: aMondayInTheFutureBeforeSevenPM, endDate: aWednesdayInTheFutureBeforeSevenPM } as ClosingPeriodInterface,
+            {
+              startDate: aMondayInTheFutureBeforeSevenPM,
+              endDate: aWednesdayInTheFutureBeforeSevenPM,
+            } as ClosingPeriodInterface,
           ];
           newOrderCommand.pickUpDate = aTuesdayInTheFutureBeforeSevenPM;
 
@@ -406,7 +410,10 @@ describe('domain/order/Order', () => {
           // given
           closingPeriods = [
             { startDate: nowMinusOneDay, endDate: aSundayInTheFutureBeforeSevenPM } as ClosingPeriodInterface,
-            { startDate: aMondayInTheFutureBeforeSevenPM, endDate: aWednesdayInTheFutureBeforeSevenPM } as ClosingPeriodInterface,
+            {
+              startDate: aMondayInTheFutureBeforeSevenPM,
+              endDate: aWednesdayInTheFutureBeforeSevenPM,
+            } as ClosingPeriodInterface,
           ];
           newOrderCommand.pickUpDate = aThursdayInTheFutureBeforeSevenPM;
 

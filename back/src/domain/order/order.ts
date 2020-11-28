@@ -10,6 +10,7 @@ import { Product } from '../product/product';
 import { ProductIdWithQuantity, ProductWithQuantity } from '../product/product-with-quantity';
 import { ProductInterface } from '../product/product.interface';
 import { OrderId } from '../type-aliases';
+import { InvalidUserError } from '../user/errors/invalid-user.error';
 import { NewOrderCommand } from './commands/new-order-command';
 import { UpdateOrderCommand } from './commands/update-order-command';
 import { InvalidOrderError } from './errors/invalid-order.error';
@@ -100,7 +101,7 @@ export class Order implements OrderInterface {
       throw new InvalidOrderError(`unknown order type ${type}`);
     }
     if (type === OrderType.RESERVATION && !isAdmin) {
-      throw new InvalidOrderError('RESERVATION order type requires to be ADMIN');
+      throw new InvalidUserError('RESERVATION order type requires to be ADMIN');
     }
   }
 
