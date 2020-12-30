@@ -201,7 +201,10 @@ export default Vue.extend({
       const now: Date = new Date();
 
       if (!this.isInAdmin) {
-        if (now.getHours() >= MAXIMUM_HOUR_TO_PLACE_A_PICK_UP_ORDER_BEFORE_BEING_CONSIDERED_AS_PLACED_THE_FOLLOWING_DAY) {
+        if (
+          now.getHours() >= MAXIMUM_HOUR_TO_PLACE_A_PICK_UP_ORDER_BEFORE_BEING_CONSIDERED_AS_PLACED_THE_FOLLOWING_DAY ||
+          (now.getHours() === MAXIMUM_HOUR_TO_PLACE_A_PICK_UP_ORDER_BEFORE_BEING_CONSIDERED_AS_PLACED_THE_FOLLOWING_DAY - 1 && now.getMinutes() > 55)
+        ) {
           now.setDate(now.getDate() + 1);
         }
         const currentDay: number = now.getDay();
@@ -224,7 +227,8 @@ export default Vue.extend({
         const currentDayOfWeek: number = now.getDay();
         if (
           (currentDayOfWeek > Day.TUESDAY && currentDayOfWeek <= Day.THURSDAY) ||
-          (currentDayOfWeek === Day.TUESDAY && now.getHours() >= MAXIMUM_HOUR_FOR_DELIVERY_SAME_WEEK)
+          (currentDayOfWeek === Day.TUESDAY && now.getHours() >= MAXIMUM_HOUR_FOR_DELIVERY_SAME_WEEK) ||
+          (currentDayOfWeek === Day.TUESDAY && now.getHours() === MAXIMUM_HOUR_FOR_DELIVERY_SAME_WEEK - 1 && now.getMinutes() > 55)
         ) {
           const numberOfDaysToAddToOverlapNextThursday: number = Day.THURSDAY - currentDayOfWeek + 1;
           now.setDate(now.getDate() + numberOfDaysToAddToOverlapNextThursday);
