@@ -11,7 +11,7 @@
     "start:debug": "tsc-watch -p tsconfig.build.json --onSuccess \"node --inspect-brk dist/main.js\"",
     "start:prod": "node dist/main.js",
     "lint": "tslint -p tsconfig.json -c tslint.json",
-    "lintfix": "npm run lint -- --fix",
+    "lint:fix": "npm run lint -- --fix",
     "pretest": "rimraf .stryker-tmp && npm run test:cleanArchitecture && npm run lint",
     "pretest:e2e": "rimraf e2e.sqlite",
     "test": "npm run test:cov && npm run test:e2e",
