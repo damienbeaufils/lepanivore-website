@@ -11,7 +11,7 @@
     "start:dev": "npm run dev",
     "generate": "nuxt generate",
     "lint": "tslint --project .",
-    "lintfix": "npm run lint -- --fix",
+    "lint:fix": "npm run lint -- --fix",
     "pretest": "npm run lint",
     "test": "jest"
   },
