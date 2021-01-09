@@ -6,11 +6,15 @@ import { isAdmin, User } from '../domain/user/user';
 export class GetOrders {
   constructor(private readonly orderRepository: OrderRepository) {}
 
-  async execute(user: User): Promise<OrderInterface[]> {
+  async execute(user: User, year?: number): Promise<OrderInterface[]> {
     if (!isAdmin(user)) {
       return Promise.reject(new InvalidUserError('User has to be ADMIN to execute this action'));
     }
 
-    return this.orderRepository.findAll();
+    if (year) {
+      return this.orderRepository.findAllByYear(year);
+    } else {
+      return this.orderRepository.findAll();
+    }
   }
 }

@@ -34,13 +34,13 @@ describe('infrastructure/rest/ClosingPeriodController (e2e)', () => {
 
     mockAddNewClosingPeriod = {} as AddNewClosingPeriod;
     mockAddNewClosingPeriod.execute = jest.fn();
-    const mockAddNewClosingPeriodsProxyService: UseCaseProxy<AddNewClosingPeriod> = {
+    const mockAddNewClosingPeriodProxyService: UseCaseProxy<AddNewClosingPeriod> = {
       getInstance: () => mockAddNewClosingPeriod,
     } as UseCaseProxy<AddNewClosingPeriod>;
 
     mockDeleteClosingPeriod = {} as DeleteClosingPeriod;
     mockDeleteClosingPeriod.execute = jest.fn();
-    const mockDeleteClosingPeriodsProxyService: UseCaseProxy<DeleteClosingPeriod> = {
+    const mockDeleteClosingPeriodProxyService: UseCaseProxy<DeleteClosingPeriod> = {
       getInstance: () => mockDeleteClosingPeriod,
     } as UseCaseProxy<DeleteClosingPeriod>;
 
@@ -50,15 +50,21 @@ describe('infrastructure/rest/ClosingPeriodController (e2e)', () => {
       .overrideProvider(ProxyServicesDynamicModule.GET_CLOSING_PERIODS_PROXY_SERVICE)
       .useValue(mockGetClosingPeriodsProxyService)
       .overrideProvider(ProxyServicesDynamicModule.ADD_NEW_CLOSING_PERIOD_PROXY_SERVICE)
-      .useValue(mockAddNewClosingPeriodsProxyService)
+      .useValue(mockAddNewClosingPeriodProxyService)
       .overrideProvider(ProxyServicesDynamicModule.DELETE_CLOSING_PERIOD_PROXY_SERVICE)
-      .useValue(mockDeleteClosingPeriodsProxyService)
+      .useValue(mockDeleteClosingPeriodProxyService)
       .overrideProvider(EnvironmentConfigService)
       .useValue(e2eEnvironmentConfigService)
       .compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
+  });
+
+  beforeEach(() => {
+    (mockGetClosingPeriods.execute as jest.Mock).mockClear();
+    (mockAddNewClosingPeriod.execute as jest.Mock).mockClear();
+    (mockDeleteClosingPeriod.execute as jest.Mock).mockClear();
   });
 
   describe('GET /api/closing-periods', () => {

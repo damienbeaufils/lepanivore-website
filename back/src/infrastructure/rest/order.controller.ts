@@ -35,7 +35,8 @@ export class OrderController {
   @Get('/')
   @UseGuards(JwtAuthGuard)
   async getOrders(@Req() request: Request): Promise<GetOrderResponse[]> {
-    const orders: OrderInterface[] = await this.getOrdersProxyService.getInstance().execute(request.user as User);
+    const year: number = request.query.year ? parseInt(request.query.year as string, 10) : undefined;
+    const orders: OrderInterface[] = await this.getOrdersProxyService.getInstance().execute(request.user as User, year);
 
     return orders.map(
       (order: OrderInterface): GetOrderResponse => ({
@@ -50,7 +51,8 @@ export class OrderController {
   @Get('/csv')
   @UseGuards(JwtAuthGuard)
   async getOrdersAsCsv(@Req() request: Request): Promise<string> {
-    const orders: OrderInterface[] = await this.getOrdersProxyService.getInstance().execute(request.user as User);
+    const year: number = request.query.year ? parseInt(request.query.year as string, 10) : undefined;
+    const orders: OrderInterface[] = await this.getOrdersProxyService.getInstance().execute(request.user as User, year);
     const ordersAsCsvLines: OrderAsCsvLine[] = this.toOrderAsCsvLines(orders);
 
     request.res.contentType('text/csv');

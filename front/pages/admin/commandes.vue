@@ -3,15 +3,29 @@
     <v-card-title>
       Commandes passées
       <v-spacer></v-spacer>
-      <v-text-field v-model="searchedValue" append-icon="mdi-magnify" label="Rechercher une commande" single-line hide-details></v-text-field>
+      <v-text-field
+        v-model="searchedValue"
+        append-icon="mdi-magnify"
+        label="Rechercher une commande"
+        single-line
+        hide-details
+      ></v-text-field>
       <v-spacer></v-spacer>
-      <v-btn color="success" @click="downloadCsv">Télécharger tout en CSV</v-btn>
+      <v-select
+        v-model="year"
+        :items="yearsSince2020"
+        label="Année"
+        clearable
+        class="year-select"
+      ></v-select>
+      <v-spacer></v-spacer>
+      <v-btn color="success" @click="downloadCsv">{{ downloadCsvLabel }}</v-btn>
     </v-card-title>
 
     <v-data-table :headers="headers" :items="orders" :search="searchedValue" sort-by="id" sort-desc class="elevation-1">
       <template v-slot:item.products="{ item }">
         <span v-for="productWithQuantity in item.products" v-bind:key="productWithQuantity.product.id">
-          - {{ productWithQuantity.product.name }} : {{ productWithQuantity.quantity }}<br />
+          - {{ productWithQuantity.product.name }} : {{ productWithQuantity.quantity }}<br/>
         </span>
       </template>
 
@@ -90,6 +104,7 @@ interface CommandesData {
   products: GetProductResponse[];
   editedOrder: PutOrderRequest;
   editedOrderId: OrderId;
+  year?: number;
 }
 
 export default Vue.extend({
@@ -124,18 +139,37 @@ export default Vue.extend({
       products: [],
       editedOrder: {} as PutOrderRequest,
       editedOrderId: -1,
+      year: undefined,
     } as CommandesData;
   },
   async asyncData(ctx: Context): Promise<object> {
-    const orders: GetOrderResponse[] = await ctx.app.$apiService.getOrders();
+    const year: number = new Date().getFullYear();
+    const orders: GetOrderResponse[] = await ctx.app.$apiService.getOrders(year);
     const closingPeriods: GetClosingPeriodResponse[] = await ctx.app.$apiService.getClosingPeriods();
     const products: GetProductResponse[] = await ctx.app.$apiService.getProducts();
 
-    return { orders, closingPeriods, products };
+    return { orders, closingPeriods, products, year };
   },
   watch: {
     editOrderDialog(value: boolean) {
       value || this.closeEditOrderDialog();
+    },
+    async year(value: number) {
+      this.orders = await this.$apiService.getOrders(value);
+    },
+  },
+  computed: {
+    yearsSince2020(): number[] {
+      const startYear: number = 2020;
+      const currentYear: number = new Date().getFullYear();
+      const years: number[] = [];
+      for (let i = startYear; i <= currentYear; i++) {
+        years.push(i);
+      }
+      return years;
+    },
+    downloadCsvLabel(): string {
+      return this.year ? `Télécharger les commandes de ${this.year} en CSV` : 'Télécharger tout en CSV';
     },
   },
   methods: {
@@ -146,7 +180,7 @@ export default Vue.extend({
           ({
             productId: productWithQuantity.product.id,
             quantity: productWithQuantity.quantity,
-          } as ProductIdWithQuantity)
+          } as ProductIdWithQuantity),
       );
       orderToEdit.type = order.type;
       orderToEdit.deliveryDate = order.deliveryDate;
@@ -172,7 +206,7 @@ export default Vue.extend({
       if (this.$refs.editOrderForm.validate()) {
         try {
           await this.$apiService.putOrder(this.editedOrderId, this.editedOrder);
-          this.orders = await this.$apiService.getOrders();
+          this.orders = await this.$apiService.getOrders(this.year);
           this.closeEditOrderDialog();
         } catch (e) {
           this.handleError(e);
@@ -183,12 +217,12 @@ export default Vue.extend({
     async deleteOrder(order: GetOrderResponse): Promise<void> {
       if (
         confirm(
-          `Vous allez supprimer la commande #${order.id}.\nÊtes-vous certain de vouloir supprimer cette commande ?\n\nAttention, cette action est irréversible !`
+          `Vous allez supprimer la commande #${order.id}.\nÊtes-vous certain de vouloir supprimer cette commande ?\n\nAttention, cette action est irréversible !`,
         )
       ) {
         try {
           await this.$apiService.deleteOrder(order.id);
-          this.orders = await this.$apiService.getOrders();
+          this.orders = await this.$apiService.getOrders(this.year);
         } catch (e) {
           this.handleError(e);
         }
@@ -215,11 +249,12 @@ export default Vue.extend({
     },
 
     async downloadCsv(): Promise<void> {
-      const csvContent: string = await this.$apiService.getOrdersAsCsv();
+      const csvContent: string = await this.$apiService.getOrdersAsCsv(this.year);
+      const filenamePrefix: string = this.year ? `${this.year}` : 'all';
 
       const link: HTMLElement = document.createElement('a');
       link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent));
-      link.setAttribute('download', `orders_export_${new Date().toISOString()}.csv`);
+      link.setAttribute('download', `${filenamePrefix}_orders_export_${new Date().toISOString()}.csv`);
 
       link.style.display = 'none';
       document.body.appendChild(link);
@@ -231,3 +266,10 @@ export default Vue.extend({
   },
 });
 </script>
+
+<style scoped lang="scss">
+.year-select {
+  margin-bottom: -22px;
+  max-width: 200px;
+}
+</style>

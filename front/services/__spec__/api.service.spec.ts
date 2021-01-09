@@ -63,6 +63,16 @@ describe('services/ApiService', () => {
       // then
       expect($get).toHaveBeenCalledWith('/api/orders');
     });
+    it('should get orders from api with year as query param when given', async () => {
+      // given
+      const year: number = 2021;
+
+      // when
+      await apiService.getOrders(year);
+
+      // then
+      expect($get).toHaveBeenCalledWith('/api/orders?year=2021');
+    });
     it('should return orders', async () => {
       // given
       const response: GetOrderResponse[] = [{ id: 1, clientName: 'fake order 1' } as GetOrderResponse];
@@ -83,6 +93,16 @@ describe('services/ApiService', () => {
 
       // then
       expect($get).toHaveBeenCalledWith('/api/orders/csv');
+    });
+    it('should get orders as csv from api with year as query param when given', async () => {
+      // given
+      const year: number = 2021;
+
+      // when
+      await apiService.getOrdersAsCsv(year);
+
+      // then
+      expect($get).toHaveBeenCalledWith('/api/orders/csv?year=2021');
     });
     it('should return orders', async () => {
       // given

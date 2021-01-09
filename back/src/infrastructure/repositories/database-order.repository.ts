@@ -41,4 +41,16 @@ export class DatabaseOrderRepository implements OrderRepository {
 
     return Promise.resolve(result);
   }
+
+  async findAllByYear(year: number): Promise<OrderInterface[]> {
+    const foundOrderEntities: OrderEntity[] = await this.orderEntityRepository
+      .createQueryBuilder('order')
+      .where(`order.pick_up_date LIKE '${year}-%'`)
+      .orWhere(`order.delivery_date LIKE '${year}-%'`)
+      .orWhere(`order.reservation_date LIKE '${year}-%'`)
+      .getMany();
+    const result: OrderInterface[] = foundOrderEntities.map((orderEntity: OrderEntity) => this.orderEntityTransformer.from(orderEntity));
+
+    return Promise.resolve(result);
+  }
 }

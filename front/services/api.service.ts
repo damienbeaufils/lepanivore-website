@@ -22,12 +22,16 @@ export default class ApiService {
     this.$axios = $axios;
   }
 
-  getOrders(): Promise<GetOrderResponse[]> {
-    return this.$axios.$get('/api/orders');
+  getOrders(year?: number): Promise<GetOrderResponse[]> {
+    const url: string = year ? `/api/orders?year=${year}` : '/api/orders';
+
+    return this.$axios.$get(url);
   }
 
-  getOrdersAsCsv(): Promise<string> {
-    return this.$axios.$get('/api/orders/csv');
+  getOrdersAsCsv(year?: number): Promise<string> {
+    const url: string = year ? `/api/orders/csv?year=${year}` : '/api/orders/csv';
+
+    return this.$axios.$get(url);
   }
 
   postOrder(postOrderRequest: PostOrderRequest): Promise<PostOrderResponse> {

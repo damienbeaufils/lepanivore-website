@@ -6,4 +6,5 @@ export interface OrderRepository {
   delete(order: OrderInterface): Promise<void>;
   findById(orderId: OrderId): Promise<OrderInterface>;
   findAll(): Promise<OrderInterface[]>;
+  findAllByYear(year: number): Promise<OrderInterface[]>;
 }

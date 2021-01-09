@@ -73,6 +73,13 @@ describe('infrastructure/rest/ProductController (e2e)', () => {
     await app.init();
   });
 
+  beforeEach(() => {
+    (mockGetActiveProducts.execute as jest.Mock).mockClear();
+    (mockAddNewProduct.execute as jest.Mock).mockClear();
+    (mockUpdateExistingProduct.execute as jest.Mock).mockClear();
+    (mockArchiveProduct.execute as jest.Mock).mockClear();
+  });
+
   describe('GET /api/products', () => {
     it('should return http status code OK with found products', () => {
       // given
