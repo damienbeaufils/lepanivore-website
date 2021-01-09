@@ -250,10 +250,11 @@ export default Vue.extend({
 
     async downloadCsv(): Promise<void> {
       const csvContent: string = await this.$apiService.getOrdersAsCsv(this.year);
+      const filenamePrefix: string = this.year ? `${this.year}` : 'all';
 
       const link: HTMLElement = document.createElement('a');
       link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent));
-      link.setAttribute('download', `orders_export_${new Date().toISOString()}.csv`);
+      link.setAttribute('download', `${filenamePrefix}_orders_export_${new Date().toISOString()}.csv`);
 
       link.style.display = 'none';
       document.body.appendChild(link);
