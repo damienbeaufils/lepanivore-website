@@ -56,6 +56,12 @@ describe('infrastructure/rest/ProductOrderingController (e2e)', () => {
     await app.init();
   });
 
+  beforeEach(() => {
+    (mockGetProductOrderingStatus.execute as jest.Mock).mockClear();
+    (mockEnableProductOrdering.execute as jest.Mock).mockClear();
+    (mockDisableProductOrdering.execute as jest.Mock).mockClear();
+  });
+
   describe('GET /api/product-ordering/status', () => {
     it('should return http status code OK with product ordering feature', () => {
       // given

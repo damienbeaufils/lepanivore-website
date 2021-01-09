@@ -139,6 +139,108 @@ describe('infrastructure/repositories/DatabaseOrderRepository', () => {
     });
   });
 
+  describe('findAllByYear()', () => {
+    it('should return found orders in database where pick-up date has same year as given', async () => {
+      // given
+      const year: number = 2021;
+      const orderWithoutIdAndPickUpDateYearMinusOne: OrderInterface = { ...orderWithoutId, pickUpDate: new Date('2020-12-31T12:00:00Z') };
+      const orderWithoutIdAndPickUpDateFirstOfYear: OrderInterface = { ...orderWithoutId, pickUpDate: new Date('2021-01-01T12:00:00Z') };
+      const orderWithoutIdAndPickUpDateLastOfYear: OrderInterface = { ...orderWithoutId, pickUpDate: new Date('2021-12-31T12:00:00Z') };
+      const orderWithoutIdAndPickUpDateYearPlusOne: OrderInterface = { ...orderWithoutId, pickUpDate: new Date('2022-01-01T12:00:00Z') };
+      await databaseOrderRepository.save(orderWithoutIdAndPickUpDateYearMinusOne);
+      await databaseOrderRepository.save(orderWithoutIdAndPickUpDateFirstOfYear);
+      await databaseOrderRepository.save(orderWithoutIdAndPickUpDateLastOfYear);
+      await databaseOrderRepository.save(orderWithoutIdAndPickUpDateYearPlusOne);
+
+      // when
+      const result: OrderInterface[] = await databaseOrderRepository.findAllByYear(year);
+
+      // then
+      expect(result).toHaveLength(2);
+      expect(result[0]).toMatchObject(orderWithoutIdAndPickUpDateFirstOfYear);
+      expect(result[1]).toMatchObject(orderWithoutIdAndPickUpDateLastOfYear);
+    });
+
+    it('should return found orders in database where delivery date has same year as given', async () => {
+      // given
+      const year: number = 2021;
+      const orderWithoutIdAndDeliveryDateYearMinusOne: OrderInterface = { ...orderWithoutId, deliveryDate: new Date('2020-12-31T12:00:00Z') };
+      const orderWithoutIdAndDeliveryDateFirstOfYear: OrderInterface = { ...orderWithoutId, deliveryDate: new Date('2021-01-01T12:00:00Z') };
+      const orderWithoutIdAndDeliveryDateLastOfYear: OrderInterface = { ...orderWithoutId, deliveryDate: new Date('2021-12-31T12:00:00Z') };
+      const orderWithoutIdAndDeliveryDateYearPlusOne: OrderInterface = { ...orderWithoutId, deliveryDate: new Date('2022-01-01T12:00:00Z') };
+      await databaseOrderRepository.save(orderWithoutIdAndDeliveryDateYearMinusOne);
+      await databaseOrderRepository.save(orderWithoutIdAndDeliveryDateFirstOfYear);
+      await databaseOrderRepository.save(orderWithoutIdAndDeliveryDateLastOfYear);
+      await databaseOrderRepository.save(orderWithoutIdAndDeliveryDateYearPlusOne);
+
+      // when
+      const result: OrderInterface[] = await databaseOrderRepository.findAllByYear(year);
+
+      // then
+      expect(result).toHaveLength(2);
+      expect(result[0]).toMatchObject(orderWithoutIdAndDeliveryDateFirstOfYear);
+      expect(result[1]).toMatchObject(orderWithoutIdAndDeliveryDateLastOfYear);
+    });
+
+    it('should return found orders in database where reservation date has same year as given', async () => {
+      // given
+      const year: number = 2021;
+      const orderWithoutIdAndReservationDateYearMinusOne: OrderInterface = { ...orderWithoutId, reservationDate: new Date('2020-12-31T12:00:00Z') };
+      const orderWithoutIdAndReservationDateFirstOfYear: OrderInterface = { ...orderWithoutId, reservationDate: new Date('2021-01-01T12:00:00Z') };
+      const orderWithoutIdAndReservationDateLastOfYear: OrderInterface = { ...orderWithoutId, reservationDate: new Date('2021-12-31T12:00:00Z') };
+      const orderWithoutIdAndReservationDateYearPlusOne: OrderInterface = { ...orderWithoutId, reservationDate: new Date('2022-01-01T12:00:00Z') };
+      await databaseOrderRepository.save(orderWithoutIdAndReservationDateYearMinusOne);
+      await databaseOrderRepository.save(orderWithoutIdAndReservationDateFirstOfYear);
+      await databaseOrderRepository.save(orderWithoutIdAndReservationDateLastOfYear);
+      await databaseOrderRepository.save(orderWithoutIdAndReservationDateYearPlusOne);
+
+      // when
+      const result: OrderInterface[] = await databaseOrderRepository.findAllByYear(year);
+
+      // then
+      expect(result).toHaveLength(2);
+      expect(result[0]).toMatchObject(orderWithoutIdAndReservationDateFirstOfYear);
+      expect(result[1]).toMatchObject(orderWithoutIdAndReservationDateLastOfYear);
+    });
+
+    it('should return found orders in database of different types where dates has same year as given', async () => {
+      // given
+      const year: number = 2021;
+      const orderWithoutIdAndHavingPickUpDateSameYear: OrderInterface = { ...orderWithoutId, pickUpDate: new Date('2021-06-13T12:00:00Z') };
+      const orderWithoutIdAndHavingDeliveryDateSameYear: OrderInterface = { ...orderWithoutId, deliveryDate: new Date('2021-06-13T12:00:00Z') };
+      const orderWithoutIdAndHavingReservationDateSameYear: OrderInterface = { ...orderWithoutId, reservationDate: new Date('2021-06-13T12:00:00Z') };
+      await databaseOrderRepository.save(orderWithoutIdAndHavingPickUpDateSameYear);
+      await databaseOrderRepository.save(orderWithoutIdAndHavingDeliveryDateSameYear);
+      await databaseOrderRepository.save(orderWithoutIdAndHavingReservationDateSameYear);
+
+      // when
+      const result: OrderInterface[] = await databaseOrderRepository.findAllByYear(year);
+
+      // then
+      expect(result).toHaveLength(3);
+    });
+
+    it('should return empty array when no order matching year has been found in database', async () => {
+      // given
+      const year: number = 2019;
+      const orderWithoutIdAndHavingPickUpDateDifferentYear: OrderInterface = { ...orderWithoutId, pickUpDate: new Date('2020-06-13T12:00:00Z') };
+      const orderWithoutIdAndHavingDeliveryDateDifferentYear: OrderInterface = { ...orderWithoutId, deliveryDate: new Date('2021-06-13T12:00:00Z') };
+      const orderWithoutIdAndHavingReservationDateDifferentYear: OrderInterface = {
+        ...orderWithoutId,
+        reservationDate: new Date('2022-06-13T12:00:00Z'),
+      };
+      await databaseOrderRepository.save(orderWithoutIdAndHavingPickUpDateDifferentYear);
+      await databaseOrderRepository.save(orderWithoutIdAndHavingDeliveryDateDifferentYear);
+      await databaseOrderRepository.save(orderWithoutIdAndHavingReservationDateDifferentYear);
+
+      // when
+      const result: OrderInterface[] = await databaseOrderRepository.findAllByYear(year);
+
+      // then
+      expect(result).toHaveLength(0);
+    });
+  });
+
   afterAll(async () => {
     await app.close();
   });

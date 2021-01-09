@@ -74,6 +74,13 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
     await app.init();
   });
 
+  beforeEach(() => {
+    (mockGetOrders.execute as jest.Mock).mockClear();
+    (mockOrderProducts.execute as jest.Mock).mockClear();
+    (mockUpdateExistingOrder.execute as jest.Mock).mockClear();
+    (mockDeleteOrder.execute as jest.Mock).mockClear();
+  });
+
   describe('GET /api/orders', () => {
     it('should return http status code OK with found orders when authenticated as admin', (done: DoneCallback) => {
       // given
@@ -120,6 +127,36 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
                 { id: 1, clientName: 'fake order 1', pickUpDate: '2020-07-01', deliveryDate: '2030-07-01', reservationDate: '2040-07-01' },
                 { id: 2, clientName: 'fake order 2', pickUpDate: '2020-08-15', deliveryDate: '2030-08-15', reservationDate: '2040-08-15' },
               ]);
+            })
+            .end(done);
+        });
+    });
+
+    it('should call use case with year when defined in query param', (done: DoneCallback) => {
+      // given
+      const loginRequest: request.Test = request(app.getHttpServer()).post('/api/authentication/login').send({
+        username: ADMIN_E2E_USERNAME,
+        password: ADMIN_E2E_PASSWORD,
+      });
+
+      let accessToken: string;
+      loginRequest
+        .expect(200)
+        .expect((loginResponse: Response) => {
+          accessToken = loginResponse.body.accessToken;
+        })
+        .end(() => {
+          // when
+          const testRequest: request.Test = request(app.getHttpServer())
+            .get('/api/orders')
+            .query({ year: '2021' })
+            .set({ Authorization: `Bearer ${accessToken}` });
+
+          // then
+          testRequest
+            .expect(200)
+            .expect((response: Response) => {
+              expect(mockGetOrders.execute).toHaveBeenCalledWith({ username: 'ADMIN' }, 2021);
             })
             .end(done);
         });
@@ -194,6 +231,36 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
                   '2,"fake order 2",,,"product 3",3,"Livraison","2020-08-15","2030-08-15",,"2040-08-15",\n' +
                   '2,"fake order 2",,,"product 4",4,"Livraison","2020-08-15","2030-08-15",,"2040-08-15",'
               );
+            })
+            .end(done);
+        });
+    });
+
+    it('should call use case with year when defined in query param', (done: DoneCallback) => {
+      // given
+      const loginRequest: request.Test = request(app.getHttpServer()).post('/api/authentication/login').send({
+        username: ADMIN_E2E_USERNAME,
+        password: ADMIN_E2E_PASSWORD,
+      });
+
+      let accessToken: string;
+      loginRequest
+        .expect(200)
+        .expect((loginResponse: Response) => {
+          accessToken = loginResponse.body.accessToken;
+        })
+        .end(() => {
+          // when
+          const testRequest: request.Test = request(app.getHttpServer())
+            .get('/api/orders/csv')
+            .query({ year: '2021' })
+            .set({ Authorization: `Bearer ${accessToken}` });
+
+          // then
+          testRequest
+            .expect(200)
+            .expect((response: Response) => {
+              expect(mockGetOrders.execute).toHaveBeenCalledWith({ username: 'ADMIN' }, 2021);
             })
             .end(done);
         });
