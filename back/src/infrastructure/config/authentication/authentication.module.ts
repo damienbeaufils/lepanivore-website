@@ -16,7 +16,7 @@ import { LocalStrategy } from './local-strategy';
       inject: [EnvironmentConfigService],
       useFactory: (environmentConfigService: EnvironmentConfigService) => ({
         secret: environmentConfigService.get('APP_JWT_SECRET'),
-        signOptions: { expiresIn: '1800s' },
+        signOptions: { expiresIn: '12h' },
       }),
     }),
   ],
