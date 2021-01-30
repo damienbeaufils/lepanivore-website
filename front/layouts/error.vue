@@ -8,7 +8,7 @@
         {{ otherError }}
       </h1>
       <nuxt-link to="/">
-        Retour à la page de commande
+        Retour à la page d'accueil
       </nuxt-link>
     </v-flex>
   </v-layout>
