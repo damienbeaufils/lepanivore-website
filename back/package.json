@@ -1,6 +1,6 @@
 {
   "name": "lepanivore-website-backend",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "private": true,
   "scripts": {
     "postinstall": "[[ -n $APP_FOLDER ]] && npm run build && npm run typeorm:migration:run || exit 0",
@@ -34,7 +34,7 @@
     "@nestjs/passport": "7.1.5",
     "@nestjs/platform-express": "7.6.5",
     "@nestjs/typeorm": "7.1.5",
-    "@sentry/node": "5.30.0",
+    "@sentry/node": "6.0.3",
     "bcrypt": "5.0.0",
     "helmet": "4.4.1",
     "json2csv": "5.0.5",
