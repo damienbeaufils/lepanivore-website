@@ -16,7 +16,7 @@
         <v-btn text color="#efd25c" class="mt-2" max-height="50px" href="https://www.lepanivore.com/Home/Contact">
           Contact
         </v-btn>
-        <v-btn text color="#efd25c" class="mt-2" max-height="50px" href="https://www.lepanivore.com/Home/About">
+        <v-btn text color="#efd25c" class="mt-2" max-height="50px" nuxt to="/a-propos">
           À propos
         </v-btn>
       </v-toolbar-items>
