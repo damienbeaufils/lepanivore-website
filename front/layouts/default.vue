@@ -7,7 +7,7 @@
         </nuxt-link>
       </v-toolbar-title>
       <v-toolbar-items>
-        <v-btn text color="#efd25c" class="mt-2" max-height="50px" href="https://www.lepanivore.com/Home/Products">
+        <v-btn text color="#efd25c" class="mt-2" max-height="50px" nuxt to="/produits">
           Produits
         </v-btn>
         <v-btn text color="#efd25c" class="mt-2" max-height="50px" nuxt to="/commander">

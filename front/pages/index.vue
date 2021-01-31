@@ -31,11 +31,6 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
-.recipe {
-  max-width: 1000px;
-  width: 100%;
-}
-
 .yellow-card {
   color: #683c11 !important;
   background-color: rgba(229,198,88,.5) !important;
@@ -43,6 +38,11 @@ export default Vue.extend({
 
   .headline {
     font-size: 30px !important;
+  }
+
+  .recipe {
+    max-width: 1000px;
+    width: 100%;
   }
 }
 </style>
