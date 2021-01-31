@@ -16,6 +16,15 @@ export default {
       },
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
+    script: [
+      {
+        src: 'https://connect.facebook.net/fr_CA/sdk.js#xfbml=1&version=v9.0',
+        async: true,
+        defer: true,
+        crossorigin: 'anonymous',
+        nonce: 'zvRqZFzC',
+      },
+    ],
   },
   /*
    ** Customize the progress-bar color
