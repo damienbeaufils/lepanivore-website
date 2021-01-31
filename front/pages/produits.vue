@@ -1,7 +1,6 @@
 <template>
   <v-layout class="products" column justify-center align-center>
     <v-flex xs12 sm8 md6>
-
       <v-row>
         <v-col cols="12" sm="6" md="8">
           <h1>Nos pains et leurs jours de production</h1>
