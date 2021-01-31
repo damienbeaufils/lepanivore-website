@@ -17,7 +17,7 @@
             Livraison à domicile le jeudi soir. Service gratuit pour la Petite-Patrie (Jean Talon - Des Carrières - Des
             Érables - Christophe-Colomb).
             <br/>Pour une livraison en dehors de cette zone,
-            <a href="https://www.lepanivore.com/Home/Contact" target="_blank">veuillez nous contacter</a>.
+            <nuxt-link to="/contact">veuillez nous contacter</nuxt-link>.
           </p>
         </v-col>
         <v-col cols="12" sm="6" md="8" v-if="isPickUpOrderTypeSelected">

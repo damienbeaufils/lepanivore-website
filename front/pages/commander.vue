@@ -11,12 +11,12 @@
 
           <v-alert type="warning" v-if="hasValidationError"
             >Les données entrées sont invalides. Si le problème persiste,
-            <a href="https://www.lepanivore.com/Home/Contact" target="_blank">contactez-nous</a>.</v-alert
-          >
+            <nuxt-link to="/contact">contactez-nous</nuxt-link>.
+          </v-alert>
           <v-alert type="error" v-if="hasUnknownError"
             >Une erreur s'est produite, veuillez nous excuser ! Si le problème persiste,
-            <a href="https://www.lepanivore.com/Home/Contact" target="_blank">contactez-nous</a>.</v-alert
-          >
+            <nuxt-link to="/contact">contactez-nous</nuxt-link>.
+          </v-alert>
           <v-btn :loading="isLoading" color="primary" type="submit" x-large>
             Valider la commande
           </v-btn>
@@ -26,7 +26,7 @@
       <div v-else>
         <v-alert type="info" class="product-ordering-disabled mt-12">
           La commande en ligne n'est présentement pas possible. En cas d'urgence, n'hésitez pas à
-          <a href="https://www.lepanivore.com/Home/Contact" target="_blank">nous contacter</a>.
+          <nuxt-link to="/contact">nous contacter</nuxt-link>.
         </v-alert>
       </div>
     </v-flex>

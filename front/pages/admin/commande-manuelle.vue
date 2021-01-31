@@ -24,7 +24,7 @@
       <div v-else>
         <v-alert type="info" class="product-ordering-disabled mt-12">
           La commande en ligne n'est présentement pas possible. En cas d'urgence, n'hésitez pas à
-          <a href="https://www.lepanivore.com/Home/Contact" target="_blank">nous contacter</a>.
+          <nuxt-link to="/contact">nous contacter</nuxt-link>.
         </v-alert>
       </div>
     </v-flex>

@@ -14,7 +14,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn color="primary" href="https://www.lepanivore.com/">
+          <v-btn color="primary" nuxt to="/">
             Retour à l'accueil
           </v-btn>
           <v-spacer />
