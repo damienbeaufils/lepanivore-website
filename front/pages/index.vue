@@ -30,7 +30,7 @@ export default Vue.extend({
 });
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
 .yellow-card {
   color: #683c11 !important;
   background-color: rgba(229,198,88,.5) !important;

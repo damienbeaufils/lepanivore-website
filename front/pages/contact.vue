@@ -94,23 +94,16 @@
 import Vue from 'vue';
 
 export default Vue.extend({
-  name: 'a-propos',
+  name: 'contact',
 });
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
 .contact {
   color: #683c11;
 
   h2 {
-    font-size: 30px;
-    font-weight: 400;
     margin-bottom: 10px;
-  }
-
-  h3 {
-    font-size: 24px;
-    font-weight: 400;
   }
 
   address {

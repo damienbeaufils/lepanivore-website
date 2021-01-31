@@ -44,19 +44,12 @@ export default Vue.extend({
 });
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
 .about {
   color: #683c11;
 
   h2 {
-    font-size: 30px;
-    font-weight: 400;
     margin-bottom: 10px;
-  }
-
-  h3 {
-    font-size: 24px;
-    font-weight: 400;
   }
 }
 </style>

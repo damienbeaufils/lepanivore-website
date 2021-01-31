@@ -166,19 +166,12 @@ export default Vue.extend({
 });
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
 .products {
   color: #683c11;
 
   h1 {
-    font-size: 36px;
-    font-weight: 400;
     margin-bottom: 10px;
-  }
-
-  h4 {
-    font-size: 18px;
-    font-weight: 400;
   }
 }
 </style>
