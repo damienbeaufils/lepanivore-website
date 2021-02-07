@@ -33,6 +33,15 @@ import Vue from 'vue';
 
 export default Vue.extend({
   name: 'index',
+  mounted () {
+    this.reloadFacebookTimeline();
+  },
+  methods: {
+    reloadFacebookTimeline(): void {
+      // @ts-ignore
+      window.FB.XFBML.parse();
+    }
+  }
 });
 </script>
 
