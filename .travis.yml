@@ -6,25 +6,31 @@ node_js:
 git:
   depth: false
 
-branches:
-  only:
-    - master
-    - maintenance/stop-test-applications
-
-install:
-  - cd $TRAVIS_BUILD_DIR/back && npm ci
-  - cd $TRAVIS_BUILD_DIR/front && npm ci
-
-script:
-  - cd $TRAVIS_BUILD_DIR/back && npm test
-  - cd $TRAVIS_BUILD_DIR/front && npm test
-
-before_deploy:
+before_script:
   - npm install -g clever-tools@2.11.0
 
-deploy:
-  provider: script
-  script: bash $TRAVIS_BUILD_DIR/tools/deploy-to-clever-cloud.sh
+script:
+  - bash $TRAVIS_BUILD_DIR/tools/stop-clever-cloud-test-applications.sh
 
+#branches:
+#  only:
+#    - master
+#    - maintenance/stop-test-applications
+#
+#install:
+#  - cd $TRAVIS_BUILD_DIR/back && npm ci
+#  - cd $TRAVIS_BUILD_DIR/front && npm ci
+#
+#script:
+#  - cd $TRAVIS_BUILD_DIR/back && npm test
+#  - cd $TRAVIS_BUILD_DIR/front && npm test
+#
+#before_deploy:
+#  - npm install -g clever-tools@2.11.0
+#
+#deploy:
+#  provider: script
+#  script: bash $TRAVIS_BUILD_DIR/tools/deploy-to-clever-cloud.sh
+#
 #after_script:
 #  - cd $TRAVIS_BUILD_DIR/back && npm run test:mutation
