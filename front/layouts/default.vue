@@ -66,21 +66,25 @@ export default Vue.extend({
 @media #{map-get($display-breakpoints, 'sm-and-down')} {
   .logo {
     padding-top: 8px;
+    margin-bottom: 8px;
     width: 49px;
     height: 55px;
     object-fit: cover;
     object-position: left;
+  }
+  .nav-link {
+    margin-top: 4px;
   }
 }
 
 @media #{map-get($display-breakpoints, 'xs-only')} {
   .logo {
     padding-top: 2px;
+    margin-bottom: 0;
     width: 35px;
     height: 35px;
   }
   .nav-link {
-    margin-top: 4px;
     font-size: 12px;
     padding: 0 8px !important;
   }
