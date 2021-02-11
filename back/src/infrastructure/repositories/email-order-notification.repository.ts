@@ -9,10 +9,11 @@ export class EmailOrderNotificationRepository implements OrderNotificationReposi
   constructor(private readonly mailerService: MailerService, private readonly environmentConfigService: EnvironmentConfigService) {}
 
   async send(orderNotification: OrderNotificationInterface): Promise<void> {
+    const subjectPrefix: string = this.environmentConfigService.get('APP_EMAIL_ORDER_NOTIFICATION_SUBJECT_PREFIX');
     await this.mailerService.sendMail({
       from: this.environmentConfigService.get('APP_EMAIL_ORDER_NOTIFICATION_FROM'),
       to: this.environmentConfigService.get('APP_EMAIL_ORDER_NOTIFICATION_TO').split(','),
-      subject: orderNotification.subject,
+      subject: subjectPrefix ? `${subjectPrefix} ${orderNotification.subject}` : orderNotification.subject,
       text: orderNotification.body,
     });
   }

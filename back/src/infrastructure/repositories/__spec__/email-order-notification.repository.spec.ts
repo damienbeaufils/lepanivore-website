@@ -32,6 +32,8 @@ describe('infrastructure/repositories/EmailOrderNotificationRepository', () => {
             return 'from@example.org';
           case 'APP_EMAIL_ORDER_NOTIFICATION_TO':
             return 'to1@example.org,to2@example.org';
+          case 'APP_EMAIL_ORDER_NOTIFICATION_SUBJECT_PREFIX':
+            return '';
           default:
             return null;
         }
@@ -47,6 +49,29 @@ describe('infrastructure/repositories/EmailOrderNotificationRepository', () => {
         subject: 'order notification subject',
         text: 'order notification body',
       });
+    });
+
+    it('should send mail with prefix added to subject when defined in configuration', async () => {
+      // given
+      const orderNotification: OrderNotification = {
+        subject: 'order notification subject',
+        body: '',
+      };
+
+      (mockEnvironmentConfigService.get as jest.Mock).mockImplementation((key: string) => {
+        switch (key) {
+          case 'APP_EMAIL_ORDER_NOTIFICATION_SUBJECT_PREFIX':
+            return '[TEST]';
+          default:
+            return '';
+        }
+      });
+
+      // when
+      await emailOrderNotificationRepository.send(orderNotification);
+
+      // then
+      expect((mockMailerService.sendMail as jest.Mock).mock.calls[0][0].subject).toEqual('[TEST] order notification subject');
     });
   });
 });
