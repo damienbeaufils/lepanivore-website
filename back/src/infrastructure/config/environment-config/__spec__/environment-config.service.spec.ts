@@ -260,6 +260,19 @@ describe('infrastructure/config/environment-config/EnvironmentConfigService', ()
       });
     });
 
+    describe('APP_EMAIL_ORDER_NOTIFICATION_SUBJECT_PREFIX', () => {
+      it('should be defaulted to empty string', () => {
+        // given
+        process.env.APP_EMAIL_ORDER_NOTIFICATION_SUBJECT_PREFIX = undefined;
+
+        // when
+        const result: EnvironmentConfigService = new EnvironmentConfigService();
+
+        // then
+        expect(result.get('APP_EMAIL_ORDER_NOTIFICATION_SUBJECT_PREFIX')).toBe('');
+      });
+    });
+
     describe('APP_JWT_SECRET', () => {
       it('should fail when empty', () => {
         // given
