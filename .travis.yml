@@ -4,8 +4,8 @@ git:
   depth: false
 
 install:
-  - cd $TRAVIS_BUILD_DIR/back && npm install
-  - cd $TRAVIS_BUILD_DIR/front && npm install
+  - cd $TRAVIS_BUILD_DIR/back && npm ci
+  - cd $TRAVIS_BUILD_DIR/front && npm ci
 
 script:
   - cd $TRAVIS_BUILD_DIR/back && npm test
