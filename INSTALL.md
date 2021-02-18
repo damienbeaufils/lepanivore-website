@@ -69,6 +69,10 @@ Environment variables are accessible in `front` application using [Nuxt env prop
     * Description: the email address that will be used in the `from` field in the email order notification  
     * Example: `from@example.org`
 
+  * __`APP_EMAIL_ORDER_NOTIFICATION_SUBJECT_PREFIX`__
+    * Description: the subject prefix of the email order notification  
+    * Example: `[TEST]`
+
   * __`APP_EMAIL_ORDER_NOTIFICATION_TO`__
     * Description: the email addresses that will be used in the `to` field in the email order notification, comma-separated  
     * Example: `to1@example.org,to2@example.org`
