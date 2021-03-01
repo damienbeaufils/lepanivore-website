@@ -1,6 +1,6 @@
 {
   "name": "front",
-  "version": "1.7.2",
+  "version": "1.7.3",
   "description": "lepanivore-website-frontend",
   "private": true,
   "scripts": {
@@ -39,6 +39,6 @@
     "vue-jest": "4.0.0-rc.1"
   },
   "engines": {
-    "node": "~12.20"
+    "node": "~14.16.0"
   }
 }
