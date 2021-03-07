@@ -5,14 +5,18 @@ export default {
    ** Headers of the page
    */
   head: {
-    title: 'Boulangerie Le Panivore',
+    htmlAttrs: {
+      lang: 'fr',
+    },
+    title: 'Boulangerie artisanale Le Panivore',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       {
         hid: 'description',
         name: 'description',
-        content: 'Commande en ligne',
+        content:
+          'Pains au levain biologiques, pâtisseries, brioches françaises, chouquettes et autres spécialités salées et sucrées régionales françaises.',
       },
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],

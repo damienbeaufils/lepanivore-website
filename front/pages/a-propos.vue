@@ -4,7 +4,7 @@
       <h2>À Propos</h2>
       <h3>Origine</h3>
       <p>
-        La Boulangerie Artisanale Le Panivore est née de la passion d'un amoureux du bon pain au levain fait maison.
+        La boulangerie artisanale Le Panivore est née de la passion d'un amoureux du bon pain au levain fait maison.
         L'objectif du Panivore est d'offrir à ses clients des pains confectionnés exclusivement à partir de farines biologiques,
         d'eau filtrée, de levain naturel biologique et de sel de mer.<br>
         Pour le plaisir des papilles des gâteries sont aussi proposées.
