@@ -11,16 +11,14 @@ export class OrderEntityTransformer implements ValueTransformer {
   private readonly PRODUCT_WITH_QUANTITY_SEPARATOR: string = ':::';
 
   from(orderEntity: OrderEntity): OrderInterface {
-    const products: ProductWithQuantity[] = orderEntity.products.map(
-      (productWithQuantityAsStringWithSeparator: string): ProductWithQuantity => {
-        const productWithQuantityAsStringArray: string[] = productWithQuantityAsStringWithSeparator.split(this.PRODUCT_WITH_QUANTITY_SEPARATOR);
+    const products: ProductWithQuantity[] = orderEntity.products.map((productWithQuantityAsStringWithSeparator: string): ProductWithQuantity => {
+      const productWithQuantityAsStringArray: string[] = productWithQuantityAsStringWithSeparator.split(this.PRODUCT_WITH_QUANTITY_SEPARATOR);
 
-        return {
-          product: JSON.parse(productWithQuantityAsStringArray[0]) as Product,
-          quantity: parseInt(productWithQuantityAsStringArray[1], 10),
-        };
-      }
-    );
+      return {
+        product: JSON.parse(productWithQuantityAsStringArray[0]) as Product,
+        quantity: parseInt(productWithQuantityAsStringArray[1], 10),
+      };
+    });
 
     return {
       id: orderEntity.id,
