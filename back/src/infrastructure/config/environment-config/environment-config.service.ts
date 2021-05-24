@@ -1,5 +1,5 @@
-import * as Joi from '@hapi/joi';
-import { ValidationResult } from '@hapi/joi';
+import * as Joi from 'joi';
+import { ValidationResult } from 'joi';
 import { Injectable } from '@nestjs/common';
 import { EnvironmentConfigError } from './environment-config.error';
 
