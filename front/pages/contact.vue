@@ -16,6 +16,11 @@
         </v-col>
         
         <v-col cols="12" sm="8" md="6">
+          <h3>Fermeture pour la fête nationale du Québec ainsi que pour la fête du Canada</h3>
+          Veuillez prendre note que la boulangerie sera <b>fermée les jeudis 24 Juin et 1er Juillet 2021.</b>
+        </v-col>
+        
+        <v-col cols="12" sm="8" md="6">
           <h3>Heures d'ouverture</h3>
           <table>
             <tbody>
