@@ -1526,7 +1526,7 @@ describe('domain/order/Order', () => {
         orderId: 42,
         products: [{ productId: 42, quantity: 1 }],
         type: OrderType.DELIVERY,
-        pickUpDate: new Date('2021-06-12T04:41:20'),
+        pickUpDate: new Date('2030-06-12T04:41:20'),
         deliveryAddress: 'Laval',
         deliveryDate: new Date('2030-01-10T12:00:00Z'),
         note: 'an updated note',
