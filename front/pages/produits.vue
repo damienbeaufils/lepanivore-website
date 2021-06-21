@@ -102,6 +102,7 @@
             <li>Le Datte <small>(farine de blé tamisée, dattes séchées)</small> : 6.70 $</li>
             <li>Le Pois Chiche <small>(farine de blé tamisée, farine de pois chiche)</small> : 7.00 $</li>
             <li>Le Quinoa <small>(farine de blé tamisée, farine de quinoa)</small> : 7.00 $</li>
+            <li>Le Sarrasin <small>(farine de blé tamisée, farine de sarrasin)</small> : 7.00 $</li>
             <li>Le Maïs <small>(farine blanche, farine de maïs entière)</small> : 5.90 $</li>
             <li>Le Tordu, pain torsadé cuit sur pierre naturelle <small>(farine blanche)</small> : 4.75 $</li>
           </ul>
