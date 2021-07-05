@@ -1,12 +1,10 @@
 language: node_js
-node_js:
-  - lts/*
 
 git:
   depth: false
 
 before_install:
-  - npm i -g npm@lts
+  - npm i -g npm@latest-6
 
 install:
   - cd $TRAVIS_BUILD_DIR/back && npm ci
