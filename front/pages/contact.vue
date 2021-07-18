@@ -16,8 +16,10 @@
         </v-col>
         
         <v-col cols="12" sm="8" md="6">
-          <h3>Fermeture pour la fête nationale du Québec ainsi que pour la fête du Canada</h3>
-          Veuillez prendre note que la boulangerie sera <b>fermée les jeudis 24 Juin et 1er Juillet 2021.</b>
+          <h3>Vacances d'été</h3>
+          Veuillez prendre note que la boulangerie sera <b>fermée du 18 Juillet au 23 Août inclus.</b>
+          Nous vous retrouverons avec bonheur dès le mardi 24 août ! 
+          Passez un bel été et à très bientôt !
         </v-col>
         
         <v-col cols="12" sm="8" md="6">
