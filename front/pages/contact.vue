@@ -14,14 +14,7 @@
             Courriel : <a href="mailto:info@lepanivore.com">info@lepanivore.com</a>
           </address>
         </v-col>
-        
-        <v-col cols="12" sm="8" md="6">
-          <h3>Vacances d'été</h3>
-          Veuillez prendre note que la boulangerie sera <b>fermée du 18 Juillet au 23 Août inclus.</b>
-          Nous vous retrouverons avec bonheur dès le mardi 24 août ! 
-          Passez un bel été et à très bientôt !
-        </v-col>
-        
+              
         <v-col cols="12" sm="8" md="6">
           <h3>Heures d'ouverture</h3>
           <table>
