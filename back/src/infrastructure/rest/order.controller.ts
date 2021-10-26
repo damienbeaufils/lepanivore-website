@@ -21,11 +21,14 @@ import { GetOrderResponse } from './models/get-order-response';
 import { PostOrderRequest } from './models/post-order-request';
 import { PostOrderResponse } from './models/post-order-response';
 import { PutOrderRequest } from './models/put-order-request';
+import { GetOrdersByDateRange } from '../../use_cases/get-orders-by-date-range';
 
 @Controller('/api/orders')
 export class OrderController {
   constructor(
     @Inject(ProxyServicesDynamicModule.GET_ORDERS_PROXY_SERVICE) private readonly getOrdersProxyService: UseCaseProxy<GetOrders>,
+    @Inject(ProxyServicesDynamicModule.GET_ORDERS_BY_DATE_RANGE_PROXY_SERVICE)
+    private readonly getOrdersByDateRangeProxyService: UseCaseProxy<GetOrdersByDateRange>,
     @Inject(ProxyServicesDynamicModule.ORDER_PRODUCTS_PROXY_SERVICE) private readonly orderProductsProxyService: UseCaseProxy<OrderProducts>,
     @Inject(ProxyServicesDynamicModule.UPDATE_EXISTING_ORDER_PROXY_SERVICE)
     private readonly updateExistingOrderProxyService: UseCaseProxy<UpdateExistingOrder>,
@@ -37,6 +40,27 @@ export class OrderController {
   async getOrders(@Req() request: Request): Promise<GetOrderResponse[]> {
     const year: number = request.query.year ? parseInt(request.query.year as string, 10) : undefined;
     const orders: OrderInterface[] = await this.getOrdersProxyService.getInstance().execute(request.user as User, year);
+
+    return orders.map(
+      (order: OrderInterface): GetOrderResponse => ({
+        ...order,
+        pickUpDate: getDateAsIsoStringWithoutTime(order.pickUpDate),
+        deliveryDate: getDateAsIsoStringWithoutTime(order.deliveryDate),
+        reservationDate: getDateAsIsoStringWithoutTime(order.reservationDate),
+      })
+    );
+  }
+
+  @Get('/:startDate/:endDate')
+  @UseGuards(JwtAuthGuard)
+  async getOrdersByDateRange(
+    @Param('startDate') startDate: string,
+    @Param('endDate') endDate: string,
+    @Req() request: Request
+  ): Promise<GetOrderResponse[]> {
+    const orders: OrderInterface[] = await this.getOrdersByDateRangeProxyService
+      .getInstance()
+      .execute(request.user as User, parseDateWithTimeAtNoonUTC(startDate), parseDateWithTimeAtNoonUTC(endDate));
 
     return orders.map(
       (order: OrderInterface): GetOrderResponse => ({

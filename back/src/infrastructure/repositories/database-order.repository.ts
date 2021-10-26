@@ -53,4 +53,13 @@ export class DatabaseOrderRepository implements OrderRepository {
 
     return Promise.resolve(result);
   }
+
+  async findAllByDate(date: Date): Promise<OrderInterface[]> {
+    const foundOrderEntities: OrderEntity[] = await this.orderEntityRepository.find({
+      where: [{ pickUpDate: date }, { deliveryDate: date }, { reservationDate: date }],
+    });
+    const result: OrderInterface[] = foundOrderEntities.map((orderEntity: OrderEntity) => this.orderEntityTransformer.from(orderEntity));
+
+    return Promise.resolve(result);
+  }
 }

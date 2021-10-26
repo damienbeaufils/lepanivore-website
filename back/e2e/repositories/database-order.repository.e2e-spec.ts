@@ -203,7 +203,7 @@ describe('infrastructure/repositories/DatabaseOrderRepository', () => {
       expect(result[1]).toMatchObject(orderWithoutIdAndReservationDateLastOfYear);
     });
 
-    it('should return found orders in database of different types where dates has same year as given', async () => {
+    it('should return found orders in database of different types where dates have same year as given', async () => {
       // given
       const year: number = 2021;
       const orderWithoutIdAndHavingPickUpDateSameYear: OrderInterface = { ...orderWithoutId, pickUpDate: new Date('2021-06-13T12:00:00Z') };
@@ -235,6 +235,99 @@ describe('infrastructure/repositories/DatabaseOrderRepository', () => {
 
       // when
       const result: OrderInterface[] = await databaseOrderRepository.findAllByYear(year);
+
+      // then
+      expect(result).toHaveLength(0);
+    });
+  });
+
+  describe('findAllByDate()', () => {
+    it('should return found orders in database where pick-up date has same date as given', async () => {
+      // given
+      const date: Date = new Date('2020-12-31T12:00:00Z');
+      const orderWithoutIdAndSamePickUpDate: OrderInterface = { ...orderWithoutId, pickUpDate: new Date('2020-12-31T12:00:00Z') };
+      const orderWithoutIdAndDifferentPickUpDate: OrderInterface = { ...orderWithoutId, pickUpDate: new Date('2020-12-30T12:00:00Z') };
+      const anotherOrderWithoutIdAndSamePickUpDate: OrderInterface = { ...orderWithoutId, pickUpDate: new Date('2020-12-31T12:00:00Z') };
+      await databaseOrderRepository.save(orderWithoutIdAndSamePickUpDate);
+      await databaseOrderRepository.save(orderWithoutIdAndDifferentPickUpDate);
+      await databaseOrderRepository.save(anotherOrderWithoutIdAndSamePickUpDate);
+
+      // when
+      const result: OrderInterface[] = await databaseOrderRepository.findAllByDate(date);
+
+      // then
+      expect(result).toHaveLength(2);
+      expect(result[0]).toMatchObject(orderWithoutIdAndSamePickUpDate);
+      expect(result[1]).toMatchObject(anotherOrderWithoutIdAndSamePickUpDate);
+    });
+
+    it('should return found orders in database where delivery date has same date as given', async () => {
+      // given
+      const date: Date = new Date('2020-12-31T12:00:00Z');
+      const orderWithoutIdAndSameDeliveryDate: OrderInterface = { ...orderWithoutId, deliveryDate: new Date('2020-12-31T12:00:00Z') };
+      const orderWithoutIdAndDifferentDeliveryDate: OrderInterface = { ...orderWithoutId, deliveryDate: new Date('2020-12-30T12:00:00Z') };
+      const anotherOrderWithoutIdAndSameDeliveryDate: OrderInterface = { ...orderWithoutId, deliveryDate: new Date('2020-12-31T12:00:00Z') };
+      await databaseOrderRepository.save(orderWithoutIdAndSameDeliveryDate);
+      await databaseOrderRepository.save(orderWithoutIdAndDifferentDeliveryDate);
+      await databaseOrderRepository.save(anotherOrderWithoutIdAndSameDeliveryDate);
+
+      // when
+      const result: OrderInterface[] = await databaseOrderRepository.findAllByDate(date);
+
+      // then
+      expect(result).toHaveLength(2);
+      expect(result[0]).toMatchObject(orderWithoutIdAndSameDeliveryDate);
+      expect(result[1]).toMatchObject(anotherOrderWithoutIdAndSameDeliveryDate);
+    });
+
+    it('should return found orders in database where reservation date has same date as given', async () => {
+      // given
+      const date: Date = new Date('2020-12-31T12:00:00Z');
+      const orderWithoutIdAndSameReservationDate: OrderInterface = { ...orderWithoutId, reservationDate: new Date('2020-12-31T12:00:00Z') };
+      const orderWithoutIdAndDifferentReservationDate: OrderInterface = { ...orderWithoutId, reservationDate: new Date('2020-12-30T12:00:00Z') };
+      const anotherOrderWithoutIdAndSameReservationDate: OrderInterface = { ...orderWithoutId, reservationDate: new Date('2020-12-31T12:00:00Z') };
+      await databaseOrderRepository.save(orderWithoutIdAndSameReservationDate);
+      await databaseOrderRepository.save(orderWithoutIdAndDifferentReservationDate);
+      await databaseOrderRepository.save(anotherOrderWithoutIdAndSameReservationDate);
+
+      // when
+      const result: OrderInterface[] = await databaseOrderRepository.findAllByDate(date);
+
+      // then
+      expect(result).toHaveLength(2);
+      expect(result[0]).toMatchObject(orderWithoutIdAndSameReservationDate);
+      expect(result[1]).toMatchObject(anotherOrderWithoutIdAndSameReservationDate);
+    });
+
+    it('should return found orders in database of different types where dates are same date as given', async () => {
+      // given
+      const date: Date = new Date('2020-12-31T12:00:00Z');
+      const orderWithoutIdAndSamePickUpDate: OrderInterface = { ...orderWithoutId, pickUpDate: new Date('2020-12-31T12:00:00Z') };
+      const orderWithoutIdAndSameDeliveryDate: OrderInterface = { ...orderWithoutId, deliveryDate: new Date('2020-12-31T12:00:00Z') };
+      const orderWithoutIdAndSameReservationDate: OrderInterface = { ...orderWithoutId, reservationDate: new Date('2020-12-31T12:00:00Z') };
+      await databaseOrderRepository.save(orderWithoutIdAndSamePickUpDate);
+      await databaseOrderRepository.save(orderWithoutIdAndSameDeliveryDate);
+      await databaseOrderRepository.save(orderWithoutIdAndSameReservationDate);
+
+      // when
+      const result: OrderInterface[] = await databaseOrderRepository.findAllByDate(date);
+
+      // then
+      expect(result).toHaveLength(3);
+    });
+
+    it('should return empty array when no order matching date has been found in database', async () => {
+      // given
+      const date: Date = new Date('2020-12-31T12:00:00Z');
+      const orderWithoutIdAndDifferentPickUpDate: OrderInterface = { ...orderWithoutId, pickUpDate: new Date('2020-12-30T12:00:00Z') };
+      const orderWithoutIdAndDifferentDeliveryDate: OrderInterface = { ...orderWithoutId, deliveryDate: new Date('2020-12-30T12:00:00Z') };
+      const orderWithoutIdAndDifferentReservationDate: OrderInterface = { ...orderWithoutId, reservationDate: new Date('2020-12-30T12:00:00Z') };
+      await databaseOrderRepository.save(orderWithoutIdAndDifferentPickUpDate);
+      await databaseOrderRepository.save(orderWithoutIdAndDifferentDeliveryDate);
+      await databaseOrderRepository.save(orderWithoutIdAndDifferentReservationDate);
+
+      // when
+      const result: OrderInterface[] = await databaseOrderRepository.findAllByDate(date);
 
       // then
       expect(result).toHaveLength(0);

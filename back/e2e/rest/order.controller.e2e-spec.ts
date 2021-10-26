@@ -22,10 +22,12 @@ import { OrderProducts } from '../../src/use_cases/order-products';
 import { UpdateExistingOrder } from '../../src/use_cases/update-existing-order';
 import { ADMIN_E2E_PASSWORD, ADMIN_E2E_USERNAME, e2eEnvironmentConfigService } from '../e2e-config';
 import DoneCallback = jest.DoneCallback;
+import { GetOrdersByDateRange } from '../../src/use_cases/get-orders-by-date-range';
 
 describe('infrastructure/rest/OrderController (e2e)', () => {
   let app: INestApplication;
   let mockGetOrders: GetOrders;
+  let mockGetOrdersByDateRange: GetOrdersByDateRange;
   let mockOrderProducts: OrderProducts;
   let mockUpdateExistingOrder: UpdateExistingOrder;
   let mockDeleteOrder: DeleteOrder;
@@ -36,6 +38,12 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
     const mockGetOrdersProxyService: UseCaseProxy<GetOrders> = {
       getInstance: () => mockGetOrders,
     } as UseCaseProxy<GetOrders>;
+
+    mockGetOrdersByDateRange = {} as GetOrdersByDateRange;
+    mockGetOrdersByDateRange.execute = jest.fn();
+    const mockGetOrdersByDateRangeProxyService: UseCaseProxy<GetOrdersByDateRange> = {
+      getInstance: () => mockGetOrdersByDateRange,
+    } as UseCaseProxy<GetOrdersByDateRange>;
 
     mockOrderProducts = {} as OrderProducts;
     mockOrderProducts.execute = jest.fn();
@@ -60,6 +68,8 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
     })
       .overrideProvider(ProxyServicesDynamicModule.GET_ORDERS_PROXY_SERVICE)
       .useValue(mockGetOrdersProxyService)
+      .overrideProvider(ProxyServicesDynamicModule.GET_ORDERS_BY_DATE_RANGE_PROXY_SERVICE)
+      .useValue(mockGetOrdersByDateRangeProxyService)
       .overrideProvider(ProxyServicesDynamicModule.ORDER_PRODUCTS_PROXY_SERVICE)
       .useValue(mockOrderProductsProxyService)
       .overrideProvider(ProxyServicesDynamicModule.UPDATE_EXISTING_ORDER_PROXY_SERVICE)
@@ -76,6 +86,7 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
 
   beforeEach(() => {
     (mockGetOrders.execute as jest.Mock).mockClear();
+    (mockGetOrdersByDateRange.execute as jest.Mock).mockClear();
     (mockOrderProducts.execute as jest.Mock).mockClear();
     (mockUpdateExistingOrder.execute as jest.Mock).mockClear();
     (mockDeleteOrder.execute as jest.Mock).mockClear();
@@ -165,6 +176,99 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
     it('should return http status code Unauthorized when not authenticated as admin', () => {
       // when
       const testRequestWithoutAuthorizationHeader: request.Test = request(app.getHttpServer()).get('/api/orders');
+
+      // then
+      return testRequestWithoutAuthorizationHeader.expect(401);
+    });
+  });
+
+  describe('GET /api/orders/startDate/endDate', () => {
+    it('should return http status code OK with found orders when authenticated as admin', (done: DoneCallback) => {
+      // given
+      const orders: Order[] = [
+        {
+          id: 1,
+          clientName: 'fake order 1',
+          pickUpDate: new Date('2020-07-01T12:00:00Z'),
+          deliveryDate: new Date('2030-07-01T12:00:00Z'),
+          reservationDate: new Date('2040-07-01T12:00:00Z'),
+        } as Order,
+        {
+          id: 2,
+          clientName: 'fake order 2',
+          pickUpDate: new Date('2020-08-15T12:00:00Z'),
+          deliveryDate: new Date('2030-08-15T12:00:00Z'),
+          reservationDate: new Date('2040-08-15T12:00:00Z'),
+        } as Order,
+      ];
+      (mockGetOrdersByDateRange.execute as jest.Mock).mockReturnValue(Promise.resolve(orders));
+
+      const loginRequest: request.Test = request(app.getHttpServer()).post('/api/authentication/login').send({
+        username: ADMIN_E2E_USERNAME,
+        password: ADMIN_E2E_PASSWORD,
+      });
+
+      let accessToken: string;
+      loginRequest
+        .expect(200)
+        .expect((loginResponse: Response) => {
+          accessToken = loginResponse.body.accessToken;
+        })
+        .end(() => {
+          // when
+          const testRequest: request.Test = request(app.getHttpServer())
+            .get('/api/orders/2021-01-01/2021-12-31')
+            .set({ Authorization: `Bearer ${accessToken}` });
+
+          // then
+          testRequest
+            .expect(200)
+            .expect((response: Response) => {
+              expect(response.body).toStrictEqual([
+                { id: 1, clientName: 'fake order 1', pickUpDate: '2020-07-01', deliveryDate: '2030-07-01', reservationDate: '2040-07-01' },
+                { id: 2, clientName: 'fake order 2', pickUpDate: '2020-08-15', deliveryDate: '2030-08-15', reservationDate: '2040-08-15' },
+              ]);
+            })
+            .end(done);
+        });
+    });
+
+    it('should call use case with start and end dates', (done: DoneCallback) => {
+      // given
+      const loginRequest: request.Test = request(app.getHttpServer()).post('/api/authentication/login').send({
+        username: ADMIN_E2E_USERNAME,
+        password: ADMIN_E2E_PASSWORD,
+      });
+
+      let accessToken: string;
+      loginRequest
+        .expect(200)
+        .expect((loginResponse: Response) => {
+          accessToken = loginResponse.body.accessToken;
+        })
+        .end(() => {
+          // when
+          const testRequest: request.Test = request(app.getHttpServer())
+            .get('/api/orders/2021-01-01/2021-12-31')
+            .set({ Authorization: `Bearer ${accessToken}` });
+
+          // then
+          testRequest
+            .expect(200)
+            .expect((response: Response) => {
+              expect(mockGetOrdersByDateRange.execute).toHaveBeenCalledWith(
+                { username: 'ADMIN' },
+                new Date('2021-01-01T12:00:00Z'),
+                new Date('2021-12-31T12:00:00Z')
+              );
+            })
+            .end(done);
+        });
+    });
+
+    it('should return http status code Unauthorized when not authenticated as admin', () => {
+      // when
+      const testRequestWithoutAuthorizationHeader: request.Test = request(app.getHttpServer()).get('/api/orders/2021-01-01/2021-12-31');
 
       // then
       return testRequestWithoutAuthorizationHeader.expect(401);
