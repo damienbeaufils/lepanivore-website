@@ -3,6 +3,7 @@ import { AxiosError } from 'axios';
 import { ClosingPeriodId, OrderId, ProductId } from '../../back/src/domain/type-aliases';
 import { GetClosingPeriodResponse } from '../../back/src/infrastructure/rest/models/get-closing-period-response';
 import { GetOrderResponse } from '../../back/src/infrastructure/rest/models/get-order-response';
+import { GetOrderedProductResponse } from '../../back/src/infrastructure/rest/models/get-ordered-product-response';
 import { GetProductOrderingResponse } from '../../back/src/infrastructure/rest/models/get-product-ordering-response';
 import { GetProductResponse } from '../../back/src/infrastructure/rest/models/get-product-response';
 import { PostClosingPeriodRequest } from '../../back/src/infrastructure/rest/models/post-closing-period-request';
@@ -34,8 +35,8 @@ export default class ApiService {
     return this.$axios.$get(url);
   }
 
-  getOrdersByDateRange(startDate: Date, endDate: Date): Promise<GetOrderResponse[]> {
-    const url: string = `/api/orders/${startDate.toISOString().split('T')[0]}/${endDate.toISOString().split('T')[0]}`;
+  getOrderedProductsByDateRange(startDate: Date, endDate: Date): Promise<GetOrderedProductResponse[]> {
+    const url: string = `/api/orders/products/${startDate.toISOString().split('T')[0]}/${endDate.toISOString().split('T')[0]}`;
 
     return this.$axios.$get(url);
   }

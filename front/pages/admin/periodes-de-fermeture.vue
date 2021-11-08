@@ -146,7 +146,7 @@ export default Vue.extend({
   },
   computed: {
     startDateMin(): string {
-      const now:Date = new Date();
+      const now: Date = new Date();
 
       return this.toISOStringWithoutTimeAndIgnoringTimeZone(now);
     },

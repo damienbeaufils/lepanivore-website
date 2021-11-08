@@ -22,12 +22,13 @@ import { OrderProducts } from '../../src/use_cases/order-products';
 import { UpdateExistingOrder } from '../../src/use_cases/update-existing-order';
 import { ADMIN_E2E_PASSWORD, ADMIN_E2E_USERNAME, e2eEnvironmentConfigService } from '../e2e-config';
 import DoneCallback = jest.DoneCallback;
-import { GetOrdersByDateRange } from '../../src/use_cases/get-orders-by-date-range';
+import { GetOrderedProductsByDateRange } from '../../src/use_cases/get-ordered-products-by-date-range';
+import { OrderedProductInterface } from '../../src/domain/order/ordered-product.interface';
 
 describe('infrastructure/rest/OrderController (e2e)', () => {
   let app: INestApplication;
   let mockGetOrders: GetOrders;
-  let mockGetOrdersByDateRange: GetOrdersByDateRange;
+  let mockGetOrderedProductsByDateRange: GetOrderedProductsByDateRange;
   let mockOrderProducts: OrderProducts;
   let mockUpdateExistingOrder: UpdateExistingOrder;
   let mockDeleteOrder: DeleteOrder;
@@ -39,11 +40,11 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
       getInstance: () => mockGetOrders,
     } as UseCaseProxy<GetOrders>;
 
-    mockGetOrdersByDateRange = {} as GetOrdersByDateRange;
-    mockGetOrdersByDateRange.execute = jest.fn();
-    const mockGetOrdersByDateRangeProxyService: UseCaseProxy<GetOrdersByDateRange> = {
-      getInstance: () => mockGetOrdersByDateRange,
-    } as UseCaseProxy<GetOrdersByDateRange>;
+    mockGetOrderedProductsByDateRange = {} as GetOrderedProductsByDateRange;
+    mockGetOrderedProductsByDateRange.execute = jest.fn();
+    const mockGetOrderedProductsByDateRangeProxyService: UseCaseProxy<GetOrderedProductsByDateRange> = {
+      getInstance: () => mockGetOrderedProductsByDateRange,
+    } as UseCaseProxy<GetOrderedProductsByDateRange>;
 
     mockOrderProducts = {} as OrderProducts;
     mockOrderProducts.execute = jest.fn();
@@ -68,8 +69,8 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
     })
       .overrideProvider(ProxyServicesDynamicModule.GET_ORDERS_PROXY_SERVICE)
       .useValue(mockGetOrdersProxyService)
-      .overrideProvider(ProxyServicesDynamicModule.GET_ORDERS_BY_DATE_RANGE_PROXY_SERVICE)
-      .useValue(mockGetOrdersByDateRangeProxyService)
+      .overrideProvider(ProxyServicesDynamicModule.GET_ORDERED_PRODUCTS_BY_DATE_RANGE_PROXY_SERVICE)
+      .useValue(mockGetOrderedProductsByDateRangeProxyService)
       .overrideProvider(ProxyServicesDynamicModule.ORDER_PRODUCTS_PROXY_SERVICE)
       .useValue(mockOrderProductsProxyService)
       .overrideProvider(ProxyServicesDynamicModule.UPDATE_EXISTING_ORDER_PROXY_SERVICE)
@@ -86,7 +87,7 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
 
   beforeEach(() => {
     (mockGetOrders.execute as jest.Mock).mockClear();
-    (mockGetOrdersByDateRange.execute as jest.Mock).mockClear();
+    (mockGetOrderedProductsByDateRange.execute as jest.Mock).mockClear();
     (mockOrderProducts.execute as jest.Mock).mockClear();
     (mockUpdateExistingOrder.execute as jest.Mock).mockClear();
     (mockDeleteOrder.execute as jest.Mock).mockClear();
@@ -182,26 +183,24 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
     });
   });
 
-  describe('GET /api/orders/startDate/endDate', () => {
+  describe('GET /api/orders/products/startDate/endDate', () => {
     it('should return http status code OK with found orders when authenticated as admin', (done: DoneCallback) => {
       // given
-      const orders: Order[] = [
+      const orderedProducts: OrderedProductInterface[] = [
         {
-          id: 1,
-          clientName: 'fake order 1',
-          pickUpDate: new Date('2020-07-01T12:00:00Z'),
-          deliveryDate: new Date('2030-07-01T12:00:00Z'),
-          reservationDate: new Date('2040-07-01T12:00:00Z'),
-        } as Order,
+          name: 'product A',
+          pickUpCount: 0,
+          deliveryCount: 1,
+          reservationCount: 2,
+        },
         {
-          id: 2,
-          clientName: 'fake order 2',
-          pickUpDate: new Date('2020-08-15T12:00:00Z'),
-          deliveryDate: new Date('2030-08-15T12:00:00Z'),
-          reservationDate: new Date('2040-08-15T12:00:00Z'),
-        } as Order,
+          name: 'product B',
+          pickUpCount: 3,
+          deliveryCount: 4,
+          reservationCount: 0,
+        },
       ];
-      (mockGetOrdersByDateRange.execute as jest.Mock).mockReturnValue(Promise.resolve(orders));
+      (mockGetOrderedProductsByDateRange.execute as jest.Mock).mockReturnValue(Promise.resolve(orderedProducts));
 
       const loginRequest: request.Test = request(app.getHttpServer()).post('/api/authentication/login').send({
         username: ADMIN_E2E_USERNAME,
@@ -217,7 +216,7 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
         .end(() => {
           // when
           const testRequest: request.Test = request(app.getHttpServer())
-            .get('/api/orders/2021-01-01/2021-12-31')
+            .get('/api/orders/products/2021-01-01/2021-12-31')
             .set({ Authorization: `Bearer ${accessToken}` });
 
           // then
@@ -225,8 +224,8 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
             .expect(200)
             .expect((response: Response) => {
               expect(response.body).toStrictEqual([
-                { id: 1, clientName: 'fake order 1', pickUpDate: '2020-07-01', deliveryDate: '2030-07-01', reservationDate: '2040-07-01' },
-                { id: 2, clientName: 'fake order 2', pickUpDate: '2020-08-15', deliveryDate: '2030-08-15', reservationDate: '2040-08-15' },
+                { name: 'product A', pickUpCount: 0, deliveryCount: 1, reservationCount: 2 },
+                { name: 'product B', pickUpCount: 3, deliveryCount: 4, reservationCount: 0 },
               ]);
             })
             .end(done);
@@ -249,14 +248,14 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
         .end(() => {
           // when
           const testRequest: request.Test = request(app.getHttpServer())
-            .get('/api/orders/2021-01-01/2021-12-31')
+            .get('/api/orders/products/2021-01-01/2021-12-31')
             .set({ Authorization: `Bearer ${accessToken}` });
 
           // then
           testRequest
             .expect(200)
             .expect((response: Response) => {
-              expect(mockGetOrdersByDateRange.execute).toHaveBeenCalledWith(
+              expect(mockGetOrderedProductsByDateRange.execute).toHaveBeenCalledWith(
                 { username: 'ADMIN' },
                 new Date('2021-01-01T12:00:00Z'),
                 new Date('2021-12-31T12:00:00Z')
@@ -268,7 +267,7 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
 
     it('should return http status code Unauthorized when not authenticated as admin', () => {
       // when
-      const testRequestWithoutAuthorizationHeader: request.Test = request(app.getHttpServer()).get('/api/orders/2021-01-01/2021-12-31');
+      const testRequestWithoutAuthorizationHeader: request.Test = request(app.getHttpServer()).get('/api/orders/products/2021-01-01/2021-12-31');
 
       // then
       return testRequestWithoutAuthorizationHeader.expect(401);

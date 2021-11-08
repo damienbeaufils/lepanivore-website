@@ -5,6 +5,7 @@ import { FeatureStatus } from '../../../back/src/domain/feature/feature-status';
 import { ClosingPeriodId, OrderId, ProductId } from '../../../back/src/domain/type-aliases';
 import { GetClosingPeriodResponse } from '../../../back/src/infrastructure/rest/models/get-closing-period-response';
 import { GetOrderResponse } from '../../../back/src/infrastructure/rest/models/get-order-response';
+import { GetOrderedProductResponse } from '../../../back/src/infrastructure/rest/models/get-ordered-product-response';
 import { GetProductOrderingResponse } from '../../../back/src/infrastructure/rest/models/get-product-ordering-response';
 import { GetProductResponse } from '../../../back/src/infrastructure/rest/models/get-product-response';
 import { PostClosingPeriodRequest } from '../../../back/src/infrastructure/rest/models/post-closing-period-request';
@@ -117,25 +118,25 @@ describe('services/ApiService', () => {
     });
   });
 
-  describe('getOrdersByDateRange()', () => {
-    it('should get orders from api with start and end dates as parameters', async () => {
+  describe('getOrderedProductsByDateRange()', () => {
+    it('should get ordered products from api with start and end dates as parameters', async () => {
       // given
       const startDate: Date = new Date('2020-06-13T12:00:00Z');
       const endDate: Date = new Date('2021-07-30T12:00:00Z');
 
       // when
-      await apiService.getOrdersByDateRange(startDate, endDate);
+      await apiService.getOrderedProductsByDateRange(startDate, endDate);
 
       // then
-      expect($get).toHaveBeenCalledWith('/api/orders/2020-06-13/2021-07-30');
+      expect($get).toHaveBeenCalledWith('/api/orders/products/2020-06-13/2021-07-30');
     });
-    it('should return orders', async () => {
+    it('should return ordered products', async () => {
       // given
-      const response: GetOrderResponse[] = [{ id: 1, clientName: 'fake order 1' } as GetOrderResponse];
+      const response: GetOrderedProductResponse[] = [{ name: 'product A', pickUpCount: 0, deliveryCount: 1, reservationCount: 2, totalCount: 3 }];
       $get.mockReturnValue(Promise.resolve(response));
 
       // when
-      const result: GetOrderResponse[] = await apiService.getOrdersByDateRange(new Date(), new Date());
+      const result: GetOrderedProductResponse[] = await apiService.getOrderedProductsByDateRange(new Date(), new Date());
 
       // then
       expect(result).toStrictEqual(response);

@@ -42,15 +42,13 @@
           v-model="endDate"
           @input="showEndDatePicker = false"
           locale="fr-ca"
+          :min="startDate"
         ></v-date-picker>
       </v-menu>
     </v-card-title>
 
-    <v-data-table :headers="headers" :items="ordersGroupedByProducts" sort-by="totalCount" sort-desc
-                  class="elevation-1">
-      <template v-slot:item.totalCount="{ item }">
-        {{ item.pickUpCount + item.deliveryCount + item.reservationCount }}
-      </template>
+    <v-data-table :headers="headers" :items="orderedProducts" sort-by="totalCount" sort-desc class="elevation-1" items-per-page="50"
+                  :footer-props="{ 'items-per-page-options': [50, 10, 20, 30, 40, 100] }">
     </v-data-table>
   </v-card>
 </template>
@@ -58,8 +56,7 @@
 <script lang="ts">
 import {Context} from '@nuxt/types';
 import Vue from 'vue';
-import {GetOrderResponse} from '../../../back/src/infrastructure/rest/models/get-order-response';
-import {OrderType} from '../../../back/src/domain/order/order-type';
+import {GetOrderedProductResponse} from '../../../back/src/infrastructure/rest/models/get-ordered-product-response';
 
 interface QuantitesCommandeesData {
   showStartDatePicker: boolean;
@@ -67,14 +64,7 @@ interface QuantitesCommandeesData {
   startDate: string;
   endDate: string;
   headers: Array<{ text: string; value: string }>;
-  orders: GetOrderResponse[];
-}
-
-interface OrderedProduct {
-  name: string;
-  pickUpCount: number;
-  deliveryCount: number;
-  reservationCount: number;
+  orderedProducts: GetOrderedProductResponse[];
 }
 
 export default Vue.extend({
@@ -94,7 +84,7 @@ export default Vue.extend({
         {text: 'Livraison', value: 'deliveryCount'},
         {text: 'Total', value: 'totalCount'},
       ],
-      orders: [],
+      orderedProducts: [],
     } as QuantitesCommandeesData;
   },
   async asyncData(ctx: Context): Promise<object> {
@@ -102,48 +92,21 @@ export default Vue.extend({
     const endDate: Date = new Date();
     endDate.setDate(endDate.getDate() + 6);
 
-    const orders: GetOrderResponse[] = await ctx.app.$apiService.getOrdersByDateRange(startDate, endDate);
+    const orderedProducts: GetOrderedProductResponse[] = await ctx.app.$apiService.getOrderedProductsByDateRange(startDate, endDate);
 
-    return {startDate: startDate.toISOString().split('T')[0], endDate: endDate.toISOString().split('T')[0], orders,};
+    return {
+      startDate: startDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString().split('T')[0],
+      orderedProducts
+    };
   },
   watch: {
     async startDate(value: string) {
-      this.orders = await this.$apiService.getOrdersByDateRange(this.toDate(value), this.toDate(this.endDate));
+      this.orderedProducts = await this.$apiService.getOrderedProductsByDateRange(this.toDate(value), this.toDate(this.endDate));
     },
     async endDate(value: string) {
-      this.orders = await this.$apiService.getOrdersByDateRange(this.toDate(this.startDate), this.toDate(value));
+      this.orderedProducts = await this.$apiService.getOrderedProductsByDateRange(this.toDate(this.startDate), this.toDate(value));
     },
-  },
-  computed: {
-    ordersGroupedByProducts(): OrderedProduct[] {
-      // TODO: move this logic to backend as product endpoint?
-      const orderedProducts: OrderedProduct[] = [];
-      this.orders.forEach(order => {
-        order.products.forEach(productWithQuantity => {
-          const productName = productWithQuantity.product.name;
-          const existingOrderedProduct = orderedProducts.find(orderedProduct => orderedProduct.name === productName);
-          let orderedProduct;
-          if (existingOrderedProduct) {
-            orderedProduct = existingOrderedProduct;
-          } else {
-            orderedProduct = this.emptyOrderedProduct(productName);
-            orderedProducts.push(orderedProduct);
-          }
-          switch (order.type) {
-            case OrderType.PICK_UP:
-              orderedProduct.pickUpCount += productWithQuantity.quantity;
-              break;
-            case OrderType.DELIVERY:
-              orderedProduct.deliveryCount += productWithQuantity.quantity;
-              break;
-            case OrderType.RESERVATION:
-              orderedProduct.reservationCount += productWithQuantity.quantity;
-              break;
-          }
-        });
-      });
-      return orderedProducts;
-    }
   },
   methods: {
     toDate(dateAsIsoString: string): Date {
@@ -153,9 +116,6 @@ export default Vue.extend({
         return new Date(`${dateAsIsoString}T12:00:00Z`);
       }
     },
-    emptyOrderedProduct(name: string): OrderedProduct {
-      return {name, pickUpCount: 0, deliveryCount: 0, reservationCount: 0}
-    }
   },
 });
 </script>
