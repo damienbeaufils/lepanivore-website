@@ -117,6 +117,31 @@ describe('services/ApiService', () => {
     });
   });
 
+  describe('getOrdersByDateRange()', () => {
+    it('should get orders from api with start and end dates as parameters', async () => {
+      // given
+      const startDate: Date = new Date('2020-06-13T12:00:00Z');
+      const endDate: Date = new Date('2021-07-30T12:00:00Z');
+
+      // when
+      await apiService.getOrdersByDateRange(startDate, endDate);
+
+      // then
+      expect($get).toHaveBeenCalledWith('/api/orders/2020-06-13/2021-07-30');
+    });
+    it('should return orders', async () => {
+      // given
+      const response: GetOrderResponse[] = [{ id: 1, clientName: 'fake order 1' } as GetOrderResponse];
+      $get.mockReturnValue(Promise.resolve(response));
+
+      // when
+      const result: GetOrderResponse[] = await apiService.getOrdersByDateRange(new Date(), new Date());
+
+      // then
+      expect(result).toStrictEqual(response);
+    });
+  });
+
   describe('postOrder()', () => {
     it('should post order to api', async () => {
       // given

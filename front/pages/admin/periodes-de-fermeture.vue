@@ -25,7 +25,8 @@
               <v-form ref="newClosingPeriodForm">
                 <v-row>
                   <v-col cols="12">
-                    <v-menu v-model="showStartDatePicker" :nudge-right="40" transition="scale-transition" offset-y min-width="290px">
+                    <v-menu v-model="showStartDatePicker" :nudge-right="40" transition="scale-transition" offset-y min-width="290px"
+                            :close-on-content-click="false">
                       <template v-slot:activator="{ on }">
                         <v-text-field
                           v-model="newClosingPeriod.startDate"
@@ -46,7 +47,8 @@
                     </v-menu>
                   </v-col>
                   <v-col cols="12">
-                    <v-menu v-model="showEndDatePicker" :nudge-right="40" transition="scale-transition" offset-y min-width="290px">
+                    <v-menu v-model="showEndDatePicker" :nudge-right="40" transition="scale-transition" offset-y min-width="290px"
+                            :close-on-content-click="false">
                       <template v-slot:activator="{ on }">
                         <v-text-field
                           v-model="newClosingPeriod.endDate"

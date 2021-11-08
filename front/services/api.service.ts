@@ -34,6 +34,12 @@ export default class ApiService {
     return this.$axios.$get(url);
   }
 
+  getOrdersByDateRange(startDate: Date, endDate: Date): Promise<GetOrderResponse[]> {
+    const url: string = `/api/orders/${startDate.toISOString().split('T')[0]}/${endDate.toISOString().split('T')[0]}`;
+
+    return this.$axios.$get(url);
+  }
+
   postOrder(postOrderRequest: PostOrderRequest): Promise<PostOrderResponse> {
     return this.$axios.$post('/api/orders', postOrderRequest);
   }
