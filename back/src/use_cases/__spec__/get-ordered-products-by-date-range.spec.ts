@@ -123,7 +123,7 @@ describe('use_cases/GetOrderedProductsByDateRange', () => {
       ];
       const orders3: Order[] = [
         { id: 3, products: [{ product: { name: 'product A' }, quantity: 2 }], type: OrderType.RESERVATION } as Order,
-        { id: 3, products: [{ product: { name: 'product B' }, quantity: 2 }], type: OrderType.RESERVATION } as Order,
+        { id: 4, products: [{ product: { name: 'product B' }, quantity: 2 }], type: OrderType.RESERVATION } as Order,
       ];
       (mockOrderRepository.findAllByDate as jest.Mock)
         .mockReturnValueOnce(Promise.resolve(orders1))
