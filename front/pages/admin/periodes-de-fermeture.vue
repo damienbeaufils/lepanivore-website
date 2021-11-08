@@ -154,7 +154,7 @@ export default Vue.extend({
     endDateMin(): string {
       const date: Date = new Date();
       if (this.newClosingPeriod.startDate) {
-        date.setDate(this.toDate(this.newClosingPeriod.startDate).getDate() + 1);
+        date.setDate(this.toDate(this.newClosingPeriod.startDate).getDate());
       }
 
       return this.toISOStringWithoutTimeAndIgnoringTimeZone(date);
