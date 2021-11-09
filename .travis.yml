@@ -26,5 +26,5 @@ deploy:
   provider: script
   script: bash $TRAVIS_BUILD_DIR/tools/deploy-to-clever-cloud.sh
 
-after_script:
-  - cd $TRAVIS_BUILD_DIR/back && npm run test:mutation
+#after_script:
+#  - cd $TRAVIS_BUILD_DIR/back && npm run test:mutation
