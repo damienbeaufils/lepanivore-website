@@ -20,6 +20,7 @@ import { DatabaseProductRepository } from '../repositories/database-product.repo
 import { EmailOrderNotificationRepository } from '../repositories/email-order-notification.repository';
 import { RepositoriesModule } from '../repositories/repositories.module';
 import { UseCaseProxy } from './use-case-proxy';
+import { GetOrderedProductsByDateRange } from '../../use_cases/get-ordered-products-by-date-range';
 
 @Module({
   imports: [RepositoriesModule],
@@ -27,6 +28,7 @@ import { UseCaseProxy } from './use-case-proxy';
 export class ProxyServicesDynamicModule {
   // Order
   static GET_ORDERS_PROXY_SERVICE: string = 'GetOrdersProxyService';
+  static GET_ORDERED_PRODUCTS_BY_DATE_RANGE_PROXY_SERVICE: string = 'GetOrderedProductsByDateRangeProxyService';
   static ORDER_PRODUCTS_PROXY_SERVICE: string = 'OrderProductsProxyService';
   static UPDATE_EXISTING_ORDER_PROXY_SERVICE: string = 'UpdateExistingOrderProxyService';
   static DELETE_ORDER_PROXY_SERVICE: string = 'DeleteOrderProxyService';
@@ -53,6 +55,12 @@ export class ProxyServicesDynamicModule {
           inject: [DatabaseOrderRepository],
           provide: ProxyServicesDynamicModule.GET_ORDERS_PROXY_SERVICE,
           useFactory: (databaseOrderRepository: DatabaseOrderRepository) => new UseCaseProxy(new GetOrders(databaseOrderRepository)),
+        },
+        {
+          inject: [DatabaseOrderRepository],
+          provide: ProxyServicesDynamicModule.GET_ORDERED_PRODUCTS_BY_DATE_RANGE_PROXY_SERVICE,
+          useFactory: (databaseOrderRepository: DatabaseOrderRepository) =>
+            new UseCaseProxy(new GetOrderedProductsByDateRange(databaseOrderRepository)),
         },
         {
           inject: [
@@ -158,6 +166,7 @@ export class ProxyServicesDynamicModule {
       exports: [
         // Order
         ProxyServicesDynamicModule.GET_ORDERS_PROXY_SERVICE,
+        ProxyServicesDynamicModule.GET_ORDERED_PRODUCTS_BY_DATE_RANGE_PROXY_SERVICE,
         ProxyServicesDynamicModule.ORDER_PRODUCTS_PROXY_SERVICE,
         ProxyServicesDynamicModule.UPDATE_EXISTING_ORDER_PROXY_SERVICE,
         ProxyServicesDynamicModule.DELETE_ORDER_PROXY_SERVICE,

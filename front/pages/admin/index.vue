@@ -16,6 +16,11 @@
               </v-btn>
             </v-col>
             <v-col cols="12">
+              <v-btn color="primary" nuxt to="/admin/quantites-commandees">
+                Quantités commandées
+              </v-btn>
+            </v-col>
+            <v-col cols="12">
               <v-btn color="primary" nuxt to="/admin/produits">
                 Configuration des produits
               </v-btn>

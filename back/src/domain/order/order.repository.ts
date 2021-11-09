@@ -7,4 +7,5 @@ export interface OrderRepository {
   findById(orderId: OrderId): Promise<OrderInterface>;
   findAll(): Promise<OrderInterface[]>;
   findAllByYear(year: number): Promise<OrderInterface[]>;
+  findAllByDate(date: Date): Promise<OrderInterface[]>;
 }

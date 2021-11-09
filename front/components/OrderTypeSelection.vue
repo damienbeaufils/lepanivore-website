@@ -22,7 +22,8 @@
         </v-col>
         <v-col cols="12" sm="6" md="8" v-if="isPickUpOrderTypeSelected">
           <v-menu v-model="showPickUpDatePicker" :nudge-right="40" transition="scale-transition" offset-y
-                  min-width="290px">
+                  min-width="290px"
+                  :close-on-content-click="false">
             <template v-slot:activator="{ on }">
               <v-text-field
                 v-model="value.pickUpDate"
@@ -45,7 +46,8 @@
         </v-col>
         <v-col cols="12" sm="6" md="8" v-if="isDeliveryOrderTypeSelected">
           <v-menu v-model="showDeliveryDatePicker" :nudge-right="40" transition="scale-transition" offset-y
-                  min-width="290px">
+                  min-width="290px"
+                  :close-on-content-click="false">
             <template v-slot:activator="{ on }">
               <v-text-field
                 v-model="value.deliveryDate"
@@ -74,7 +76,8 @@
         </v-col>
         <v-col cols="12" sm="6" md="8" v-if="isReservationOrderTypeSelected">
           <v-menu v-model="showReservationDatePicker" :nudge-right="40" transition="scale-transition" offset-y
-                  min-width="290px">
+                  min-width="290px"
+                  :close-on-content-click="false">
             <template v-slot:activator="{ on }">
               <v-text-field
                 v-model="value.reservationDate"

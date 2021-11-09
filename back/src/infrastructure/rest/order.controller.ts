@@ -21,11 +21,16 @@ import { GetOrderResponse } from './models/get-order-response';
 import { PostOrderRequest } from './models/post-order-request';
 import { PostOrderResponse } from './models/post-order-response';
 import { PutOrderRequest } from './models/put-order-request';
+import { GetOrderedProductsByDateRange } from '../../use_cases/get-ordered-products-by-date-range';
+import { OrderedProductInterface } from '../../domain/order/ordered-product.interface';
+import { GetOrderedProductResponse } from './models/get-ordered-product-response';
 
 @Controller('/api/orders')
 export class OrderController {
   constructor(
     @Inject(ProxyServicesDynamicModule.GET_ORDERS_PROXY_SERVICE) private readonly getOrdersProxyService: UseCaseProxy<GetOrders>,
+    @Inject(ProxyServicesDynamicModule.GET_ORDERED_PRODUCTS_BY_DATE_RANGE_PROXY_SERVICE)
+    private readonly getOrderedProductsByDateRangeProxyService: UseCaseProxy<GetOrderedProductsByDateRange>,
     @Inject(ProxyServicesDynamicModule.ORDER_PRODUCTS_PROXY_SERVICE) private readonly orderProductsProxyService: UseCaseProxy<OrderProducts>,
     @Inject(ProxyServicesDynamicModule.UPDATE_EXISTING_ORDER_PROXY_SERVICE)
     private readonly updateExistingOrderProxyService: UseCaseProxy<UpdateExistingOrder>,
@@ -46,6 +51,20 @@ export class OrderController {
         reservationDate: getDateAsIsoStringWithoutTime(order.reservationDate),
       })
     );
+  }
+
+  @Get('/products/:startDate/:endDate')
+  @UseGuards(JwtAuthGuard)
+  async getOrderedProductsByDateRange(
+    @Param('startDate') startDate: string,
+    @Param('endDate') endDate: string,
+    @Req() request: Request
+  ): Promise<GetOrderedProductResponse[]> {
+    const orderedProducts: OrderedProductInterface[] = await this.getOrderedProductsByDateRangeProxyService
+      .getInstance()
+      .execute(request.user as User, parseDateWithTimeAtNoonUTC(startDate), parseDateWithTimeAtNoonUTC(endDate));
+
+    return orderedProducts as GetOrderedProductResponse[];
   }
 
   @Get('/csv')
