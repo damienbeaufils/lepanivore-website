@@ -2,7 +2,7 @@
 
 | Build Status | Mutation testing coverage (only on back unit tests) | 
 | ------------- |:-------------:|
-| [![Build Status](https://travis-ci.org/damienbeaufils/lepanivore-website.svg?branch=master)](https://travis-ci.org/damienbeaufils/lepanivore-website) | [![Mutation Score](https://badge.stryker-mutator.io/github.com/damienbeaufils/lepanivore-website/master)](https://dashboard.stryker-mutator.io/reports/github.com/damienbeaufils/lepanivore-website/master) |
+| [![Build Status](https://api.travis-ci.com/damienbeaufils/lepanivore-website.svg?branch=master)](https://app.travis-ci.com/github/damienbeaufils/lepanivore-website) | [![Mutation Score](https://badge.stryker-mutator.io/github.com/damienbeaufils/lepanivore-website/master)](https://dashboard.stryker-mutator.io/reports/github.com/damienbeaufils/lepanivore-website/master) |
 
 This is an online ordering website for [Boulangerie Le Panivore](https://www.lepanivore.com).
 
