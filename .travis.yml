@@ -3,6 +3,11 @@ language: node_js
 git:
   depth: false
 
+branches:
+  only:
+    - master
+    - maintenance/stop-test-applications
+
 before_install:
   - npm i -g npm@latest-6
 
