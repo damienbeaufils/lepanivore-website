@@ -192,12 +192,14 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
           pickUpCount: 0,
           deliveryCount: 1,
           reservationCount: 2,
+          totalCount: 3,
         },
         {
           name: 'product B',
           pickUpCount: 3,
           deliveryCount: 4,
           reservationCount: 0,
+          totalCount: 7,
         },
       ];
       (mockGetOrderedProductsByDateRange.execute as jest.Mock).mockReturnValue(Promise.resolve(orderedProducts));
@@ -224,8 +226,8 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
             .expect(200)
             .expect((response: Response) => {
               expect(response.body).toStrictEqual([
-                { name: 'product A', pickUpCount: 0, deliveryCount: 1, reservationCount: 2 },
-                { name: 'product B', pickUpCount: 3, deliveryCount: 4, reservationCount: 0 },
+                { name: 'product A', pickUpCount: 0, deliveryCount: 1, reservationCount: 2, totalCount: 3 },
+                { name: 'product B', pickUpCount: 3, deliveryCount: 4, reservationCount: 0, totalCount: 7 },
               ]);
             })
             .end(done);
