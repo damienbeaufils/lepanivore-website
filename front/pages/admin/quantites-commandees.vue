@@ -90,7 +90,6 @@ export default Vue.extend({
   async asyncData(ctx: Context): Promise<object> {
     const startDate: Date = new Date();
     const endDate: Date = new Date();
-    endDate.setDate(endDate.getDate() + 6);
 
     const orderedProducts: GetOrderedProductResponse[] = await ctx.app.$apiService.getOrderedProductsByDateRange(startDate, endDate);
 
