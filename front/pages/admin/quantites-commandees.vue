@@ -47,7 +47,27 @@
       </v-menu>
     </v-card-title>
 
-    <v-data-table :headers="headers" :items="orderedProducts" sort-by="totalCount" sort-desc class="elevation-1" items-per-page="50"
+    <v-card-subtitle>
+      <v-row>
+        <v-col cols="12" sm="4" md="5" class="text-sm-right">Types de commande :</v-col>
+        <v-col cols="12" sm="8" md="7">
+          <v-row no-gutters>
+            <v-col cols="12" sm="4" md="3" lg="2">
+              <v-checkbox v-model="showReservationOrders" label="Réservation" class="pa-0 ma-0"/>
+            </v-col>
+            <v-col cols="12" sm="4" md="3" lg="2">
+              <v-checkbox v-model="showPickUpOrders" label="Cueillette" class="pa-0 ma-0"/>
+            </v-col>
+            <v-col cols="12" sm="4" md="3" lg="2">
+              <v-checkbox v-model="showDeliveryOrders" label="Livraison" class="pa-0 ma-0"/>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+    </v-card-subtitle>
+
+    <v-data-table :headers="headers" :items="filteredOrderedProducts" sort-by="totalCount" sort-desc class="elevation-1"
+                  :items-per-page="50"
                   :footer-props="{ 'items-per-page-options': [50, 10, 20, 30, 40, 100] }">
     </v-data-table>
   </v-card>
@@ -65,6 +85,9 @@ interface QuantitesCommandeesData {
   endDate: string;
   headers: Array<{ text: string; value: string }>;
   orderedProducts: GetOrderedProductResponse[];
+  showReservationOrders: boolean;
+  showPickUpOrders: boolean;
+  showDeliveryOrders: boolean;
 }
 
 export default Vue.extend({
@@ -82,9 +105,12 @@ export default Vue.extend({
         {text: 'Réservation', value: 'reservationCount'},
         {text: 'Cueillette', value: 'pickUpCount'},
         {text: 'Livraison', value: 'deliveryCount'},
-        {text: 'Total', value: 'totalCount'},
+        {text: 'Total', value: 'totalCount', cellClass: 'font-weight-bold'},
       ],
       orderedProducts: [],
+      showReservationOrders: true,
+      showPickUpOrders: true,
+      showDeliveryOrders: true,
     } as QuantitesCommandeesData;
   },
   async asyncData(ctx: Context): Promise<object> {
@@ -100,12 +126,32 @@ export default Vue.extend({
     };
   },
   watch: {
-    async startDate(value: string) {
+    async startDate(value: string): Promise<void> {
       this.orderedProducts = await this.$apiService.getOrderedProductsByDateRange(this.toDate(value), this.toDate(this.endDate));
     },
-    async endDate(value: string) {
+    async endDate(value: string): Promise<void> {
       this.orderedProducts = await this.$apiService.getOrderedProductsByDateRange(this.toDate(this.startDate), this.toDate(value));
     },
+  },
+  computed: {
+    filteredOrderedProducts(): GetOrderedProductResponse[] {
+      return this.orderedProducts.map((orderedProduct: GetOrderedProductResponse) => {
+        const filteredOrderedProduct: GetOrderedProductResponse = this.buildEmptyOrderedProduct(orderedProduct.name);
+        if (this.showReservationOrders) {
+          filteredOrderedProduct.reservationCount = orderedProduct.reservationCount;
+          filteredOrderedProduct.totalCount += orderedProduct.reservationCount;
+        }
+        if (this.showPickUpOrders) {
+          filteredOrderedProduct.pickUpCount = orderedProduct.pickUpCount;
+          filteredOrderedProduct.totalCount += orderedProduct.pickUpCount;
+        }
+        if (this.showDeliveryOrders) {
+          filteredOrderedProduct.deliveryCount = orderedProduct.deliveryCount;
+          filteredOrderedProduct.totalCount += orderedProduct.deliveryCount;
+        }
+        return filteredOrderedProduct;
+      })
+    }
   },
   methods: {
     toDate(dateAsIsoString: string): Date {
@@ -115,6 +161,9 @@ export default Vue.extend({
         return new Date(`${dateAsIsoString}T12:00:00Z`);
       }
     },
+    buildEmptyOrderedProduct(name: string): GetOrderedProductResponse {
+      return {name, pickUpCount: 0, deliveryCount: 0, reservationCount: 0, totalCount: 0};
+    }
   },
 });
 </script>
