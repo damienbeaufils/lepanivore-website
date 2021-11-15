@@ -1,6 +1,6 @@
 {
   "name": "lepanivore-website-backend",
-  "version": "1.8.2",
+  "version": "1.8.3",
   "private": true,
   "scripts": {
     "postinstall": "[[ -n $APP_FOLDER ]] && npm run build && npm run typeorm:migration:run || exit 0",
@@ -33,7 +33,7 @@
     "@nestjs/passport": "7.1.6",
     "@nestjs/platform-express": "7.6.18",
     "@nestjs/typeorm": "7.1.5",
-    "@sentry/node": "6.14.1",
+    "@sentry/node": "6.14.3",
     "bcrypt": "5.0.1",
     "helmet": "4.6.0",
     "joi": "17.4.2",
@@ -48,7 +48,7 @@
     "rimraf": "3.0.2",
     "rxjs": "6.6.7",
     "sqlite3": "5.0.2",
-    "typeorm": "0.2.38"
+    "typeorm": "0.2.40"
   },
   "devDependencies": {
     "@nestjs/cli": "7.6.0",
