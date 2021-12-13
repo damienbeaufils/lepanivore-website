@@ -17,7 +17,7 @@
         
         <v-col cols="12" sm="8" md="6">
           <h3>Horaire du temps des fêtes 2021</h3>
-         Veuillez noter que la boulangerie sera <br/>
+         Veuillez noter que la boulangerie sera <br/
          <b>ouverte aux horaires habituels du mardi au jeudi</b>,<br/>
          <b>ouverte de 8:00 à 16:00 les vendredi 24 et 31 Décembre</b> et<br/>
          <b>fermée les samedi 25 Décembre et 1er Janvier.</b>
