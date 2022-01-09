@@ -35,7 +35,7 @@
             <li>La Baguette au levain enrobée au sésame : 3.95 $</li>
             <li>L'Exquis <small>(farine de blé tamisée, farine d'épeautre, farine de khorasan, graines de tournesol
               dedans
-              et dessus)</small> : 6.90 $
+              et dessus)</small> : 7.10 $
             </li>
             <li>Le Moelleux <small>(farine blanche, farine de blé tamisée, lait, huile de canola)</small> : 5.95 $</li>
             <li>Le Seigle <small>(farine de blé tamisée, farine de seigle)</small> : 5.80 $</li>
@@ -93,9 +93,7 @@
             <li>La Miche Rustique, cuite sur pierre naturelle <small>(farine de blé tamisée)</small> : 5.40 $</li>
             <li>Le Mariko <small>(farine de blé tamisée, écorces d'orange bio confites)</small> : 8.05 $</li>
             <li>Le Mariko Choco <small>(farine de blé tamisée, écorces d'orange bio confites et pépites de
-              chocolat)</small> : 8.70 $
-            </li>
-            </li>
+              chocolat)</small> : 8.70 $</li>
             <li>Le Canneberge <small>(farine de blé tamisée, canneberges séchées)</small> : 6.90 $</li>
             <li>Le Raisin <small>(farine de blé tamisée, raisins sultana)</small> : 6.90 $</li>
             <li>Le Datte <small>(farine de blé tamisée, dattes séchées)</small> : 6.90 $</li>
@@ -119,8 +117,8 @@
             <li>Deux pâtes à pizza : 6.50 $</li>
           </ul>
           <ul>
-            <li>2 grands cercles de pâte feuilletée : 13.00 $</li>
-            <li>4 grands cercles de pâte feuilletée : 22.00 $</li>
+            <li>2 grands cercles de pâte feuilletée : 14.00 $</li>
+            <li>4 grands cercles de pâte feuilletée : 23.00 $</li>
           </ul>
           <i>Pâte à pizza comme pâte feuilletée peuvent se congeler car elles sont faites fraiches du jour.<br/>Les pâtes
             feuilletées doivent être commandées au plus tard le mardi soir à 19:00.</i>
