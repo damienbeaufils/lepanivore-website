@@ -14,4 +14,5 @@ export interface GetOrderResponse {
   deliveryAddress?: string;
   reservationDate?: string;
   note?: string;
+  checked?: boolean;
 }

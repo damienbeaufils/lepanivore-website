@@ -2,6 +2,7 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { AddNewClosingPeriod } from '../../use_cases/add-new-closing-period';
 import { AddNewProduct } from '../../use_cases/add-new-product';
 import { ArchiveProduct } from '../../use_cases/archive-product';
+import { CheckOrder } from '../../use_cases/check-order';
 import { DeleteClosingPeriod } from '../../use_cases/delete-closing-period';
 import { DeleteOrder } from '../../use_cases/delete-order';
 import { DisableProductOrdering } from '../../use_cases/disable-product-ordering';
@@ -9,8 +10,10 @@ import { EnableProductOrdering } from '../../use_cases/enable-product-ordering';
 import { GetActiveProducts } from '../../use_cases/get-active-products';
 import { GetClosingPeriods } from '../../use_cases/get-closing-periods';
 import { GetOrders } from '../../use_cases/get-orders';
+import { GetOrdersByDate } from '../../use_cases/get-orders-by-date';
 import { GetProductOrderingStatus } from '../../use_cases/get-product-ordering-status';
 import { OrderProducts } from '../../use_cases/order-products';
+import { UncheckOrder } from '../../use_cases/uncheck-order';
 import { UpdateExistingOrder } from '../../use_cases/update-existing-order';
 import { UpdateExistingProduct } from '../../use_cases/update-existing-product';
 import { DatabaseClosingPeriodRepository } from '../repositories/database-closing-period.repository';
@@ -28,10 +31,13 @@ import { GetOrderedProductsByDateRange } from '../../use_cases/get-ordered-produ
 export class ProxyServicesDynamicModule {
   // Order
   static GET_ORDERS_PROXY_SERVICE: string = 'GetOrdersProxyService';
+  static GET_ORDERS_BY_DATE_PROXY_SERVICE: string = 'GetOrdersByDateProxyService';
   static GET_ORDERED_PRODUCTS_BY_DATE_RANGE_PROXY_SERVICE: string = 'GetOrderedProductsByDateRangeProxyService';
   static ORDER_PRODUCTS_PROXY_SERVICE: string = 'OrderProductsProxyService';
   static UPDATE_EXISTING_ORDER_PROXY_SERVICE: string = 'UpdateExistingOrderProxyService';
   static DELETE_ORDER_PROXY_SERVICE: string = 'DeleteOrderProxyService';
+  static CHECK_ORDERED_PRODUCT_PROXY_SERVICE: string = 'CheckOrderProxyService';
+  static UNCHECK_ORDERED_PRODUCT_PROXY_SERVICE: string = 'UncheckOrderProxyService';
   // Product
   static GET_ACTIVE_PRODUCTS_PROXY_SERVICE: string = 'GetActiveProductsProxyService';
   static ADD_NEW_PRODUCT_PROXY_SERVICE: string = 'AddNewProductProxyService';
@@ -55,6 +61,11 @@ export class ProxyServicesDynamicModule {
           inject: [DatabaseOrderRepository],
           provide: ProxyServicesDynamicModule.GET_ORDERS_PROXY_SERVICE,
           useFactory: (databaseOrderRepository: DatabaseOrderRepository) => new UseCaseProxy(new GetOrders(databaseOrderRepository)),
+        },
+        {
+          inject: [DatabaseOrderRepository],
+          provide: ProxyServicesDynamicModule.GET_ORDERS_BY_DATE_PROXY_SERVICE,
+          useFactory: (databaseOrderRepository: DatabaseOrderRepository) => new UseCaseProxy(new GetOrdersByDate(databaseOrderRepository)),
         },
         {
           inject: [DatabaseOrderRepository],
@@ -101,6 +112,16 @@ export class ProxyServicesDynamicModule {
           inject: [DatabaseOrderRepository],
           provide: ProxyServicesDynamicModule.DELETE_ORDER_PROXY_SERVICE,
           useFactory: (databaseOrderRepository: DatabaseOrderRepository) => new UseCaseProxy(new DeleteOrder(databaseOrderRepository)),
+        },
+        {
+          inject: [DatabaseOrderRepository],
+          provide: ProxyServicesDynamicModule.CHECK_ORDERED_PRODUCT_PROXY_SERVICE,
+          useFactory: (databaseOrderRepository: DatabaseOrderRepository) => new UseCaseProxy(new CheckOrder(databaseOrderRepository)),
+        },
+        {
+          inject: [DatabaseOrderRepository],
+          provide: ProxyServicesDynamicModule.UNCHECK_ORDERED_PRODUCT_PROXY_SERVICE,
+          useFactory: (databaseOrderRepository: DatabaseOrderRepository) => new UseCaseProxy(new UncheckOrder(databaseOrderRepository)),
         },
         // Product
         {
@@ -166,10 +187,13 @@ export class ProxyServicesDynamicModule {
       exports: [
         // Order
         ProxyServicesDynamicModule.GET_ORDERS_PROXY_SERVICE,
+        ProxyServicesDynamicModule.GET_ORDERS_BY_DATE_PROXY_SERVICE,
         ProxyServicesDynamicModule.GET_ORDERED_PRODUCTS_BY_DATE_RANGE_PROXY_SERVICE,
         ProxyServicesDynamicModule.ORDER_PRODUCTS_PROXY_SERVICE,
         ProxyServicesDynamicModule.UPDATE_EXISTING_ORDER_PROXY_SERVICE,
         ProxyServicesDynamicModule.DELETE_ORDER_PROXY_SERVICE,
+        ProxyServicesDynamicModule.CHECK_ORDERED_PRODUCT_PROXY_SERVICE,
+        ProxyServicesDynamicModule.UNCHECK_ORDERED_PRODUCT_PROXY_SERVICE,
         // Product
         ProxyServicesDynamicModule.GET_ACTIVE_PRODUCTS_PROXY_SERVICE,
         ProxyServicesDynamicModule.ADD_NEW_PRODUCT_PROXY_SERVICE,

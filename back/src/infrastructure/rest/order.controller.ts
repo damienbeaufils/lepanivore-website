@@ -2,17 +2,22 @@ import { Body, Controller, Delete, Get, HttpCode, Inject, Param, Post, Put, Req,
 import { Request } from 'express';
 import { parseAsync } from 'json2csv';
 import { getDateAsIsoStringWithoutTime, parseDateWithTimeAtNoonUTC } from '../../domain/date.utils';
+import { CheckOrderCommand } from '../../domain/order/commands/check-order-command';
 import { DeleteOrderCommand } from '../../domain/order/commands/delete-order-command';
 import { NewOrderCommand } from '../../domain/order/commands/new-order-command';
+import { UncheckOrderCommand } from '../../domain/order/commands/uncheck-order-command';
 import { UpdateOrderCommand } from '../../domain/order/commands/update-order-command';
 import { getOrderTypeLabel, OrderType } from '../../domain/order/order-type';
 import { OrderInterface } from '../../domain/order/order.interface';
 import { ProductWithQuantity } from '../../domain/product/product-with-quantity';
 import { OrderId } from '../../domain/type-aliases';
 import { User } from '../../domain/user/user';
+import { CheckOrder } from '../../use_cases/check-order';
 import { DeleteOrder } from '../../use_cases/delete-order';
 import { GetOrders } from '../../use_cases/get-orders';
+import { GetOrdersByDate } from '../../use_cases/get-orders-by-date';
 import { OrderProducts } from '../../use_cases/order-products';
+import { UncheckOrder } from '../../use_cases/uncheck-order';
 import { UpdateExistingOrder } from '../../use_cases/update-existing-order';
 import { JwtAuthGuard, Public } from '../config/authentication/jwt-auth-guard';
 import { ProxyServicesDynamicModule } from '../use_cases_proxy/proxy-services-dynamic.module';
@@ -29,12 +34,17 @@ import { GetOrderedProductResponse } from './models/get-ordered-product-response
 export class OrderController {
   constructor(
     @Inject(ProxyServicesDynamicModule.GET_ORDERS_PROXY_SERVICE) private readonly getOrdersProxyService: UseCaseProxy<GetOrders>,
+    @Inject(ProxyServicesDynamicModule.GET_ORDERS_BY_DATE_PROXY_SERVICE) private readonly getOrdersByDateProxyService: UseCaseProxy<GetOrdersByDate>,
     @Inject(ProxyServicesDynamicModule.GET_ORDERED_PRODUCTS_BY_DATE_RANGE_PROXY_SERVICE)
     private readonly getOrderedProductsByDateRangeProxyService: UseCaseProxy<GetOrderedProductsByDateRange>,
     @Inject(ProxyServicesDynamicModule.ORDER_PRODUCTS_PROXY_SERVICE) private readonly orderProductsProxyService: UseCaseProxy<OrderProducts>,
     @Inject(ProxyServicesDynamicModule.UPDATE_EXISTING_ORDER_PROXY_SERVICE)
     private readonly updateExistingOrderProxyService: UseCaseProxy<UpdateExistingOrder>,
-    @Inject(ProxyServicesDynamicModule.DELETE_ORDER_PROXY_SERVICE) private readonly deleteOrderProxyService: UseCaseProxy<DeleteOrder>
+    @Inject(ProxyServicesDynamicModule.DELETE_ORDER_PROXY_SERVICE) private readonly deleteOrderProxyService: UseCaseProxy<DeleteOrder>,
+    @Inject(ProxyServicesDynamicModule.CHECK_ORDERED_PRODUCT_PROXY_SERVICE)
+    private readonly checkOrderProxyService: UseCaseProxy<CheckOrder>,
+    @Inject(ProxyServicesDynamicModule.UNCHECK_ORDERED_PRODUCT_PROXY_SERVICE)
+    private readonly uncheckOrderProxyService: UseCaseProxy<UncheckOrder>
   ) {}
 
   @Get('/')
@@ -42,6 +52,23 @@ export class OrderController {
   async getOrders(@Req() request: Request): Promise<GetOrderResponse[]> {
     const year: number = request.query.year ? parseInt(request.query.year as string, 10) : undefined;
     const orders: OrderInterface[] = await this.getOrdersProxyService.getInstance().execute(request.user as User, year);
+
+    return orders.map(
+      (order: OrderInterface): GetOrderResponse => ({
+        ...order,
+        pickUpDate: getDateAsIsoStringWithoutTime(order.pickUpDate),
+        deliveryDate: getDateAsIsoStringWithoutTime(order.deliveryDate),
+        reservationDate: getDateAsIsoStringWithoutTime(order.reservationDate),
+      })
+    );
+  }
+
+  @Get('/date/:date')
+  @UseGuards(JwtAuthGuard)
+  async getOrdersByDate(@Param('date') date: string, @Req() request: Request): Promise<GetOrderResponse[]> {
+    const orders: OrderInterface[] = await this.getOrdersByDateProxyService
+      .getInstance()
+      .execute(request.user as User, parseDateWithTimeAtNoonUTC(date));
 
     return orders.map(
       (order: OrderInterface): GetOrderResponse => ({
@@ -98,11 +125,23 @@ export class OrderController {
     await this.updateExistingOrderProxyService.getInstance().execute(request.user as User, this.toUpdateOrderCommand(id, putOrderRequest));
   }
 
+  @Put('/:id/check')
+  @UseGuards(JwtAuthGuard)
+  async checkOrder(@Param('id') id: string, @Req() request: Request): Promise<void> {
+    await this.checkOrderProxyService.getInstance().execute(request.user as User, this.toCommandContainingOnlyOrderId(id));
+  }
+
+  @Put('/:id/uncheck')
+  @UseGuards(JwtAuthGuard)
+  async uncheckOrder(@Param('id') id: string, @Req() request: Request): Promise<void> {
+    await this.uncheckOrderProxyService.getInstance().execute(request.user as User, this.toCommandContainingOnlyOrderId(id));
+  }
+
   @Delete('/:id')
   @HttpCode(204)
   @UseGuards(JwtAuthGuard)
   async deleteOrder(@Param('id') id: string, @Req() request: Request): Promise<void> {
-    await this.deleteOrderProxyService.getInstance().execute(request.user as User, this.toDeleteCommand(id));
+    await this.deleteOrderProxyService.getInstance().execute(request.user as User, this.toCommandContainingOnlyOrderId(id));
   }
 
   private toNewOrderCommand(postOrderRequest: PostOrderRequest): NewOrderCommand {
@@ -133,7 +172,7 @@ export class OrderController {
     };
   }
 
-  private toDeleteCommand(id: string): DeleteOrderCommand {
+  private toCommandContainingOnlyOrderId(id: string): DeleteOrderCommand | CheckOrderCommand | UncheckOrderCommand {
     return { orderId: parseInt(id, 10) };
   }
 

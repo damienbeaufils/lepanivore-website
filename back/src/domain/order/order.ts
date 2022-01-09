@@ -48,6 +48,7 @@ export class Order implements OrderInterface {
   deliveryAddress?: string;
   reservationDate?: Date;
   note?: string;
+  checked?: boolean;
 
   private constructor(
     order: OrderInterface,
@@ -266,6 +267,14 @@ export class Order implements OrderInterface {
     this.bindProductSelection(command, activeProducts);
     this.bindOrderTypeSelection(command, closingPeriods, isAdmin);
     this.note = command.note;
+  }
+
+  check(): void {
+    this.checked = true;
+  }
+
+  uncheck(): void {
+    this.checked = false;
   }
 
   private copy(otherOrder: OrderInterface): void {

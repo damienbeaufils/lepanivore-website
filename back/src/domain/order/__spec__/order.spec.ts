@@ -2144,4 +2144,53 @@ describe('domain/order/Order', () => {
       });
     });
   });
+
+  describe('check()', () => {
+    let existingOrder: Order;
+
+    beforeEach(() => {
+      existingOrder = Order.factory.copy({
+        id: 42,
+        clientName: 'John Doe',
+        clientPhoneNumber: '+1 514 111 1111',
+        clientEmailAddress: 'test@example.org',
+        products: [],
+        type: OrderType.PICK_UP,
+        note: 'a note',
+      });
+    });
+
+    it('should mark the order as checked when it has been picked up', () => {
+      // when
+      existingOrder.check();
+
+      // then
+      expect(existingOrder.checked).toBe(true);
+    });
+  });
+
+  describe('uncheck()', () => {
+    let existingOrder: Order;
+
+    beforeEach(() => {
+      existingOrder = Order.factory.copy({
+        id: 42,
+        clientName: 'John Doe',
+        clientPhoneNumber: '+1 514 111 1111',
+        clientEmailAddress: 'test@example.org',
+        products: [],
+        type: OrderType.PICK_UP,
+        note: 'a note',
+        checked: true,
+      });
+    });
+
+    it('should mark the order as unchecked when it has not been picked up', () => {
+      // when
+      existingOrder.uncheck();
+
+      // then
+      expect(existingOrder.checked).toBe(false);
+    });
+  });
 });

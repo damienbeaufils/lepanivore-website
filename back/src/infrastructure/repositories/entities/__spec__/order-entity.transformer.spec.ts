@@ -28,6 +28,7 @@ describe('infrastructure/repositories/entities/OrderEntityTransformer', () => {
         reservationDate: new Date('2040-06-13T04:41:20'),
         deliveryAddress: 'Montréal',
         note: 'a note',
+        checked: true,
       } as OrderEntity;
 
       // when
@@ -49,6 +50,7 @@ describe('infrastructure/repositories/entities/OrderEntityTransformer', () => {
         reservationDate: new Date('2040-06-13T04:41:20'),
         deliveryAddress: 'Montréal',
         note: 'a note',
+        checked: true,
       } as OrderInterface);
     });
   });
@@ -71,6 +73,7 @@ describe('infrastructure/repositories/entities/OrderEntityTransformer', () => {
         reservationDate: new Date('2040-06-13T04:41:20'),
         deliveryAddress: 'Montréal',
         note: 'a note',
+        checked: true,
       };
 
       // when
@@ -92,6 +95,7 @@ describe('infrastructure/repositories/entities/OrderEntityTransformer', () => {
         reservationDate: new Date('2040-06-13T04:41:20'),
         deliveryAddress: 'Montréal',
         note: 'a note',
+        checked: true,
       } as OrderEntity);
     });
   });
