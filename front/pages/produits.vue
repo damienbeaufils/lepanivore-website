@@ -33,10 +33,7 @@
           <ul>
             <li>La Baguette au levain : 3.50 $</li>
             <li>La Baguette au levain enrobée au sésame : 3.95 $</li>
-            <li>L'Exquis <small>(farine de blé tamisée, farine d'épeautre, farine de khorasan, graines de tournesol
-              dedans
-              et dessus)</small> : 7.10 $
-            </li>
+            <li>L'Exquis <small>(farine de blé tamisée, farine d'épeautre, farine de khorasan, graines de tournesol dedans et dessus)</small> : 7.10 $</li>
             <li>Le Moelleux <small>(farine blanche, farine de blé tamisée, lait, huile de canola)</small> : 5.95 $</li>
             <li>Le Seigle <small>(farine de blé tamisée, farine de seigle)</small> : 5.80 $</li>
             <li>La Miche Blanche <small>(farine blanche)</small> : 4.50 $</li>
@@ -48,9 +45,8 @@
           <h4><u>Mardi :</u></h4>
           <ul>
             <li>L'Avoine <small>(farine de blé tamisée, farine d'avoine)</small> : 5.85 $</li>
-            <li>Le Multigrains <small>(farine de blé tamisée, flocons d'avoine, graines de tournesol rôties, graines de
-              lin, graines de sésame, graines de citrouilles vertes)</small> : 7.15 $
-            </li>
+            <li>Le Multigrains <small>(farine de blé tamisée, flocons d'avoine, graines de tournesol rôties, graines de lin, graines de sésame, 
+            graines de citrouilles vertes)</small> : 7.15 $</li>
           </ul>
 
           <h4><u>Mercredi :</u></h4>
@@ -77,8 +73,7 @@
           <h4><u>Samedi :</u></h4>
           <ul>
             <li>Le Datte Noix <small>(farine de blé tamisée, dattes séchées, noix de Grenoble)</small> : 7.90 $</li>
-            <li>Le Raisin Choco <small>(farine de blé tamisée, raisins sultana, pépites de chocolat)</small> : 7.20 $
-            </li>
+            <li>Le Raisin Choco <small>(farine de blé tamisée, raisins sultana, pépites de chocolat)</small> : 7.20 $</li>
             <li>L'Épeautre <small>(farine de blé tamisée, farine d'épeautre)</small> : 5.85 $</li>
             <li>L'Intégral <small>(farine de blé intégrale)</small> : 5.80 $</li>
           </ul>
@@ -92,8 +87,7 @@
             <li>L'Enrobé Sésame<small>(farine de blé tamisée, croûte de graines de sésame)</small> : 7.20 $</li>
             <li>La Miche Rustique, cuite sur pierre naturelle <small>(farine de blé tamisée)</small> : 5.40 $</li>
             <li>Le Mariko <small>(farine de blé tamisée, écorces d'orange bio confites)</small> : 8.05 $</li>
-            <li>Le Mariko Choco <small>(farine de blé tamisée, écorces d'orange bio confites et pépites de
-              chocolat)</small> : 8.70 $</li>
+            <li>Le Mariko Choco <small>(farine de blé tamisée, écorces d'orange bio confites et pépites de chocolat)</small> : 8.70 $</li>
             <li>Le Canneberge <small>(farine de blé tamisée, canneberges séchées)</small> : 6.90 $</li>
             <li>Le Raisin <small>(farine de blé tamisée, raisins sultana)</small> : 6.90 $</li>
             <li>Le Datte <small>(farine de blé tamisée, dattes séchées)</small> : 6.90 $</li>
