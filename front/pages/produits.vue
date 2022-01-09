@@ -49,7 +49,7 @@
           <ul>
             <li>L'Avoine <small>(farine de blé tamisée, farine d'avoine)</small> : 5.85 $</li>
             <li>Le Multigrains <small>(farine de blé tamisée, flocons d'avoine, graines de tournesol rôties, graines de
-              lin, graines de sésame, graines de citrouilles vertes)</small> : 7.10 $
+              lin, graines de sésame, graines de citrouilles vertes)</small> : 7.15 $
             </li>
           </ul>
 
