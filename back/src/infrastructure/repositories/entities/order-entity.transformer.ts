@@ -32,6 +32,7 @@ export class OrderEntityTransformer implements ValueTransformer {
       deliveryAddress: orderEntity.deliveryAddress,
       reservationDate: orderEntity.reservationDate,
       note: orderEntity.note,
+      checked: orderEntity.checked,
     };
   }
 
@@ -51,6 +52,7 @@ export class OrderEntityTransformer implements ValueTransformer {
     orderEntity.deliveryAddress = order.deliveryAddress;
     orderEntity.reservationDate = order.reservationDate;
     orderEntity.note = order.note;
+    orderEntity.checked = order.checked;
 
     return orderEntity;
   }

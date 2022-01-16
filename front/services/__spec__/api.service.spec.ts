@@ -87,6 +87,30 @@ describe('services/ApiService', () => {
     });
   });
 
+  describe('getOrdersByDate()', () => {
+    it('should get orders from api with date as uri param', async () => {
+      // given
+      const date: Date = new Date('2020-06-13T12:00:00Z');
+
+      // when
+      await apiService.getOrdersByDate(date);
+
+      // then
+      expect($get).toHaveBeenCalledWith('/api/orders/date/2020-06-13');
+    });
+    it('should return orders', async () => {
+      // given
+      const response: GetOrderResponse[] = [{ id: 1, clientName: 'fake order 1' } as GetOrderResponse];
+      $get.mockReturnValue(Promise.resolve(response));
+
+      // when
+      const result: GetOrderResponse[] = await apiService.getOrdersByDate(new Date());
+
+      // then
+      expect(result).toStrictEqual(response);
+    });
+  });
+
   describe('getOrdersAsCsv()', () => {
     it('should get orders as csv from api', async () => {
       // when
@@ -179,6 +203,32 @@ describe('services/ApiService', () => {
 
       // then
       expect($put).toHaveBeenCalledWith('/api/orders/42', request);
+    });
+  });
+
+  describe('checkOrder()', () => {
+    it('should check order to api', async () => {
+      // given
+      const orderId: OrderId = 42;
+
+      // when
+      await apiService.checkOrder(orderId);
+
+      // then
+      expect($put).toHaveBeenCalledWith('/api/orders/42/check');
+    });
+  });
+
+  describe('uncheckOrder()', () => {
+    it('should check order to api', async () => {
+      // given
+      const orderId: OrderId = 42;
+
+      // when
+      await apiService.uncheckOrder(orderId);
+
+      // then
+      expect($put).toHaveBeenCalledWith('/api/orders/42/uncheck');
     });
   });
 

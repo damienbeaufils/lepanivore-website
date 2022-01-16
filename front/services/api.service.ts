@@ -29,6 +29,12 @@ export default class ApiService {
     return this.$axios.$get(url);
   }
 
+  getOrdersByDate(date: Date): Promise<GetOrderResponse[]> {
+    const url: string = `/api/orders/date/${this.toString(date)}`;
+
+    return this.$axios.$get(url);
+  }
+
   getOrdersAsCsv(year?: number): Promise<string> {
     const url: string = year ? `/api/orders/csv?year=${year}` : '/api/orders/csv';
 
@@ -36,7 +42,7 @@ export default class ApiService {
   }
 
   getOrderedProductsByDateRange(startDate: Date, endDate: Date): Promise<GetOrderedProductResponse[]> {
-    const url: string = `/api/orders/products/${startDate.toISOString().split('T')[0]}/${endDate.toISOString().split('T')[0]}`;
+    const url: string = `/api/orders/products/${this.toString(startDate)}/${this.toString(endDate)}`;
 
     return this.$axios.$get(url);
   }
@@ -47,6 +53,14 @@ export default class ApiService {
 
   putOrder(id: OrderId, putOrderRequest: PutOrderRequest): Promise<void> {
     return this.$axios.$put(`/api/orders/${id}`, putOrderRequest);
+  }
+
+  checkOrder(id: OrderId): Promise<void> {
+    return this.$axios.$put(`/api/orders/${id}/check`);
+  }
+
+  uncheckOrder(id: OrderId): Promise<void> {
+    return this.$axios.$put(`/api/orders/${id}/uncheck`);
   }
 
   deleteOrder(id: OrderId): Promise<void> {
@@ -97,5 +111,9 @@ export default class ApiService {
     $axios.interceptors.response.use(undefined, (error: AxiosError) => {
       return Promise.reject(error && error.response && error.response.data);
     });
+  }
+
+  private toString(date: Date): string {
+    return date.toISOString().split('T')[0];
   }
 }

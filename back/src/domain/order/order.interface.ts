@@ -14,4 +14,5 @@ export interface OrderInterface {
   deliveryAddress?: string;
   reservationDate?: Date;
   note?: string;
+  checked?: boolean;
 }

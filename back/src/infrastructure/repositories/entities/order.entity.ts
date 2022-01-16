@@ -53,4 +53,7 @@ export class OrderEntity {
 
   @Column({ name: 'note', type: 'text', nullable: true })
   note?: string;
+
+  @Column({ name: 'checked', type: 'boolean', nullable: true })
+  checked?: boolean;
 }
