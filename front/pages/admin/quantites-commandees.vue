@@ -68,6 +68,7 @@
       class="elevation-1"
       :items-per-page="50"
       :footer-props="{ 'items-per-page-options': [50, 10, 20, 30, 40, 100] }"
+      :loading="isLoading"
     >
     </v-data-table>
   </v-card>
@@ -88,6 +89,7 @@ interface QuantitesCommandeesData {
   showReservationOrders: boolean;
   showPickUpOrders: boolean;
   showDeliveryOrders: boolean;
+  isLoading: boolean;
 }
 
 export default Vue.extend({
@@ -111,6 +113,7 @@ export default Vue.extend({
       showReservationOrders: true,
       showPickUpOrders: true,
       showDeliveryOrders: true,
+      isLoading: true,
     } as QuantitesCommandeesData;
   },
   async asyncData(ctx: Context): Promise<object> {
@@ -118,26 +121,36 @@ export default Vue.extend({
     const endDate: Date = new Date();
 
     const orderedProducts: GetOrderedProductResponse[] = await ctx.app.$apiService.getOrderedProductsByDateRange(startDate, endDate);
+    const isLoading: boolean = false;
 
     return {
       startDate: startDate.toISOString().split('T')[0],
       endDate: endDate.toISOString().split('T')[0],
       orderedProducts,
+      isLoading
     };
   },
   watch: {
     async startDate(value: string): Promise<void> {
+      this.orderedProducts = [];
+      this.isLoading = true;
       try {
         this.orderedProducts = await this.$apiService.getOrderedProductsByDateRange(this.toDate(value), this.toDate(this.endDate));
       } catch (e) {
         this.handleError(e);
+      } finally {
+        this.isLoading = false;
       }
     },
     async endDate(value: string): Promise<void> {
+      this.orderedProducts = [];
+      this.isLoading = true;
       try {
         this.orderedProducts = await this.$apiService.getOrderedProductsByDateRange(this.toDate(this.startDate), this.toDate(value));
       } catch (e) {
         this.handleError(e);
+      } finally {
+        this.isLoading = false;
       }
     },
   },
@@ -191,5 +204,3 @@ export default Vue.extend({
   },
 });
 </script>
-
-<style scoped lang="scss"></style>

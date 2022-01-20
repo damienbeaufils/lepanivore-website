@@ -16,7 +16,7 @@ export class DatabaseOrderRepository implements OrderRepository {
   ) {}
 
   async save(order: OrderInterface): Promise<OrderId> {
-    const orderEntity: OrderEntity = this.orderEntityTransformer.to(order);
+    const orderEntity: OrderEntity = await this.orderEntityTransformer.to(order);
     const savedOrderEntity: OrderEntity = await this.orderEntityRepository.save(orderEntity);
 
     return Promise.resolve(savedOrderEntity.id);
@@ -37,7 +37,9 @@ export class DatabaseOrderRepository implements OrderRepository {
 
   async findAll(): Promise<OrderInterface[]> {
     const foundOrderEntities: OrderEntity[] = await this.orderEntityRepository.find();
-    const result: OrderInterface[] = foundOrderEntities.map((orderEntity: OrderEntity) => this.orderEntityTransformer.from(orderEntity));
+    const result: OrderInterface[] = await Promise.all(
+      foundOrderEntities.map((orderEntity: OrderEntity) => this.orderEntityTransformer.from(orderEntity))
+    );
 
     return Promise.resolve(result);
   }
@@ -49,7 +51,9 @@ export class DatabaseOrderRepository implements OrderRepository {
       .orWhere(`order.delivery_date LIKE '${year}-%'`)
       .orWhere(`order.reservation_date LIKE '${year}-%'`)
       .getMany();
-    const result: OrderInterface[] = foundOrderEntities.map((orderEntity: OrderEntity) => this.orderEntityTransformer.from(orderEntity));
+    const result: OrderInterface[] = await Promise.all(
+      foundOrderEntities.map((orderEntity: OrderEntity) => this.orderEntityTransformer.from(orderEntity))
+    );
 
     return Promise.resolve(result);
   }
@@ -58,7 +62,18 @@ export class DatabaseOrderRepository implements OrderRepository {
     const foundOrderEntities: OrderEntity[] = await this.orderEntityRepository.find({
       where: [{ pickUpDate: date }, { deliveryDate: date }, { reservationDate: date }],
     });
-    const result: OrderInterface[] = foundOrderEntities.map((orderEntity: OrderEntity) => this.orderEntityTransformer.from(orderEntity));
+    const result: OrderInterface[] = await Promise.all(
+      foundOrderEntities.map((orderEntity: OrderEntity) => this.orderEntityTransformer.from(orderEntity))
+    );
+
+    return Promise.resolve(result);
+  }
+
+  async findTopByOrderByIdDesc(numberOfItemsToReturn: number): Promise<OrderInterface[]> {
+    const foundOrderEntities: OrderEntity[] = await this.orderEntityRepository.find({ order: { id: 'DESC' }, take: numberOfItemsToReturn });
+    const result: OrderInterface[] = await Promise.all(
+      foundOrderEntities.map((orderEntity: OrderEntity) => this.orderEntityTransformer.from(orderEntity))
+    );
 
     return Promise.resolve(result);
   }

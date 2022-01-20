@@ -9,6 +9,7 @@ import { DisableProductOrdering } from '../../use_cases/disable-product-ordering
 import { EnableProductOrdering } from '../../use_cases/enable-product-ordering';
 import { GetActiveProducts } from '../../use_cases/get-active-products';
 import { GetClosingPeriods } from '../../use_cases/get-closing-periods';
+import { GetLastOrders } from '../../use_cases/get-last-orders';
 import { GetOrders } from '../../use_cases/get-orders';
 import { GetOrdersByDate } from '../../use_cases/get-orders-by-date';
 import { GetProductOrderingStatus } from '../../use_cases/get-product-ordering-status';
@@ -32,6 +33,7 @@ export class ProxyServicesDynamicModule {
   // Order
   static GET_ORDERS_PROXY_SERVICE: string = 'GetOrdersProxyService';
   static GET_ORDERS_BY_DATE_PROXY_SERVICE: string = 'GetOrdersByDateProxyService';
+  static GET_LAST_ORDERS_PROXY_SERVICE: string = 'GetLastOrdersProxyService';
   static GET_ORDERED_PRODUCTS_BY_DATE_RANGE_PROXY_SERVICE: string = 'GetOrderedProductsByDateRangeProxyService';
   static ORDER_PRODUCTS_PROXY_SERVICE: string = 'OrderProductsProxyService';
   static UPDATE_EXISTING_ORDER_PROXY_SERVICE: string = 'UpdateExistingOrderProxyService';
@@ -66,6 +68,11 @@ export class ProxyServicesDynamicModule {
           inject: [DatabaseOrderRepository],
           provide: ProxyServicesDynamicModule.GET_ORDERS_BY_DATE_PROXY_SERVICE,
           useFactory: (databaseOrderRepository: DatabaseOrderRepository) => new UseCaseProxy(new GetOrdersByDate(databaseOrderRepository)),
+        },
+        {
+          inject: [DatabaseOrderRepository],
+          provide: ProxyServicesDynamicModule.GET_LAST_ORDERS_PROXY_SERVICE,
+          useFactory: (databaseOrderRepository: DatabaseOrderRepository) => new UseCaseProxy(new GetLastOrders(databaseOrderRepository)),
         },
         {
           inject: [DatabaseOrderRepository],
@@ -188,6 +195,7 @@ export class ProxyServicesDynamicModule {
         // Order
         ProxyServicesDynamicModule.GET_ORDERS_PROXY_SERVICE,
         ProxyServicesDynamicModule.GET_ORDERS_BY_DATE_PROXY_SERVICE,
+        ProxyServicesDynamicModule.GET_LAST_ORDERS_PROXY_SERVICE,
         ProxyServicesDynamicModule.GET_ORDERED_PRODUCTS_BY_DATE_RANGE_PROXY_SERVICE,
         ProxyServicesDynamicModule.ORDER_PRODUCTS_PROXY_SERVICE,
         ProxyServicesDynamicModule.UPDATE_EXISTING_ORDER_PROXY_SERVICE,

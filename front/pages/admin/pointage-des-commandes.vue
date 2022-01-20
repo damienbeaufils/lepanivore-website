@@ -26,6 +26,7 @@
       class="elevation-1"
       :items-per-page="50"
       :footer-props="{ 'items-per-page-options': [50, 10, 20, 30, 40, 100] }"
+      :loading="isLoading"
     >
       <template v-slot:item.products="{ item }">
         <span v-for="productWithQuantity in item.products" v-bind:key="productWithQuantity.product.id">
@@ -74,6 +75,7 @@ interface PointageDesCommandesData {
   orders: GetOrderResponse[];
   date: string;
   showDatePicker: boolean;
+  isLoading: boolean;
 }
 
 export default Vue.extend({
@@ -98,20 +100,26 @@ export default Vue.extend({
       orders: [],
       date: '',
       showDatePicker: false,
+      isLoading: true,
     } as PointageDesCommandesData;
   },
   async asyncData(ctx: Context): Promise<object> {
     const date: Date = new Date();
     const orders: GetOrderResponse[] = await ctx.app.$apiService.getOrdersByDate(date);
+    const isLoading: boolean = false;
 
-    return { date: date.toISOString().split('T')[0], orders };
+    return { date: date.toISOString().split('T')[0], orders, isLoading };
   },
   watch: {
     async date(value: string): Promise<void> {
+      this.orders = [];
+      this.isLoading = true;
       try {
         this.orders = await this.$apiService.getOrdersByDate(this.toDate(value));
       } catch (e) {
         this.handleError(e);
+      } finally {
+        this.isLoading = false;
       }
     },
   },
@@ -122,20 +130,26 @@ export default Vue.extend({
   },
   methods: {
     async checkOrder(order: GetOrderResponse): Promise<void> {
+      this.isLoading = true;
       try {
         await this.$apiService.checkOrder(order.id);
         this.orders = await this.$apiService.getOrdersByDate(this.toDate(this.date));
       } catch (e) {
         this.handleError(e);
+      } finally {
+        this.isLoading = false;
       }
     },
 
     async uncheckOrder(order: GetOrderResponse): Promise<void> {
+      this.isLoading = true;
       try {
         await this.$apiService.uncheckOrder(order.id);
         this.orders = await this.$apiService.getOrdersByDate(this.toDate(this.date));
       } catch (e) {
         this.handleError(e);
+      } finally {
+        this.isLoading = false;
       }
     },
 

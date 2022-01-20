@@ -29,6 +29,7 @@ export class EnvironmentConfigService {
       APP_EMAIL_ORDER_NOTIFICATION_FROM: Joi.string().required(),
       APP_EMAIL_ORDER_NOTIFICATION_TO: Joi.string().required(),
       APP_EMAIL_ORDER_NOTIFICATION_SUBJECT_PREFIX: Joi.string().default(''),
+      APP_PERSONAL_DATA_ENCRYPTION_KEY: Joi.string().required().length(32),
       APP_JWT_SECRET: Joi.string().required().min(128),
       SMTP_HOST: Joi.string().required(),
       SMTP_PORT: Joi.number().required(),

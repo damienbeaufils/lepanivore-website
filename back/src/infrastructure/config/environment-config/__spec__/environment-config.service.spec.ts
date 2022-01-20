@@ -17,6 +17,7 @@ describe('infrastructure/config/environment-config/EnvironmentConfigService', ()
       APP_ADMIN_ENCRYPTED_PASSWORD: 'app-admin-encrypted-password',
       APP_EMAIL_ORDER_NOTIFICATION_FROM: 'app-email-order-notification-from',
       APP_EMAIL_ORDER_NOTIFICATION_TO: 'app-email-order-notification-cc',
+      APP_PERSONAL_DATA_ENCRYPTION_KEY: repeat('x', 32),
       APP_JWT_SECRET: repeat('x', 128),
       SMTP_HOST: 'smtp-host',
       SMTP_PORT: '789',
@@ -270,6 +271,43 @@ describe('infrastructure/config/environment-config/EnvironmentConfigService', ()
 
         // then
         expect(result.get('APP_EMAIL_ORDER_NOTIFICATION_SUBJECT_PREFIX')).toBe('');
+      });
+    });
+
+    describe('APP_PERSONAL_DATA_ENCRYPTION_KEY', () => {
+      it('should fail when empty', () => {
+        // given
+        process.env.APP_PERSONAL_DATA_ENCRYPTION_KEY = '';
+
+        // when
+        const result = () => new EnvironmentConfigService();
+
+        // then
+        expect(result).toThrow(new EnvironmentConfigError('Config validation error: "APP_PERSONAL_DATA_ENCRYPTION_KEY" is not allowed to be empty'));
+      });
+      it('should fail when less than 32 characters', () => {
+        // given
+        process.env.APP_PERSONAL_DATA_ENCRYPTION_KEY = repeat('x', 31);
+
+        // when
+        const result = () => new EnvironmentConfigService();
+
+        // then
+        expect(result).toThrow(
+          new EnvironmentConfigError('Config validation error: "APP_PERSONAL_DATA_ENCRYPTION_KEY" length must be 32 characters long')
+        );
+      });
+      it('should fail when more than 32 characters', () => {
+        // given
+        process.env.APP_PERSONAL_DATA_ENCRYPTION_KEY = repeat('x', 33);
+
+        // when
+        const result = () => new EnvironmentConfigService();
+
+        // then
+        expect(result).toThrow(
+          new EnvironmentConfigError('Config validation error: "APP_PERSONAL_DATA_ENCRYPTION_KEY" length must be 32 characters long')
+        );
       });
     });
 

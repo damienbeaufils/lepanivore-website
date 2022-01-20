@@ -8,4 +8,5 @@ export interface OrderRepository {
   findAll(): Promise<OrderInterface[]>;
   findAllByYear(year: number): Promise<OrderInterface[]>;
   findAllByDate(date: Date): Promise<OrderInterface[]>;
+  findTopByOrderByIdDesc(numberOfItemsToReturn: number): Promise<OrderInterface[]>;
 }
