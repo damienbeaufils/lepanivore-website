@@ -35,6 +35,12 @@ export default class ApiService {
     return this.$axios.$get(url);
   }
 
+  getLastOrders(numberOfOrders: number): Promise<GetOrderResponse[]> {
+    const url: string = `/api/orders/last/${numberOfOrders}`;
+
+    return this.$axios.$get(url);
+  }
+
   getOrdersAsCsv(year?: number): Promise<string> {
     const url: string = year ? `/api/orders/csv?year=${year}` : '/api/orders/csv';
 

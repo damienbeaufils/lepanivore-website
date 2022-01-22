@@ -19,10 +19,10 @@
         class="year-select"
       ></v-select>
       <v-spacer></v-spacer>
-      <v-btn color="success" @click="downloadCsv">{{ downloadCsvLabel }}</v-btn>
+      <v-btn color="success" @click="downloadCsv" :loading="isLoading">{{ downloadCsvLabel }}</v-btn>
     </v-card-title>
 
-    <v-data-table :headers="headers" :items="orders" :search="searchedValue" sort-by="id" sort-desc class="elevation-1">
+    <v-data-table :headers="headers" :items="orders" :search="searchedValue" sort-by="id" sort-desc class="elevation-1" :loading="isLoading">
       <template v-slot:item.products="{ item }">
         <span v-for="productWithQuantity in item.products" v-bind:key="productWithQuantity.product.id">
           - {{ productWithQuantity.product.name }} : {{ productWithQuantity.quantity }}<br/>
@@ -105,6 +105,7 @@ interface CommandesData {
   editedOrder: PutOrderRequest;
   editedOrderId: OrderId;
   year?: number;
+  isLoading: boolean;
 }
 
 export default Vue.extend({
@@ -140,22 +141,36 @@ export default Vue.extend({
       editedOrder: {} as PutOrderRequest,
       editedOrderId: -1,
       year: undefined,
+      isLoading: true,
     } as CommandesData;
   },
   async asyncData(ctx: Context): Promise<object> {
-    const year: number = new Date().getFullYear();
-    const orders: GetOrderResponse[] = await ctx.app.$apiService.getOrders(year);
+    const orders: GetOrderResponse[] = await ctx.app.$apiService.getLastOrders(30);
     const closingPeriods: GetClosingPeriodResponse[] = await ctx.app.$apiService.getClosingPeriods();
     const products: GetProductResponse[] = await ctx.app.$apiService.getProducts();
 
-    return { orders, closingPeriods, products, year };
+    const year: number = new Date().getFullYear();
+    const isLoading: boolean = false;
+
+    return { orders, closingPeriods, products, year, isLoading };
+  },
+  async mounted() {
+    this.orders = await this.$apiService.getOrders(this.year);
   },
   watch: {
     editOrderDialog(value: boolean) {
       value || this.closeEditOrderDialog();
     },
     async year(value: number) {
-      this.orders = await this.$apiService.getOrders(value);
+      this.orders = [];
+      this.isLoading = true;
+      try {
+        this.orders = await this.$apiService.getOrders(value);
+        } catch (e) {
+        this.handleError(e);
+      }finally {
+      this.isLoading = false;
+      }
     },
   },
   computed: {
@@ -249,7 +264,9 @@ export default Vue.extend({
     },
 
     async downloadCsv(): Promise<void> {
+      this.isLoading = true;
       const csvContent: string = await this.$apiService.getOrdersAsCsv(this.year);
+      this.isLoading = false;
       const filenamePrefix: string = this.year ? `${this.year}` : 'all';
 
       const link: HTMLElement = document.createElement('a');

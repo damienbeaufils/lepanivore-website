@@ -111,6 +111,30 @@ describe('services/ApiService', () => {
     });
   });
 
+  describe('getLastOrders()', () => {
+    it('should get orders from api with number of orders as uri param', async () => {
+      // given
+      const numberOfOrders: number = 42;
+
+      // when
+      await apiService.getLastOrders(numberOfOrders);
+
+      // then
+      expect($get).toHaveBeenCalledWith('/api/orders/last/42');
+    });
+    it('should return orders', async () => {
+      // given
+      const response: GetOrderResponse[] = [{ id: 1, clientName: 'fake order 1' } as GetOrderResponse];
+      $get.mockReturnValue(Promise.resolve(response));
+
+      // when
+      const result: GetOrderResponse[] = await apiService.getLastOrders(1);
+
+      // then
+      expect(result).toStrictEqual(response);
+    });
+  });
+
   describe('getOrdersAsCsv()', () => {
     it('should get orders as csv from api', async () => {
       // when

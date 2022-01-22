@@ -334,6 +334,55 @@ describe('infrastructure/repositories/DatabaseOrderRepository', () => {
     });
   });
 
+  describe('findTopByOrderByIdDesc()', () => {
+    it('should return the last saved orders depending on the given parameter', async () => {
+      // given
+      const orderWithoutId1: OrderInterface = { ...orderWithoutId };
+      const orderWithoutId2: OrderInterface = { ...orderWithoutId };
+      const orderWithoutId3: OrderInterface = { ...orderWithoutId };
+      await databaseOrderRepository.save(orderWithoutId1);
+      await databaseOrderRepository.save(orderWithoutId2);
+      await databaseOrderRepository.save(orderWithoutId3);
+      const numberOfItemsToReturn: number = 2;
+
+      // when
+      const result: OrderInterface[] = await databaseOrderRepository.findTopByOrderByIdDesc(numberOfItemsToReturn);
+
+      // then
+      expect(result).toHaveLength(2);
+      expect(result[0]).toMatchObject(orderWithoutId3);
+      expect(result[1]).toMatchObject(orderWithoutId2);
+    });
+
+    it('should return all orders when given parameter is above the number of records in database', async () => {
+      // given
+      const orderWithoutId1: OrderInterface = { ...orderWithoutId };
+      const orderWithoutId2: OrderInterface = { ...orderWithoutId };
+      await databaseOrderRepository.save(orderWithoutId1);
+      await databaseOrderRepository.save(orderWithoutId2);
+      const numberOfItemsToReturn: number = 5;
+
+      // when
+      const result: OrderInterface[] = await databaseOrderRepository.findTopByOrderByIdDesc(numberOfItemsToReturn);
+
+      // then
+      expect(result).toHaveLength(2);
+      expect(result[0]).toMatchObject(orderWithoutId2);
+      expect(result[1]).toMatchObject(orderWithoutId1);
+    });
+
+    it('return empty array when no orders in database', async () => {
+      // given
+      const numberOfItemsToReturn: number = 5;
+
+      // when
+      const result: OrderInterface[] = await databaseOrderRepository.findTopByOrderByIdDesc(numberOfItemsToReturn);
+
+      // then
+      expect(result).toHaveLength(0);
+    });
+  });
+
   afterAll(async () => {
     await app.close();
   });

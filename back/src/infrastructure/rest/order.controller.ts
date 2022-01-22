@@ -14,6 +14,7 @@ import { OrderId } from '../../domain/type-aliases';
 import { User } from '../../domain/user/user';
 import { CheckOrder } from '../../use_cases/check-order';
 import { DeleteOrder } from '../../use_cases/delete-order';
+import { GetLastOrders } from '../../use_cases/get-last-orders';
 import { GetOrders } from '../../use_cases/get-orders';
 import { GetOrdersByDate } from '../../use_cases/get-orders-by-date';
 import { OrderProducts } from '../../use_cases/order-products';
@@ -35,6 +36,7 @@ export class OrderController {
   constructor(
     @Inject(ProxyServicesDynamicModule.GET_ORDERS_PROXY_SERVICE) private readonly getOrdersProxyService: UseCaseProxy<GetOrders>,
     @Inject(ProxyServicesDynamicModule.GET_ORDERS_BY_DATE_PROXY_SERVICE) private readonly getOrdersByDateProxyService: UseCaseProxy<GetOrdersByDate>,
+    @Inject(ProxyServicesDynamicModule.GET_LAST_ORDERS_PROXY_SERVICE) private readonly getLastOrdersProxyService: UseCaseProxy<GetLastOrders>,
     @Inject(ProxyServicesDynamicModule.GET_ORDERED_PRODUCTS_BY_DATE_RANGE_PROXY_SERVICE)
     private readonly getOrderedProductsByDateRangeProxyService: UseCaseProxy<GetOrderedProductsByDateRange>,
     @Inject(ProxyServicesDynamicModule.ORDER_PRODUCTS_PROXY_SERVICE) private readonly orderProductsProxyService: UseCaseProxy<OrderProducts>,
@@ -53,14 +55,7 @@ export class OrderController {
     const year: number = request.query.year ? parseInt(request.query.year as string, 10) : undefined;
     const orders: OrderInterface[] = await this.getOrdersProxyService.getInstance().execute(request.user as User, year);
 
-    return orders.map(
-      (order: OrderInterface): GetOrderResponse => ({
-        ...order,
-        pickUpDate: getDateAsIsoStringWithoutTime(order.pickUpDate),
-        deliveryDate: getDateAsIsoStringWithoutTime(order.deliveryDate),
-        reservationDate: getDateAsIsoStringWithoutTime(order.reservationDate),
-      })
-    );
+    return this.toGetOrderResponses(orders);
   }
 
   @Get('/date/:date')
@@ -70,14 +65,15 @@ export class OrderController {
       .getInstance()
       .execute(request.user as User, parseDateWithTimeAtNoonUTC(date));
 
-    return orders.map(
-      (order: OrderInterface): GetOrderResponse => ({
-        ...order,
-        pickUpDate: getDateAsIsoStringWithoutTime(order.pickUpDate),
-        deliveryDate: getDateAsIsoStringWithoutTime(order.deliveryDate),
-        reservationDate: getDateAsIsoStringWithoutTime(order.reservationDate),
-      })
-    );
+    return this.toGetOrderResponses(orders);
+  }
+
+  @Get('/last/:numberOfOrders')
+  @UseGuards(JwtAuthGuard)
+  async getLastOrders(@Param('numberOfOrders') numberOfOrders: string, @Req() request: Request): Promise<GetOrderResponse[]> {
+    const orders: OrderInterface[] = await this.getLastOrdersProxyService.getInstance().execute(request.user as User, parseInt(numberOfOrders, 10));
+
+    return this.toGetOrderResponses(orders);
   }
 
   @Get('/products/:startDate/:endDate')
@@ -142,6 +138,17 @@ export class OrderController {
   @UseGuards(JwtAuthGuard)
   async deleteOrder(@Param('id') id: string, @Req() request: Request): Promise<void> {
     await this.deleteOrderProxyService.getInstance().execute(request.user as User, this.toCommandContainingOnlyOrderId(id));
+  }
+
+  private toGetOrderResponses(orders: OrderInterface[]): GetOrderResponse[] {
+    return orders.map(
+      (order: OrderInterface): GetOrderResponse => ({
+        ...order,
+        pickUpDate: getDateAsIsoStringWithoutTime(order.pickUpDate),
+        deliveryDate: getDateAsIsoStringWithoutTime(order.deliveryDate),
+        reservationDate: getDateAsIsoStringWithoutTime(order.reservationDate),
+      })
+    );
   }
 
   private toNewOrderCommand(postOrderRequest: PostOrderRequest): NewOrderCommand {

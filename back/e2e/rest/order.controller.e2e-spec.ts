@@ -20,6 +20,7 @@ import { ProxyServicesDynamicModule } from '../../src/infrastructure/use_cases_p
 import { UseCaseProxy } from '../../src/infrastructure/use_cases_proxy/use-case-proxy';
 import { CheckOrder } from '../../src/use_cases/check-order';
 import { DeleteOrder } from '../../src/use_cases/delete-order';
+import { GetLastOrders } from '../../src/use_cases/get-last-orders';
 import { GetOrders } from '../../src/use_cases/get-orders';
 import { GetOrdersByDate } from '../../src/use_cases/get-orders-by-date';
 import { OrderProducts } from '../../src/use_cases/order-products';
@@ -34,6 +35,7 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
   let app: INestApplication;
   let mockGetOrders: GetOrders;
   let mockGetOrdersByDate: GetOrdersByDate;
+  let mockGetLastOrders: GetLastOrders;
   let mockGetOrderedProductsByDateRange: GetOrderedProductsByDateRange;
   let mockOrderProducts: OrderProducts;
   let mockUpdateExistingOrder: UpdateExistingOrder;
@@ -53,6 +55,12 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
     const mockGetOrdersByDateProxyService: UseCaseProxy<GetOrdersByDate> = {
       getInstance: () => mockGetOrdersByDate,
     } as UseCaseProxy<GetOrdersByDate>;
+
+    mockGetLastOrders = {} as GetLastOrders;
+    mockGetLastOrders.execute = jest.fn();
+    const mockGetLastOrdersProxyService: UseCaseProxy<GetLastOrders> = {
+      getInstance: () => mockGetLastOrders,
+    } as UseCaseProxy<GetLastOrders>;
 
     mockGetOrderedProductsByDateRange = {} as GetOrderedProductsByDateRange;
     mockGetOrderedProductsByDateRange.execute = jest.fn();
@@ -97,6 +105,8 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
       .useValue(mockGetOrdersProxyService)
       .overrideProvider(ProxyServicesDynamicModule.GET_ORDERS_BY_DATE_PROXY_SERVICE)
       .useValue(mockGetOrdersByDateProxyService)
+      .overrideProvider(ProxyServicesDynamicModule.GET_LAST_ORDERS_PROXY_SERVICE)
+      .useValue(mockGetLastOrdersProxyService)
       .overrideProvider(ProxyServicesDynamicModule.GET_ORDERED_PRODUCTS_BY_DATE_RANGE_PROXY_SERVICE)
       .useValue(mockGetOrderedProductsByDateRangeProxyService)
       .overrideProvider(ProxyServicesDynamicModule.ORDER_PRODUCTS_PROXY_SERVICE)
@@ -120,6 +130,7 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
   beforeEach(() => {
     (mockGetOrders.execute as jest.Mock).mockClear();
     (mockGetOrdersByDate.execute as jest.Mock).mockClear();
+    (mockGetLastOrders.execute as jest.Mock).mockClear();
     (mockGetOrderedProductsByDateRange.execute as jest.Mock).mockClear();
     (mockOrderProducts.execute as jest.Mock).mockClear();
     (mockUpdateExistingOrder.execute as jest.Mock).mockClear();
@@ -301,6 +312,95 @@ describe('infrastructure/rest/OrderController (e2e)', () => {
     it('should return http status code Unauthorized when not authenticated as admin', () => {
       // when
       const testRequestWithoutAuthorizationHeader: request.Test = request(app.getHttpServer()).get('/api/orders/date/2021-03-28');
+
+      // then
+      return testRequestWithoutAuthorizationHeader.expect(401);
+    });
+  });
+
+  describe('GET /api/orders/last/numberOfOrders', () => {
+    it('should return http status code OK with found orders when authenticated as admin', (done: DoneCallback) => {
+      // given
+      const orders: Order[] = [
+        {
+          id: 1,
+          clientName: 'fake order 1',
+          pickUpDate: new Date('2021-03-28T12:00:00Z'),
+          deliveryDate: new Date('2021-03-28T12:00:00Z'),
+          reservationDate: new Date('2021-03-28T12:00:00Z'),
+        } as Order,
+        {
+          id: 2,
+          clientName: 'fake order 2',
+          pickUpDate: new Date('2021-03-28T12:00:00Z'),
+          deliveryDate: new Date('2021-03-28T12:00:00Z'),
+          reservationDate: new Date('2021-03-28T12:00:00Z'),
+        } as Order,
+      ];
+      (mockGetLastOrders.execute as jest.Mock).mockReturnValue(Promise.resolve(orders));
+
+      const loginRequest: request.Test = request(app.getHttpServer()).post('/api/authentication/login').send({
+        username: ADMIN_E2E_USERNAME,
+        password: ADMIN_E2E_PASSWORD,
+      });
+
+      let accessToken: string;
+      loginRequest
+        .expect(200)
+        .expect((loginResponse: Response) => {
+          accessToken = loginResponse.body.accessToken;
+        })
+        .end(() => {
+          // when
+          const testRequest: request.Test = request(app.getHttpServer())
+            .get('/api/orders/last/2')
+            .set({ Authorization: `Bearer ${accessToken}` });
+
+          // then
+          testRequest
+            .expect(200)
+            .expect((response: Response) => {
+              expect(response.body).toStrictEqual([
+                { id: 1, clientName: 'fake order 1', pickUpDate: '2021-03-28', deliveryDate: '2021-03-28', reservationDate: '2021-03-28' },
+                { id: 2, clientName: 'fake order 2', pickUpDate: '2021-03-28', deliveryDate: '2021-03-28', reservationDate: '2021-03-28' },
+              ]);
+            })
+            .end(done);
+        });
+    });
+
+    it('should call use case with given number of orders', (done: DoneCallback) => {
+      // given
+      const loginRequest: request.Test = request(app.getHttpServer()).post('/api/authentication/login').send({
+        username: ADMIN_E2E_USERNAME,
+        password: ADMIN_E2E_PASSWORD,
+      });
+
+      let accessToken: string;
+      loginRequest
+        .expect(200)
+        .expect((loginResponse: Response) => {
+          accessToken = loginResponse.body.accessToken;
+        })
+        .end(() => {
+          // when
+          const testRequest: request.Test = request(app.getHttpServer())
+            .get('/api/orders/last/42')
+            .set({ Authorization: `Bearer ${accessToken}` });
+
+          // then
+          testRequest
+            .expect(200)
+            .expect((response: Response) => {
+              expect(mockGetLastOrders.execute).toHaveBeenCalledWith({ username: 'ADMIN' }, 42);
+            })
+            .end(done);
+        });
+    });
+
+    it('should return http status code Unauthorized when not authenticated as admin', () => {
+      // when
+      const testRequestWithoutAuthorizationHeader: request.Test = request(app.getHttpServer()).get('/api/orders/last/42');
 
       // then
       return testRequestWithoutAuthorizationHeader.expect(401);

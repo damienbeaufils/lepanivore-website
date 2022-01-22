@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { EncryptionModule } from '../config/encryption/encryption.module';
 import { EnvironmentConfigModule } from '../config/environment-config/environment-config.module';
 import { MailerConfigModule } from '../config/mailer/mailer-config.module';
 import { TypeOrmConfigModule } from '../config/typeorm/typeorm-config.module';
@@ -23,6 +24,7 @@ import { ProductEntity } from './entities/product.entity';
     TypeOrmModule.forFeature([OrderEntity, ProductEntity, ClosingPeriodEntity, FeatureEntity]),
     EnvironmentConfigModule,
     MailerConfigModule,
+    EncryptionModule,
   ],
   providers: [
     DatabaseOrderRepository,

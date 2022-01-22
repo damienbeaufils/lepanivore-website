@@ -77,6 +77,10 @@ Environment variables are accessible in `front` application using [Nuxt env prop
     * Description: the email addresses that will be used in the `to` field in the email order notification, comma-separated  
     * Example: `to1@example.org,to2@example.org`
 
+  * __`APP_PERSONAL_DATA_ENCRYPTION_KEY`__
+    * Description: the 32 characters length AES encryption key that will be used to encrypt and decrypt personal data  
+    * Example: `abcdefghijklmnopqrstuvwxyz123456`
+
   * __`APP_JWT_SECRET`__
     * Description: the JWT secret for admin authentication  
     * Example: `a-super-secret-jwt-secret`
