@@ -6,35 +6,35 @@
         <v-col cols="12" sm="8" md="6">
           <h3>Boulangerie Le Panivore</h3>
           <address>
-            1224 rue Bélanger Est<br/>
-            Montréal (QC) H2S 1H8<br/>
-            <br/>
-            Tél. (Laurence) : (514) 647-8635<br/>
-            Tél. (Thomas) : (514) 583-2854<br/>
+            1224 rue Bélanger Est<br />
+            Montréal (QC) H2S 1H8<br />
+            <br />
+            Tél. (Laurence) : (514) 647-8635<br />
+            Tél. (Thomas) : (514) 583-2854<br />
             Courriel : <a href="mailto:info@lepanivore.com">info@lepanivore.com</a>
           </address>
         </v-col>
-       
+
         <v-col cols="12" sm="8" md="6">
           <h3>Heures d'ouverture</h3>
           <table>
             <tbody>
-            <tr>
-              <td>Lundi</td>
-              <td>Repos</td>
-            </tr>
-            <tr>
-              <td>Mardi au vendredi</td>
-              <td>11:00 à 18:30</td>
-            </tr>
-            <tr>
-              <td>Samedi</td>
-              <td>08:00 à 17:00</td>
-            </tr>
-            <tr>
-              <td>Dimanche</td>
-              <td>Repos</td>
-            </tr>
+              <tr>
+                <td>Lundi</td>
+                <td>Repos</td>
+              </tr>
+              <tr>
+                <td>Mardi au vendredi</td>
+                <td>11:00 à 18:30</td>
+              </tr>
+              <tr>
+                <td>Samedi</td>
+                <td>08:00 à 17:00</td>
+              </tr>
+              <tr>
+                <td>Dimanche</td>
+                <td>Repos</td>
+              </tr>
             </tbody>
           </table>
         </v-col>

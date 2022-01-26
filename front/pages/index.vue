@@ -33,22 +33,22 @@ import Vue from 'vue';
 
 export default Vue.extend({
   name: 'index',
-  mounted () {
+  mounted() {
     this.reloadFacebookTimeline();
   },
   methods: {
     reloadFacebookTimeline(): void {
       // @ts-ignore
       window.FB.XFBML.parse();
-    }
-  }
+    },
+  },
 });
 </script>
 
 <style scoped lang="scss">
 .yellow-card {
   color: #683c11 !important;
-  background-color: rgba(229,198,88,.5) !important;
+  background-color: rgba(229, 198, 88, 0.5) !important;
   margin-bottom: 20px;
 
   .headline {

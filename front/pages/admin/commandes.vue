@@ -166,10 +166,10 @@ export default Vue.extend({
       this.isLoading = true;
       try {
         this.orders = await this.$apiService.getOrders(value);
-        } catch (e) {
+      } catch (e) {
         this.handleError(e);
-      }finally {
-      this.isLoading = false;
+      } finally {
+        this.isLoading = false;
       }
     },
   },
@@ -195,7 +195,7 @@ export default Vue.extend({
           ({
             productId: productWithQuantity.product.id,
             quantity: productWithQuantity.quantity,
-          } as ProductIdWithQuantity),
+          } as ProductIdWithQuantity)
       );
       orderToEdit.type = order.type;
       orderToEdit.deliveryDate = order.deliveryDate;
@@ -232,7 +232,7 @@ export default Vue.extend({
     async deleteOrder(order: GetOrderResponse): Promise<void> {
       if (
         confirm(
-          `Vous allez supprimer la commande #${order.id}.\nÊtes-vous certain de vouloir supprimer cette commande ?\n\nAttention, cette action est irréversible !`,
+          `Vous allez supprimer la commande #${order.id}.\nÊtes-vous certain de vouloir supprimer cette commande ?\n\nAttention, cette action est irréversible !`
         )
       ) {
         try {

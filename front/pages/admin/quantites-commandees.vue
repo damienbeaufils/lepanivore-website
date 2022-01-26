@@ -127,7 +127,7 @@ export default Vue.extend({
       startDate: startDate.toISOString().split('T')[0],
       endDate: endDate.toISOString().split('T')[0],
       orderedProducts,
-      isLoading
+      isLoading,
     };
   },
   watch: {

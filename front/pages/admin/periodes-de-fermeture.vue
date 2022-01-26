@@ -219,7 +219,7 @@ export default Vue.extend({
       dateCopy.setHours(12, 0, 0, 0);
 
       return dateCopy.toISOString().split('T')[0];
-    }
+    },
   },
 });
 </script>

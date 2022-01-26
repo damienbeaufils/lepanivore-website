@@ -26,7 +26,7 @@
       <div v-else>
         <v-alert type="info" class="product-ordering-disabled mt-12">
           La commande en ligne n'est présentement pas possible. Veuillez réessayer plus tard.
-          <br/>
+          <br />
           En cas d'urgence, n'hésitez pas à <nuxt-link to="/contact">nous contacter</nuxt-link>.
         </v-alert>
       </div>

@@ -45,7 +45,7 @@
           <h4><u>Mardi :</u></h4>
           <ul>
             <li>L'Avoine <small>(farine de blé tamisée, farine d'avoine)</small> : 5.85 $</li>
-            <li>Le Multigrains <small>(farine de blé tamisée, flocons d'avoine, graines de tournesol rôties, graines de lin, graines de sésame, graines de citrouilles 
+            <li>Le Multigrains <small>(farine de blé tamisée, flocons d'avoine, graines de tournesol rôties, graines de lin, graines de sésame, graines de citrouilles
             vertes)</small> : 7.15 $</li>
           </ul>
 
@@ -58,7 +58,7 @@
           <h4><u>Jeudi :</u></h4>
           <p>
             <i>Les Pains au choix du boulanger!</i>
-            <br/>
+            <br />
             Le plus souvent les pains sont choisis dans la liste des pains sur commande.
           </p>
         </v-col>
@@ -98,7 +98,7 @@
             <li>Le Tordu, pain torsadé cuit sur pierre naturelle <small>(farine blanche)</small> : 4.90 $</li>
           </ul>
           <i>Pour une commande des pains suivants, s'ils le sont un autre jour que leur jour de production régulier ou le
-            jeudi, alors il faut en commander un mimimum de deux : l'Avoine, le Khorasan, l'Intégral, l'Épeautre, le Pois Chiche, le Quinoa, le Maïs, le Sarrasin 
+            jeudi, alors il faut en commander un mimimum de deux : l'Avoine, le Khorasan, l'Intégral, l'Épeautre, le Pois Chiche, le Quinoa, le Maïs, le Sarrasin
             et La Miche Rustique.</i>
         </v-col>
 
@@ -136,7 +136,7 @@
 import Vue from 'vue';
 
 interface ProduitsData {
-  productPictures: Array<{ src: string; alt: string; }>;
+  productPictures: Array<{ src: string; alt: string }>;
 }
 
 export default Vue.extend({
