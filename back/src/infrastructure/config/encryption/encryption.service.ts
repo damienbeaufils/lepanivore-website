@@ -27,10 +27,6 @@ export class EncryptionService {
   }
 
   async decrypt(valueToDecrypt: string): Promise<string> {
-    if (valueToDecrypt.indexOf(this.INITIALIZATION_VECTOR_WITH_ENCRYPTED_DATA_SEPARATOR) === -1) {
-      return valueToDecrypt; // TODO REMOVE ME WHEN ALL PERSONAL DATA ARE ENCRYPTED
-    }
-
     const key: CipherKey = await this.getEncryptionKey();
     const splittedValueToDecrypt: string[] = valueToDecrypt.split(this.INITIALIZATION_VECTOR_WITH_ENCRYPTED_DATA_SEPARATOR);
     const initializationVector: string = splittedValueToDecrypt[0];
