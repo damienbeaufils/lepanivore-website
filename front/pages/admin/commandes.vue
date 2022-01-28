@@ -19,7 +19,7 @@
         class="year-select"
       ></v-select>
       <v-spacer></v-spacer>
-      <v-btn color="success" @click="downloadCsv" :loading="isLoading">{{ downloadCsvLabel }}</v-btn>
+      <v-btn color="success" @click="downloadCsv" :loading="isCsvLoading">{{ downloadCsvLabel }}</v-btn>
     </v-card-title>
 
     <v-data-table :headers="headers" :items="orders" :search="searchedValue" sort-by="id" sort-desc class="elevation-1" :loading="isLoading">
@@ -106,6 +106,7 @@ interface CommandesData {
   editedOrderId: OrderId;
   year?: number;
   isLoading: boolean;
+  isCsvLoading: boolean;
 }
 
 export default Vue.extend({
@@ -142,6 +143,7 @@ export default Vue.extend({
       editedOrderId: -1,
       year: undefined,
       isLoading: true,
+      isCsvLoading: false,
     } as CommandesData;
   },
   async asyncData(ctx: Context): Promise<object> {
@@ -155,7 +157,9 @@ export default Vue.extend({
     return { orders, closingPeriods, products, year, isLoading };
   },
   async mounted() {
+    this.isLoading = true;
     this.orders = await this.$apiService.getOrders(this.year);
+    this.isLoading = false;
   },
   watch: {
     editOrderDialog(value: boolean) {
@@ -264,9 +268,9 @@ export default Vue.extend({
     },
 
     async downloadCsv(): Promise<void> {
-      this.isLoading = true;
+      this.isCsvLoading = true;
       const csvContent: string = await this.$apiService.getOrdersAsCsv(this.year);
-      this.isLoading = false;
+      this.isCsvLoading = false;
       const filenamePrefix: string = this.year ? `${this.year}` : 'all';
 
       const link: HTMLElement = document.createElement('a');
