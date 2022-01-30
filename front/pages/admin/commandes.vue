@@ -147,7 +147,7 @@ export default Vue.extend({
     } as CommandesData;
   },
   async asyncData(ctx: Context): Promise<object> {
-    const orders: GetOrderResponse[] = await ctx.app.$apiService.getLastOrders(30);
+    const orders: GetOrderResponse[] = await ctx.app.$apiService.getLastOrders(50);
     const closingPeriods: GetClosingPeriodResponse[] = await ctx.app.$apiService.getClosingPeriods();
     const products: GetProductResponse[] = await ctx.app.$apiService.getProducts();
 
