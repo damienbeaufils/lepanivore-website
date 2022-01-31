@@ -131,16 +131,8 @@ export default Vue.extend({
     };
   },
   watch: {
-    async startDate(value: string): Promise<void> {
-      this.orderedProducts = [];
-      this.isLoading = true;
-      try {
-        this.orderedProducts = await this.$apiService.getOrderedProductsByDateRange(this.toDate(value), this.toDate(this.endDate));
-      } catch (e) {
-        this.handleError(e);
-      } finally {
-        this.isLoading = false;
-      }
+    startDate(value: string): void {
+      this.endDate = value;
     },
     async endDate(value: string): Promise<void> {
       this.orderedProducts = [];
