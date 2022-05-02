@@ -51,7 +51,7 @@
     "typeorm": "0.3.6"
   },
   "devDependencies": {
-    "@nestjs/cli": "7.6.0",
+    "@nestjs/cli": "8.0.0",
     "@nestjs/schematics": "7.3.1",
     "@nestjs/testing": "7.6.18",
     "@stryker-mutator/core": "5.6.1",
