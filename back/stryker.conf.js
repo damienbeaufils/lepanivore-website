@@ -10,4 +10,8 @@ module.exports = {
   jest: {
     configFile: './jest-mutation.config.js',
   },
+  dashboard: {
+    project: 'github.com/damienbeaufils/lepanivore-website',
+    version: 'master'
+  }
 };
