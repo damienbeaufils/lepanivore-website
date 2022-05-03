@@ -171,7 +171,7 @@ export default Vue.extend({
       try {
         this.orders = await this.$apiService.getOrders(value);
       } catch (e) {
-        this.handleError(e);
+        this.handleError(e as NuxtError);
       } finally {
         this.isLoading = false;
       }
@@ -228,7 +228,7 @@ export default Vue.extend({
           this.orders = await this.$apiService.getOrders(this.year);
           this.closeEditOrderDialog();
         } catch (e) {
-          this.handleError(e);
+          this.handleError(e as NuxtError);
         }
       }
     },
@@ -243,7 +243,7 @@ export default Vue.extend({
           await this.$apiService.deleteOrder(order.id);
           this.orders = await this.$apiService.getOrders(this.year);
         } catch (e) {
-          this.handleError(e);
+          this.handleError(e as NuxtError);
         }
       }
     },

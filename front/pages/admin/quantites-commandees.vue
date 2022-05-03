@@ -140,7 +140,7 @@ export default Vue.extend({
       try {
         this.orderedProducts = await this.$apiService.getOrderedProductsByDateRange(this.toDate(this.startDate), this.toDate(value));
       } catch (e) {
-        this.handleError(e);
+        this.handleError(e as NuxtError);
       } finally {
         this.isLoading = false;
       }

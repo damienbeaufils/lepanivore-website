@@ -175,7 +175,7 @@ export default Vue.extend({
           this.closingPeriods = await this.$apiService.getClosingPeriods();
           this.closeNewClosingPeriodDialog();
         } catch (e) {
-          this.handleError(e);
+          this.handleError(e as NuxtError);
         }
       }
     },
@@ -186,7 +186,7 @@ export default Vue.extend({
           await this.$apiService.deleteClosingPeriod(closingPeriod.id);
           this.closingPeriods = await this.$apiService.getClosingPeriods();
         } catch (e) {
-          this.handleError(e);
+          this.handleError(e as NuxtError);
         }
       }
     },

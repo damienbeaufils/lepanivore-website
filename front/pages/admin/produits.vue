@@ -205,7 +205,7 @@ export default Vue.extend({
           this.products = await this.$apiService.getProducts();
           this.closeNewProductDialog();
         } catch (e) {
-          this.handleError(e);
+          this.handleError(e as NuxtError);
         }
       }
     },
@@ -217,7 +217,7 @@ export default Vue.extend({
           this.products = await this.$apiService.getProducts();
           this.closeEditProductDialog();
         } catch (e) {
-          this.handleError(e);
+          this.handleError(e as NuxtError);
         }
       }
     },
@@ -228,7 +228,7 @@ export default Vue.extend({
           await this.$apiService.deleteProduct(product.id);
           this.products = await this.$apiService.getProducts();
         } catch (e) {
-          this.handleError(e);
+          this.handleError(e as NuxtError);
         }
       }
     },
