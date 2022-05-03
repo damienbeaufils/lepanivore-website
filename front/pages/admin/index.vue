@@ -89,7 +89,7 @@ export default Vue.extend({
         }
         this.productOrderingStatusSwitchLoading = false;
       } catch (e) {
-        this.handleError(e);
+        this.handleError(e as NuxtError);
       }
     },
 

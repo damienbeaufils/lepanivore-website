@@ -117,7 +117,7 @@ export default Vue.extend({
       try {
         this.orders = await this.$apiService.getOrdersByDate(this.toDate(value));
       } catch (e) {
-        this.handleError(e);
+        this.handleError(e as NuxtError);
       } finally {
         this.isLoading = false;
       }
@@ -135,7 +135,7 @@ export default Vue.extend({
         await this.$apiService.checkOrder(order.id);
         this.orders = await this.$apiService.getOrdersByDate(this.toDate(this.date));
       } catch (e) {
-        this.handleError(e);
+        this.handleError(e as NuxtError);
       } finally {
         this.isLoading = false;
       }
@@ -147,7 +147,7 @@ export default Vue.extend({
         await this.$apiService.uncheckOrder(order.id);
         this.orders = await this.$apiService.getOrdersByDate(this.toDate(this.date));
       } catch (e) {
-        this.handleError(e);
+        this.handleError(e as NuxtError);
       } finally {
         this.isLoading = false;
       }

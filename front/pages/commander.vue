@@ -35,7 +35,7 @@
 </template>
 
 <script lang="ts">
-import { Context } from '@nuxt/types';
+import {Context, NuxtError} from '@nuxt/types';
 import Vue from 'vue';
 import ContactDetails from '~/components/ContactDetails.vue';
 import OrderNote from '~/components/OrderNote.vue';
@@ -95,7 +95,7 @@ export default Vue.extend({
           this.$router.push(`/confirmation-de-commande?orderId=${postOrderResponse.id}`);
         } catch (e) {
           this.isLoading = false;
-          if (e.statusCode === 400) {
+          if ((e as NuxtError).statusCode === 400) {
             this.hasValidationError = true;
           } else {
             this.hasUnknownError = true;

@@ -1,4 +1,6 @@
 language: node_js
+node_js:
+  - 16
 
 git:
   depth: false
@@ -9,7 +11,7 @@ branches:
     - maintenance/stop-test-applications
 
 before_install:
-  - npm i -g npm@latest-6
+  - npm i -g npm@latest
 
 install:
   - cd $TRAVIS_BUILD_DIR/back && npm ci

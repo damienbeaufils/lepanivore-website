@@ -89,7 +89,7 @@ export default Vue.extend({
           this.$router.push(`/admin/confirmation-de-commande-manuelle?orderId=${postOrderResponse.id}`);
         } catch (e) {
           this.isLoading = false;
-          this.handleError(e);
+          this.handleError(e as NuxtError);
         }
       }
     },
