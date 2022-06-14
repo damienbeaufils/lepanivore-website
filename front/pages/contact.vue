@@ -16,8 +16,8 @@
         </v-col>
         
          <v-col cols="12" sm="8" md="6">
-          <h3>Semaine de relâche 2022</h3>
-          Veuillez prendre note que la boulangerie sera <b>fermée du 27 Février au 7 Mars inclus.</b><br />Nous serons de retour le <b>mardi 8 mars dès 11:00</b>.
+          <h3>Fête de la Saint-Jean et Fête du Canada</h3>
+          Veuillez prendre note que la boulangerie sera <b>fermée les 24 et 25 Juin.</b><br />En revanche elle sera <b>ouverte les 1er et 2 Juillet aux horaires habituels.</b>
         </v-col>
         
         <v-col cols="12" sm="8" md="6">
