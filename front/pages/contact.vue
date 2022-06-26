@@ -16,8 +16,13 @@
         </v-col>
         
          <v-col cols="12" sm="8" md="6">
-          <h3>Fête de la Saint-Jean et Fête du Canada</h3>
-          Veuillez prendre note que la boulangerie sera <b>fermée les 24 et 25 Juin.</b><br />En revanche elle sera <b>ouverte les 1er et 2 Juillet aux horaires habituels.</b>
+          <h3>Fête du Canada</h3>
+          Veuillez prendre note que la boulangerie sera <b>ouverte les 1er et 2 Juillet.<br />
+          <ul>
+            <li>Vendredi 1er Juillet de 08:00 à 15:00</li>
+            <li>Samedi 2 Juillet de 08:00 à 17:00</li>
+          </ul>
+          </b>
         </v-col>
         
         <v-col cols="12" sm="8" md="6">
