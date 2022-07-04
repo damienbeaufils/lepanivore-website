@@ -16,13 +16,10 @@
         </v-col>
         
          <v-col cols="12" sm="8" md="6">
-          <h3>Fête du Canada</h3>
-          Veuillez prendre note que la boulangerie sera <b>ouverte les 1er et 2 Juillet.<br />
-          <ul>
-            <li>Vendredi 1er Juillet de 08:00 à 15:00</li>
-            <li>Samedi 2 Juillet de 08:00 à 17:00</li>
-          </ul>
-          </b>
+          <h3>Fermeture estivale</h3>
+          Veuillez prendre note que la boulangerie sera <b>fermée du 4 juillet au 22 août inclus.</b><br />
+          Nous serons de retour, aux horaires habituels, le mardi 23 août.<br />
+          Nous vous souhaitons un bel été !
         </v-col>
         
         <v-col cols="12" sm="8" md="6">
