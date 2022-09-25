@@ -96,6 +96,7 @@
             <li>Le Sarrasin <small>(farine de blé tamisée, farine de sarrasin)</small> : 7.20 $</li>
             <li>Le Maïs <small>(farine blanche, farine de maïs entière)</small> : 6.10 $</li>
             <li>Le Tordu, pain torsadé cuit sur pierre naturelle <small>(farine blanche)</small> : 4.90 $</li>
+            <li>Le Campagne, cuit sur pierre naturelle <small>(farine de blé tamisée, farine de seigle)</small> : 5.40 $</li>
           </ul>
           <i>Pour une commande des pains suivants, s'ils le sont un autre jour que leur jour de production régulier ou le
             jeudi, alors il faut en commander un mimimum de deux : l'Avoine, le Khorasan, l'Intégral, l'Épeautre, le Pois Chiche, le Quinoa, le Maïs, le Sarrasin
