@@ -26,7 +26,7 @@
     "typeorm:migration:run": "npm run typeorm -- migration:run -c schema"
   },
   "dependencies": {
-    "@nestjs-modules/mailer": "1.6.1",
+    "@nestjs-modules/mailer": "1.8.1",
     "@nestjs/common": "8.4.4",
     "@nestjs/core": "8.4.4",
     "@nestjs/jwt": "8.0.0",
