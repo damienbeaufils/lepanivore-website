@@ -16,10 +16,10 @@
         </v-col>
         
          <v-col cols="12" sm="8" md="6">
-          <h3>Fermeture estivale</h3>
-          Veuillez prendre note que la boulangerie sera <b>fermée du 4 juillet au 22 août inclus.</b><br />
-          Nous serons de retour, aux horaires habituels, le mardi 23 août.<br />
-          Nous vous souhaitons un bel été !
+          <h3>Fermeture mardi 27 décembre</h3>
+          Veuillez prendre note que la boulangerie sera <b>fermée mardi 27 décembre.</b><br />
+          L'horaire des autres jours reste inchangé.<br />
+          Joyeux temps des fêtes !
         </v-col>
         
         <v-col cols="12" sm="8" md="6">
