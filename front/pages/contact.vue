@@ -16,13 +16,6 @@
         </v-col>
         
          <v-col cols="12" sm="8" md="6">
-          <h3>Fermeture mardi 27 décembre</h3>
-          Veuillez prendre note que la boulangerie sera <b>fermée mardi 27 décembre.</b><br />
-          L'horaire des autres jours reste inchangé.<br />
-          Joyeux temps des fêtes !
-        </v-col>
-        
-        <v-col cols="12" sm="8" md="6">
           <h3>Heures d'ouverture</h3>
           <table>
             <tbody>
