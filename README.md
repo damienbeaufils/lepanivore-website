@@ -31,7 +31,7 @@ Concretely, there are 3 main packages: `domain`, `use_cases` and `infrastructure
 The `npm` commands are the same, whether you are on `back` or `front` application. 
 
 ### Requirements
-- Node LTS 16.5
+- Node LTS 16.x
 
 ### Install
 ```
