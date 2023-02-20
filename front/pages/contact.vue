@@ -17,7 +17,7 @@
         
         <v-col cols="12" sm="8" md="6">
           <h3>Relâche scolaire 2023</h3>
-          Veuillez prendre note que la boulangerie sera <b>fermée du 26 Février au 6 Mars.</b>         
+          Veuillez prendre note que la boulangerie sera <b>fermée du 26 Février au 6 Mars.</b>        
         </v-col>
         
          <v-col cols="12" sm="8" md="6">
