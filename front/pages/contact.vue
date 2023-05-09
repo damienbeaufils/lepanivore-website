@@ -9,8 +9,7 @@
             1224 rue Bélanger Est<br />
             Montréal (QC) H2S 1H8<br />
             <br />
-            Tél. (Laurence) : (514) 647-8635<br />
-            Tél. (Thomas) : (514) 583-2854<br />
+            Tél. (Marie) : (514) 647-8635<br />
             Courriel : <a href="mailto:info@lepanivore.com">info@lepanivore.com</a>
           </address>
         </v-col>
