@@ -10,7 +10,7 @@
             Montréal (QC) H2S 1H8<br />
             <br />
             Tél. (Marie) : (514) 647-8635<br />
-            Courriel : <a href="mailto:lepanivore@outlook.com">lepanivore@outlook.com</a>
+            Courriel : <a href="mailto:info@lepanivore.com">info@lepanivore.com</a>
           </address>
         </v-col>
         
