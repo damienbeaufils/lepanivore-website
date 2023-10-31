@@ -1,3 +1,4 @@
+dist: jammy
 language: node_js
 node_js:
   - 16
@@ -10,9 +11,6 @@ branches:
     - master
     - maintenance/stop-test-applications
 
-before_install:
-  - npm i -g npm@latest
-
 install:
   - cd $TRAVIS_BUILD_DIR/back && npm ci
   - cd $TRAVIS_BUILD_DIR/front && npm ci
@@ -22,7 +20,7 @@ script:
   - cd $TRAVIS_BUILD_DIR/front && npm test
 
 before_deploy:
-  - npm install -g clever-tools
+  - npm install -g clever-tools@2.11.0
 
 deploy:
   provider: script
