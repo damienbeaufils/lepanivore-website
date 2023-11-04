@@ -9,8 +9,8 @@
             1224 rue Bélanger Est<br />
             Montréal (QC) H2S 1H8<br />
             <br />
-            Tél. (Marie) : (514) 647-8635<br />
-            Courriel : <a href="mailto:info@lepanivore.com">info@lepanivore.com</a>
+            Tél. : (514) 647-8635<br />
+            Courriel : <a href="mailto:lepanivore@outlook.com">lepanivore@outlook.com</a>
           </address>
         </v-col>
         
@@ -24,11 +24,11 @@
               </tr>
               <tr>
                 <td>Mardi au vendredi</td>
-                <td>11:00 à 18:30</td>
+                <td>08:00 à 18:00</td>
               </tr>
               <tr>
                 <td>Samedi</td>
-                <td>08:00 à 17:00</td>
+                <td>08:00 à 15:00</td>
               </tr>
               <tr>
                 <td>Dimanche</td>
