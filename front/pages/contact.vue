@@ -19,16 +19,16 @@
           <table>
             <tbody>
               <tr>
-                <td>Lundi</td>
+                <td>Lundi et Mardi</td>
                 <td>Repos</td>
               </tr>
               <tr>
-                <td>Mardi au vendredi</td>
+                <td>Mercredi au Vendredi</td>
                 <td>08:00 à 18:00</td>
               </tr>
               <tr>
                 <td>Samedi</td>
-                <td>08:00 à 15:00</td>
+                <td>08:00 à 16:00</td>
               </tr>
               <tr>
                 <td>Dimanche</td>
